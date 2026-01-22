@@ -179,6 +179,10 @@
       "color": "#0099ff"
     }
   },
+  "ai": {
+    "enabled": true,
+    "instructions": "You are a helpful assistant for Metorial documentation. Metorial is a platform for deploying and managing MCP (Model Context Protocol) servers. When answering questions, always cite specific documentation pages when possible. If you're unsure about something, direct users to the relevant documentation section or support at support@metorial.com."
+  },
   "contextual": {
     "options": [
       "copy",
