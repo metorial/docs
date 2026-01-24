@@ -22,7 +22,9 @@ An **instance** represents an isolated environment within your project. Each ins
 - OAuth sessions
 - Logs and metrics
 
+<Info>
 Changes in one instance don't affect others, allowing you to test in isolation.
+</Info>
 
 ## Instance Types
 
@@ -69,13 +71,15 @@ prod_metorial = Metorial(api_key=os.getenv("METORIAL_PROD_KEY"))
 ```
 </CodeGroup>
 
-## Best Practices
+<Info>
+**Best Practices**
 
 **Never share credentials**: Use separate API keys and OAuth apps for each environment.
 
 **Test before production**: Always test deployments in development before using in production.
 
 **Access control**: Limit production access to necessary team members.
+</Info>
 
 ## What's Next?
 
