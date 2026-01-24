@@ -10,83 +10,99 @@ description: 'Pre-built MCP server integrations that you can deploy without writ
 - Licensing and deployment options
 
 **Related resources:**
-- [Browsing the Catalog](/integrations-browsing-catalog)
-- [Deploy Your First Server](/metorial-101-deploying)
+- [Browsing the Catalog](integrations-browsing-catalog)
+- [Deploy Your First Server](metorial-101-deploying)
 </Note>
 
 ## What Are Integrations?
 
-Integrations are pre-built MCP servers that provide ready-to-use tools for various services like GitHub, Slack, Google Calendar, Exa, and more.
+Integrations are pre-built MCP servers that provide ready-to-use tools for popular services. Instead of building API clients from scratch, you can deploy integrations for services like GitHub, Slack, Google Calendar, Exa, and more.
+
+Each integration exposes tools that your AI models can call directly. For example, the GitHub integration provides tools for creating issues, reviewing pull requests, and managing repositories—all without writing any integration code yourself.
 
 ## Licensing
 
-Metorial is licensed under the **FSL (Functional Source License)**. This means:
+Metorial uses the **FSL (Functional Source License)** - source-available with commercial licensing for production.
 
-- **Source available**: You can view and audit the code
-- **Free for evaluation and development**
-- **Commercial use** requires a license for production deployments
+**What this means for developers:**
+- **Free during development**: Build and test without restrictions
+- **Source available**: Audit the code for security and compliance
+- **Production requires a license**: Contact us when you're ready to deploy
+
+The cloud SaaS version at [app.metorial.com](https://app.metorial.com) includes licensing—just sign up and deploy.
 
 ## Deployment Options
 
-### Cloud SaaS
+### Cloud SaaS (Recommended)
 
-Use Metorial's hosted cloud service at [app.metorial.com](https://app.metorial.com):
-- No infrastructure to manage
-- Automatic updates and scaling
-- Quick setup
+Start building immediately with Metorial's hosted cloud at [app.metorial.com](https://app.metorial.com). No infrastructure setup required—just create an account and deploy integrations.
+
+<Info>
+**Ideal for**: Teams who want to focus on building AI features rather than managing infrastructure.
+</Info>
 
 ### Enterprise On-Premises
 
-For enterprises requiring on-premises deployment:
-- Deploy on **AWS**, **GCP**, or other cloud providers
-- Uses **HashiStack** (Nomad, Vault, Consul) for orchestration
-- Full control over infrastructure and data
-- Contact us for enterprise licensing
+Self-host Metorial in your own cloud environment when you need full control over data and infrastructure. Metorial runs on **HashiStack** (Nomad, Vault, Consul) and deploys to AWS, GCP, Azure, or your private cloud.
+
+<Info>
+**Ideal for**: Enterprises with strict data residency requirements or compliance needs.
+</Info>
+
+Contact us for enterprise licensing and deployment support.
 
 ## Authentication Types
 
+Integrations use two authentication patterns depending on whether they access shared services or user-specific data.
+
 ### API Key Integrations
 
-Simpler setup - just provide your API credentials.
+Best for services where one API key serves your entire application. The integration uses your credentials to make requests on behalf of your app.
 
-**Examples**: Exa, Tavily
+<Info>
+**Examples**: Exa (search), Tavily (search), Brave (search)
 
-**Setup**:
-1. Get API key from the service
-2. Create deployment in Metorial
-3. Paste API key in configuration
+**When to use**: Single-tenant applications, internal tools, or services that don't have user-specific data.
+
+**Setup**: Get an API key from the service, create a deployment in Metorial, and paste your key. Done.
+</Info>
 
 ### OAuth Integrations
 
-User authorization required - each user authorizes access.
+Required when each user needs to authorize access to their own account. The integration acts on behalf of individual users with their explicit permission.
 
-**Examples**: Slack, GitHub, Google Calendar
+<Info>
+**Examples**: Slack, GitHub, Google Calendar, Gmail
 
-**Common patterns**:
-- **One-time authorization**: User authorizes once, you store and reuse the session
-- **Enterprise BYO**: Bring your own OAuth app credentials
-- **OAuth export/import**: Reduce friction by importing existing tokens
+**When to use**: Multi-tenant applications where users connect their personal accounts.
 
-See [OAuth Integrations](/integrations-oauth) for detailed patterns.
+**How it works**: Users authorize via OAuth, you store their session ID, and pass it when creating MCP sessions. Each user's data stays isolated.
+</Info>
+
+See [OAuth Integrations](integrations-oauth) for implementation patterns.
 
 ## Choosing Integrations
 
+You can mix both authentication types in the same application. For example, use an API key integration for search (Exa) while using OAuth integrations for user-specific services (Slack, GitHub). When creating MCP sessions, pass multiple deployments together—Metorial combines all their tools into a single tool list for your AI model.
+
+<Info>
 **Single-user applications**: API key integrations work well.
 
 **Multi-user applications**: Use OAuth integrations for user-specific access.
 
 **Enterprise**: Consider BYO OAuth apps with dynamic server deployments.
+</Info>
 
 ## Getting Started
 
 <CardGroup cols={3}>
-  <Card title="Browse the Catalog" icon="grid" href="/integrations-browsing-catalog">
+  <Card title="Browse the Catalog" icon="grid" href="integrations-browsing-catalog">
     Explore available integrations.
   </Card>
-  <Card title="API Key Setup" icon="key" href="/integrations-api-key">
+  <Card title="API Key Setup" icon="key" href="integrations-api-key">
     Deploy an API key-based integration.
   </Card>
-  <Card title="OAuth Setup" icon="shield" href="/integrations-oauth">
+  <Card title="OAuth Setup" icon="shield" href="integrations-oauth">
     Deploy an OAuth-based integration.
   </Card>
 </CardGroup>

@@ -119,16 +119,8 @@
               "sdk-quickstart",
               "sdk-javascript",
               "sdk-python",
+              "sdk-oauth",
               "sdk-error-handling"
-            ]
-          },
-          {
-            "group": "OAuth",
-            "pages": [
-              "sdk-oauth-overview",
-              "sdk-oauth-creating",
-              "sdk-oauth-using",
-              "sdk-oauth-waiting"
             ]
           },
           {

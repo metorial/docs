@@ -3,7 +3,7 @@ title: 'Setting Up API Key Integrations'
 description: 'Deploy and configure API key-based integrations in Metorial'
 ---
 
-API key integrations are the simplest way to get started - just provide your API credentials.
+API key integrations use a single set of credentials for your entire application. Perfect for services like search APIs (Exa, Tavily) where you don't need user-specific authorization—just get an API key, deploy, and start building.
 
 <Note>
 **What you'll learn:**
@@ -11,7 +11,8 @@ API key integrations are the simplest way to get started - just provide your API
 - How to configure and test integrations
 
 **Related resources:**
-- [Deploy Your First Server](/getting-started-your-first-deployment)
+- [Deploy Your First Server](metorial-101-deploying)
+- [Integrations Overview](integrations-overview)
 </Note>
 
 ## Deploying an API Key Integration
@@ -31,7 +32,9 @@ API key integrations are the simplest way to get started - just provide your API
   </Step>
 </Steps>
 
-## Using in Code
+## Using API Key Integrations
+
+After deploying your integration, pass the deployment ID to your Metorial session. The integration handles authentication automatically using the API key you configured.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -99,10 +102,10 @@ asyncio.run(main())
 ## What's Next?
 
 <CardGroup cols={2}>
-  <Card title="OAuth Integrations" icon="shield" href="/integrations-oauth">
-    Learn about user-authorized integrations.
+  <Card title="OAuth Integrations" icon="shield" href="integrations-oauth">
+    Set up user-authorized integrations.
   </Card>
-  <Card title="SDK Quickstart" icon="code" href="/sdk-quickstart">
-    Start using your deployments in code.
+  <Card title="SDK Quickstart" icon="code" href="sdk-quickstart">
+    Build your first AI agent.
   </Card>
 </CardGroup>

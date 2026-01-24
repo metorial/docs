@@ -3,6 +3,16 @@ title: "Using with Anthropic"
 description: "Use Metorial with Claude models"
 ---
 
+The Anthropic provider integration lets you use Metorial's MCP tools with Claude models (Sonnet, Opus, and Haiku). The integration converts Metorial tools into Anthropic's tool format and handles tool call execution.
+
+Claude excels at complex reasoning and following instructions precisely, making it a great choice for AI agents that use multiple tools. You'll need both a Metorial API key and an Anthropic API key to use this integration.
+
+**What this example does:**
+1. Initializes both Metorial and Anthropic clients
+2. Creates a Metorial session that provides tools in Anthropic's format
+3. Passes those tools to Claude's messages API
+4. Provides a `callTools` function to execute any tool calls Claude requests
+
 ## Example
 
 <CodeGroup>

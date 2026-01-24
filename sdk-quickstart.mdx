@@ -27,7 +27,7 @@ description: "Get up and running with Metorial in under 5 minutes"
 
 ## Installation
 
-Install the core SDK and a provider package for your AI model:
+The Metorial SDK consists of two parts: the core SDK (which handles sessions and tool management) and a provider package (which integrates with your chosen AI model). Install both to get started.
 
 <CodeGroup>
 ```bash TypeScript
@@ -57,6 +57,15 @@ We support OpenAI, Anthropic, Google, Mistral, DeepSeek, and any OpenAI-compatib
 
 ## Your First AI Agent
 
+This example shows how to create an AI agent that can use tools from your deployed MCP servers. The agent will have access to any tools provided by your server deployment (like search, file operations, or API calls).
+
+**What this code does:**
+1. Initializes the Metorial SDK with your API key
+2. Creates a session connected to your server deployment
+3. Passes the available tools to your AI model
+4. Streams the AI's response back in real-time
+5. Automatically closes the session when complete
+
 <CodeGroup>
 ```typescript TypeScript
 import { Metorial } from 'metorial';
@@ -64,26 +73,30 @@ import { metorialAiSdk } from '@metorial/ai-sdk';
 import { anthropic } from '@ai-sdk/anthropic';
 import { streamText } from 'ai';
 
+// Initialize the Metorial SDK with your API key
 let metorial = new Metorial({
     apiKey: process.env.METORIAL_API_KEY
 });
 
+// Create a session and pass tools to your AI model
 await metorial.withProviderSession(
-    metorialAiSdk,
+    metorialAiSdk,  // Use Vercel AI SDK provider
     {
         serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }],
-        streaming: true
+        streaming: true  // Enable streaming for real-time responses
     },
     async ({ tools, closeSession }) => {
+        // Call your AI model with the tools from Metorial
         let result = streamText({
             model: anthropic('claude-sonnet-4-5'),
             prompt: 'Search for the latest AI research',
-            tools,
+            tools,  // Tools from your server deployment
             onFinish: async () => {
-                await closeSession();
+                await closeSession();  // Clean up when done
             }
         });
 
+        // Stream the response to your user
         for await (let textPart of result.textStream) {
             process.stdout.write(textPart);
         }
@@ -132,7 +145,13 @@ asyncio.run(main())
 
 ## OAuth Flow
 
-For services requiring user authentication (Slack, GitHub, Google Calendar), use OAuth sessions:
+For services requiring user authentication (like Slack, GitHub, or Google Calendar), you need to use OAuth sessions. This allows your users to authorize access to their accounts.
+
+**The OAuth flow works in 4 steps:**
+1. Create OAuth sessions for each service that needs authentication
+2. Send the authorization URLs to your users (they'll approve access in their browser)
+3. Wait for the user to complete the OAuth flow
+4. Use the authenticated sessions to create tool-enabled AI agents
 
 <CodeGroup>
 ```typescript TypeScript
@@ -227,7 +246,7 @@ asyncio.run(main())
 
 ### Streaming Mode
 
-Enable streaming when using tool calls with streaming responses:
+When your AI model streams responses back to users in real-time, you need to enable streaming mode in Metorial. This ensures that tool calls work correctly with streamed responses.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -256,7 +275,7 @@ await metorial.with_provider_session(
 
 ### Closing Sessions
 
-Always close your session when done to free up resources:
+Sessions maintain an active connection to your MCP servers. Always close your session when you're done to free up resources and ensure clean disconnection from your deployments.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -286,6 +305,8 @@ async def session_handler(session):
 </CodeGroup>
 
 ## Error Handling
+
+The Metorial SDK provides specific error types to help you handle different failure scenarios. Catch `MetorialAPIError` for API-related issues like authentication failures, rate limits, or invalid deployment IDs.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -317,10 +338,10 @@ except Exception as e:
 ## What's Next?
 
 <CardGroup cols={2}>
-  <Card title="OAuth Integration" href="/sdk-oauth-overview">
+  <Card title="OAuth Integration" href="sdk-oauth">
     Handle user authorization for services like Slack and GitHub.
   </Card>
-  <Card title="Provider Examples" href="/sdk-providers-overview">
+  <Card title="Provider Examples" href="sdk-providers-overview">
     Use with OpenAI, Anthropic, Google, and more.
   </Card>
 </CardGroup>

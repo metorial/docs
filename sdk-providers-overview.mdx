@@ -10,16 +10,29 @@ description: "Metorial works with all major AI providers"
 - Choosing a provider
 </Note>
 
+Metorial is provider-agnostic, meaning you can use it with any AI model from any provider. The SDK provides integration packages for major AI providers, making it easy to connect Metorial's MCP tools with your chosen model.
+
+Each provider integration handles the specifics of formatting tools and responses in the way that provider expects, so you can focus on building your AI application rather than dealing with API differences.
+
 ## Supported Providers
 
-- OpenAI (GPT-4, GPT-3.5)
-- Anthropic (Claude)
-- Google (Gemini)
-- Mistral
-- DeepSeek
-- TogetherAI
-- XAI (Grok)
-- Any OpenAI-compatible API
+- **OpenAI** - GPT-4, GPT-3.5, and other OpenAI models
+- **Anthropic** - Claude Sonnet, Opus, and Haiku models
+- **Google** - Gemini Pro and other Google models
+- **Vercel AI SDK** - Unified interface for multiple providers (recommended for TypeScript)
+- **Mistral** - Mistral models
+- **DeepSeek** - DeepSeek models via OpenAI-compatible API
+- **TogetherAI** - Models hosted on TogetherAI
+- **XAI** - Grok models
+- **Any OpenAI-compatible API** - Use the OpenAI provider with custom base URLs
+
+## Choosing a Provider
+
+**For TypeScript projects**, we recommend using the **Vercel AI SDK** provider (`@metorial/ai-sdk`). It offers the best developer experience with built-in streaming support, unified tool handling, and compatibility with multiple model providers.
+
+**For Python projects**, use the provider-specific packages like `MetorialAnthropic` or `MetorialOpenAI`. These work directly with the official Python SDKs from each provider.
+
+**For production applications**, consider factors like model capabilities, pricing, rate limits, and latency when choosing your provider. Metorial makes it easy to switch providers later if your needs change.
 
 ## Provider Guides
 

@@ -10,7 +10,11 @@ description: "Handle errors gracefully in your Metorial SDK applications"
 - Debugging tips
 </Note>
 
+The Metorial SDK throws typed errors that help you identify and handle specific failure scenarios. All API-related errors are instances of `MetorialAPIError`, which includes the error message, HTTP status code, and error type.
+
 ## Catching Errors
+
+Wrap your Metorial SDK calls in try-catch blocks to handle errors gracefully. Check if the error is a `MetorialAPIError` to access structured error information.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -50,9 +54,16 @@ except MetorialAPIError as e:
 ```
 </CodeGroup>
 
+<Info>
 ## Common Errors
 
-- `DEPLOYMENT_NOT_FOUND`: Invalid deployment ID
-- `SESSION_LIMIT_REACHED`: Too many concurrent sessions
-- `OAUTH_SESSION_EXPIRED`: Reauthorization needed
-- `RATE_LIMIT_EXCEEDED`: Slow down requests
+Here are the most common error types you'll encounter and how to handle them:
+
+**`DEPLOYMENT_NOT_FOUND`**: The deployment ID doesn't exist or you don't have access to it. Double-check your deployment ID in the Metorial dashboard.
+
+**`SESSION_LIMIT_REACHED`**: You've exceeded the maximum number of concurrent sessions for your plan. Close unused sessions or wait for existing ones to finish.
+
+**`OAUTH_SESSION_EXPIRED`**: The user's OAuth authorization has expired. Prompt them to re-authorize through the OAuth flow.
+
+**`RATE_LIMIT_EXCEEDED`**: You're making too many requests. Implement exponential backoff and respect rate limit headers.
+</Info>

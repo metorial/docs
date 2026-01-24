@@ -16,9 +16,13 @@ description: "Learn how to use the Metorial JavaScript SDK for TypeScript and Ja
 - [JavaScript SDK on GitHub](https://github.com/metorial/metorial-node)
 </Note>
 
+The Metorial JavaScript SDK provides a type-safe interface for interacting with the Metorial API. Use it to manage your server deployments, create sessions, handle OAuth flows, and integrate MCP tools into your applications.
+
+The SDK works across all JavaScript environments including Node.js, browser applications, and Deno.
+
 <Steps>
   <Step title="Install the SDK">
-    To install the Metorial JavaScript SDK, use npm or yarn:
+    Install the SDK using your preferred package manager:
 
     <CodeGroup>
     ```bash npm
@@ -46,7 +50,7 @@ description: "Learn how to use the Metorial JavaScript SDK for TypeScript and Ja
   </Step>
 
   <Step title="Making Requests">
-    To make a request, use the resource methods on the `metorial` instance:
+    The SDK organizes API resources into logical namespaces (like `servers`, `serverImplementations`, `oauth`, etc.). Each resource provides methods for common operations like `get()`, `list()`, `create()`, `update()`, and `delete()`.
 
     ```javascript
     // Get a server by ID
@@ -59,7 +63,7 @@ description: "Learn how to use the Metorial JavaScript SDK for TypeScript and Ja
     });
     ```
 
-    Each method returns a Promise that resolves with the response data.
+    Each method returns a Promise that resolves with the response data. Use `async/await` or `.then()` to handle the results.
   </Step>
 
   <Step title="Using TypeScript">

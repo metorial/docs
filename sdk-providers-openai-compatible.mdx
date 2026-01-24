@@ -3,6 +3,22 @@ title: "OpenAI-Compatible Providers"
 description: "Use Metorial with DeepSeek, TogetherAI, XAI, and other OpenAI-compatible APIs"
 ---
 
+Many AI providers offer APIs that are compatible with OpenAI's format. This means you can use the same code patterns and tools, just by changing the base URL and API key. Metorial supports all of these OpenAI-compatible providers.
+
+**Supported OpenAI-compatible providers:**
+- **DeepSeek** - Cost-effective models with strong performance
+- **TogetherAI** - Open-source models with flexible deployment
+- **XAI (Grok)** - Models from xAI
+- **Any custom OpenAI-compatible endpoint** - Self-hosted or proprietary models
+
+The integration uses the OpenAI SDK with a custom base URL, making it easy to switch between different OpenAI-compatible providers without changing your code structure.
+
+**What this example does:**
+1. Creates an OpenAI client pointed at DeepSeek's API endpoint
+2. Uses Metorial's DeepSeek provider integration (or OpenAI provider for generic APIs)
+3. Passes tools to the model in OpenAI's function calling format
+4. The model can call tools just like with OpenAI's GPT models
+
 ## Example
 
 <CodeGroup>

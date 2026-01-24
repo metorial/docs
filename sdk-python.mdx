@@ -15,9 +15,13 @@ description: "Learn how to use the Metorial Python SDK for Python applications"
 - [Python SDK on GitHub](https://github.com/metorial/metorial/tree/main/clients/metorial-py)
 </Note>
 
+The Metorial Python SDK provides a Pythonic interface for interacting with the Metorial API. Use it to manage deployments, create sessions, handle OAuth flows, and integrate MCP tools into your Python applications.
+
+The SDK is fully typed with type hints for all methods and resources, making it ideal for use with modern Python development tools.
+
 <Steps>
   <Step title="Install the SDK">
-    To install the Metorial Python SDK, use pip install:
+    Install the SDK using pip:
 
     ```bash
     pip install metorial
@@ -39,7 +43,7 @@ description: "Learn how to use the Metorial Python SDK for Python applications"
   </Step>
 
   <Step title="Making Requests">
-    To make a request, use the resource methods on the `metorial` instance:
+    The SDK organizes API resources into logical attributes (like `servers`, `server_implementations`, `oauth`, etc.). Each resource provides methods for common operations like `get()`, `list()`, `create()`, `update()`, and `delete()`.
 
     ```python
     # Get a server by ID
@@ -51,9 +55,11 @@ description: "Learn how to use the Metorial Python SDK for Python applications"
       "description": "updated description"
     })
     ```
+
+    All methods are synchronous by default. For async operations, use the async version of the SDK (see the GitHub repository for examples).
   </Step>
 
   <Step title="Using Types">
-    The SDK is typed and includes type definitions for all API resources, so you can benefit from type checking and IntelliSense support.
+    The SDK includes type hints for all API resources. Use tools like mypy or your IDE's type checker to catch errors before runtime and get autocomplete suggestions for all API methods and parameters.
   </Step>
 </Steps>

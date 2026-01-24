@@ -3,31 +3,28 @@ title: 'Setting Up OAuth Integrations'
 description: 'Deploy and configure OAuth-based integrations that require user authorization'
 ---
 
-OAuth integrations require user authorization to access resources like Slack messages, GitHub repos, or Google Calendar events.
+OAuth integrations let users authorize access to their personal accounts—like Slack workspaces, GitHub repos, or Google Calendars—so your AI can perform actions on their behalf.
 
 <Note>
 **What you'll learn:**
-- Common OAuth patterns and use cases
-- How to handle OAuth for your users
-- OAuth export/import for reduced friction
-- Enterprise BYO (Bring Your Own) OAuth apps
+- Setting up OAuth for your users
+- Managing OAuth sessions
+- Advanced patterns (BYO OAuth, export/import)
 
 **Related resources:**
-- [SDK OAuth Guide](/sdk-oauth-overview)
+- [SDK OAuth Guide](sdk-oauth)
 - [Server Deployment API](/api/server-deployment)
 </Note>
 
-## OAuth Use Cases
+## Basic OAuth Setup
 
-### One-Time User Authorization
+Each user authorizes once, you store their OAuth session ID in your database, then reuse it for future requests.
 
-The most common pattern: each user authorizes once, and you store their OAuth session for future use.
-
-**How it works**:
-1. User clicks "Connect" in your app
-2. They complete the OAuth flow (e.g., authorize Slack access)
-3. You store the `oauthSessionId` for that user
-4. Use that session ID for all future requests
+**The flow:**
+1. User clicks "Connect Slack" (or GitHub, Google, etc.) in your app
+2. They authorize access via the OAuth screen
+3. You receive an `oauthSessionId` and store it for that user
+4. Pass that session ID whenever creating MCP sessions for that user
 
 <CodeGroup>
 ```typescript TypeScript
@@ -63,71 +60,9 @@ await db.users.update(user_id, slack_oauth_session_id=oauth_session.id)
 ```
 </CodeGroup>
 
-### Enterprise BYO (Bring Your Own) OAuth Apps
-
-For enterprise customers who want to use their own OAuth app credentials instead of Metorial's.
-
-**Why use BYO**:
-- Use your company's existing OAuth apps
-- Control branding in the OAuth consent screen
-- Comply with enterprise security policies
-- Manage OAuth credentials in your infrastructure
-
-**How it works**:
-Create server deployments dynamically via the API with your own OAuth credentials.
-
-See the [Server Deployment API](/api/server-deployment) for creating deployments programmatically with custom OAuth configurations.
-
-## OAuth Export/Import
-
-For users who want to reduce friction or manage OAuth tokens outside of Metorial sessions.
-
-### Exporting OAuth Tokens
-
-Export OAuth credentials for use in your own infrastructure:
-
-<CodeGroup>
-```typescript TypeScript
-// Export OAuth session credentials
-let credentials = await metorial.oauth.sessions.export(oauthSessionId);
-```
-
-```python Python
-# Export OAuth session credentials
-credentials = await metorial.oauth.sessions.export(oauth_session_id)
-```
-</CodeGroup>
-
-### Importing OAuth Tokens
-
-Import existing OAuth tokens into Metorial:
-
-<CodeGroup>
-```typescript TypeScript
-// Import existing OAuth credentials
-let oauthSession = await metorial.oauth.sessions.import({
-    serverDeploymentId: 'your-deployment-id',
-    credentials: existingOAuthCredentials
-});
-```
-
-```python Python
-# Import existing OAuth credentials
-oauth_session = await metorial.oauth.sessions.import_(
-    server_deployment_id="your-deployment-id",
-    credentials=existing_oauth_credentials
-)
-```
-</CodeGroup>
-
-This is useful when:
-- Migrating from another system
-- Users already have OAuth tokens from your app
-- You want to manage tokens in your own database
-
 ## Using OAuth Sessions
 
-Once a user is authorized, pass their OAuth session ID when creating MCP sessions:
+After a user authorizes, retrieve their stored OAuth session ID from your database and pass it when creating MCP sessions. This connects the session to their authorized account, giving your AI access to their data.
 
 <CodeGroup>
 ```typescript TypeScript
@@ -167,16 +102,76 @@ await metorial.with_provider_session(
 ```
 </CodeGroup>
 
+## Advanced Features
+
+### Enterprise BYO (Bring Your Own) OAuth
+
+Need to use your own OAuth apps instead of Metorial's? Create server deployments via the API with your own credentials.
+
+<Info>
+**Why use BYO OAuth:**
+- OAuth consent screens show your company name
+- Use existing OAuth apps from your organization
+- Meet enterprise security and compliance requirements
+- Full control over OAuth scopes and permissions
+</Info>
+
+**How it works:** Call the Server Deployment API with your OAuth app credentials (client ID, client secret) to create a custom deployment. Users authorize via your OAuth app, and you use the deployment like any other.
+
+See [Enterprise BYO](integrations-enterprise-byo) for detailed setup instructions.
+
+### OAuth Export/Import
+
+Manage OAuth tokens outside of Metorial or migrate from existing systems.
+
+**Exporting tokens:**
+
+Extract OAuth credentials from Metorial sessions for use in your own infrastructure, migration to another system, or backup purposes.
+
+<CodeGroup>
+```typescript TypeScript
+// Export OAuth session credentials
+let credentials = await metorial.oauth.sessions.export(oauthSessionId);
+```
+
+```python Python
+# Export OAuth session credentials
+credentials = await metorial.oauth.sessions.export(oauth_session_id)
+```
+</CodeGroup>
+
+**Importing tokens:**
+
+Import existing OAuth tokens into Metorial instead of asking users to re-authorize. Useful when migrating from another system or if users already have OAuth tokens from your app.
+
+<CodeGroup>
+```typescript TypeScript
+// Import existing OAuth credentials
+let oauthSession = await metorial.oauth.sessions.import({
+    serverDeploymentId: 'your-deployment-id',
+    credentials: existingOAuthCredentials
+});
+```
+
+```python Python
+# Import existing OAuth credentials
+oauth_session = await metorial.oauth.sessions.import_(
+    server_deployment_id="your-deployment-id",
+    credentials=existing_oauth_credentials
+)
+```
+</CodeGroup>
+
 ## What's Next?
 
 <CardGroup cols={3}>
-  <Card title="SDK OAuth Guide" icon="book" href="/sdk-oauth-overview">
+  <Card title="SDK OAuth Guide" icon="book" href="sdk-oauth">
     Detailed SDK documentation for OAuth.
   </Card>
-  <Card title="API Guide" icon="code" href="/api-getting-started">
+  <Card title="API Guide" icon="code" href="api-getting-started">
     Learn about the Metorial API.
   </Card>
-  <Card title="API Key Integrations" icon="key" href="/integrations-api-key">
+  <Card title="API Key Integrations" icon="key" href="integrations-api-key">
     Simpler integrations without OAuth.
   </Card>
 </CardGroup>
