@@ -37,31 +37,34 @@ Check out practical examples and sample code in the [metorial-python examples di
     To use the SDK, import the `Metorial` class and create an instance with your API key:
 
     ```python
-    from metorial import Metorial
-
-    metorial = Metorial(
-      api_key="$$SECRET_TOKEN$$"
-    )
+   import asyncio
+   from metorial import Metorial
+   
+   metorial = Metorial(api_key="your-api-key")
     ```
 
     You can now use the `metorial` instance to make requests to the Metorial API.
   </Step>
 
   <Step title="Making Requests">
-    The SDK organizes API resources into logical attributes (like `servers`, `server_implementations`, `oauth`, etc.). Each resource provides methods for common operations like `get()`, `list()`, `create()`, `update()`, and `delete()`.
+    Create a provider session to interact with your deployed MCP servers. The session automatically formats tools for your chosen provider and handles the connection lifecycle:
 
     ```python
-    # Get a server by ID
-    server = metorial.servers.get('srv_Rm4Mnheq2bfEPhBhP7SY')
+    async def main():
+    async with metorial.provider_session(
+        provider="openai",  # Tool format: "openai", "anthropic", "google", etc.
+        server_deployments=["your-deployment-id"],
+    ) as session:
+        # See your available tools
+        for tool in session.tools:
+            print(f"- {tool['function']['name']}")
 
-    # Update a server instance
-    result = metorial.server_implementations.update('svi_Rm4Mnheq2bfEPhBhP7SY', {
-      "name": "updated name",
-      "description": "updated description"
-    })
+        # Call a tool directly
+        result = await session.call_tool("search", {"query": "python news"})
+        print(result)
+
+asyncio.run(main())
     ```
-
-    All methods are synchronous by default. For async operations, use the async version of the SDK (see the GitHub repository for examples).
   </Step>
 
   <Step title="Using Types">
