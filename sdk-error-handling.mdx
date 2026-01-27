@@ -37,20 +37,34 @@ try {
 ```
 
 ```python Python
-from metorial import MetorialAPIError
+from metorial import (
+    Metorial,
+    AuthenticationError,
+    NotFoundError,
+    RateLimitError,
+    OAuthRequiredError,
+)
 
-async def session_handler(session):
-    # Your logic
-    pass
+metorial = Metorial()
 
 try:
-    await metorial.with_provider_session(
-        MetorialAnthropic,
-        [{"serverDeploymentId": "dep_123"}],
-        session_handler
-    )
-except MetorialAPIError as e:
-    print(f"API Error: {e.message}")
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=["your-deployment-id"],
+    ) as session:
+        tools = session.tools
+except AuthenticationError:
+    # Invalid API key
+    print("Check your METORIAL_API_KEY")
+except NotFoundError:
+    # Deployment doesn't exist or not accessible
+    print("Deployment not found - verify your deployment ID")
+except OAuthRequiredError:
+    # Server requires OAuth but no session was provided
+    print("This server requires OAuth - see the OAuth section above")
+except RateLimitError:
+    # Too many requests
+    print("Rate limited - try again later")
 ```
 </CodeGroup>
 
@@ -59,11 +73,11 @@ except MetorialAPIError as e:
 
 Here are the most common error types you'll encounter and how to handle them:
 
-**`DEPLOYMENT_NOT_FOUND`**: The deployment ID doesn't exist or you don't have access to it. Double-check your deployment ID in the Metorial dashboard.
+**`AuthenticationError`**: You have provided an invalid Metorial API key.
 
-**`SESSION_LIMIT_REACHED`**: You've exceeded the maximum number of concurrent sessions for your plan. Close unused sessions or wait for existing ones to finish.
+**`NotFoundError`**: The deployment ID doesn't exist or you don't have access to it. Double-check your deployment ID in the Metorial dashboard.
 
-**`OAUTH_SESSION_EXPIRED`**: The user's OAuth authorization has expired. Prompt them to re-authorize through the OAuth flow.
+**`OAuthRequiredError`**: The user's OAuth authorization has expired. Prompt them to re-authorize through the OAuth flow.
 
-**`RATE_LIMIT_EXCEEDED`**: You're making too many requests. Implement exponential backoff and respect rate limit headers.
+**`RateLimitError`**: You're making too many requests. Implement exponential backoff and respect rate limit headers.
 </Info>
