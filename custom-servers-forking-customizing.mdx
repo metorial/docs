@@ -1,0 +1,61 @@
+---
+title: "Customizing Forked Servers"
+description: "Modify forked servers to meet your needs."
+---
+
+<Note>
+**What you'll learn:**
+- How to edit forked code
+- Adding new tools
+- Testing changes
+</Note>
+
+Edit your forked server's code to customize tools, add new functionality, or integrate with your systems. Changes are deployed as a managed server.
+
+## Editing Forked Code
+
+<Steps>
+  <Step title="Open Editor">
+    Open the code editor from your forked server's dashboard or simply make the changes in your repository and push them.
+  </Step>
+  <Step title="Edit Files">
+    Modify any file with syntax highlighting and autocomplete.
+  </Step>
+  <Step title="Save Changes">
+    Changes save automatically as you edit.
+  </Step>
+  <Step title="Test">
+    Test your changes in the editor before deploying.
+  </Step>
+</Steps>
+
+## Adding Tools
+
+Define new tools by adding tool definitions and handler functions to your forked code. Tools follow the MCP specification with a schema defining inputs and a function implementing the logic.
+
+<Info>
+**Tool Structure:**
+- Schema: Defines tool inputs and outputs
+- Handler: Implements the tool logic
+- Registration: Adds tool to your server
+</Info>
+
+Modify existing tools by editing their handler functions or input schemas.
+
+## Deploy Changes
+
+<Steps>
+  <Step title="Review Changes">
+    Check your code modifications in the editor.
+        ![Upload code](/images/custom-servers/upload-code.png)
+  </Step>
+  <Step title="Click Deploy">
+    Deploy your customized server.
+  </Step>
+  <Step title="Build Process">
+    Metorial packages your changes and runs tests.
+  </Step>
+  <Step title="Go Live">
+    Your custom tools become available through the SDK.
+  </Step>
+</Steps>

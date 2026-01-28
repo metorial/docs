@@ -1,0 +1,73 @@
+---
+title: "Using with OpenAI"
+description: "Use Metorial with OpenAI GPT models"
+---
+
+The OpenAI provider integration lets you use Metorial's MCP tools with OpenAI's GPT models, including GPT-4 and GPT-3.5. The integration handles converting Metorial tools into OpenAI's function calling format and processing tool call responses.
+
+You'll need both a Metorial API key and an OpenAI API key to use this integration. The Metorial SDK manages the MCP server connections, while the OpenAI SDK handles the model interactions.
+
+**What this example does:**
+
+1. Initializes both Metorial and OpenAI clients
+2. Creates a Metorial session that provides tools in OpenAI's format
+3. Passes those tools to OpenAI's chat completions API
+4. Provides a `callTools` function to execute any tool calls the model requests
+
+## Example
+
+<CodeGroup>
+
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialOpenAI } from '@metorial/openai';
+import OpenAI from 'openai';
+
+let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+let openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+await metorial.withProviderSession(
+    metorialOpenAI.chatCompletions,
+    { serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }] },
+    async ({ tools, callTools, closeSession }) => {
+        let response = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [{ role: 'user', content: 'Help me' }],
+            tools: tools
+        });
+
+        // Handle tool calls
+        await closeSession();
+    }
+);
+```
+
+
+```python Python
+from metorial import Metorial
+from openai import AsyncOpenAI
+import asyncio
+import os
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+async def main():
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=["your-deployment-id"]
+    ) as session:
+   		response = await openai.chat.completions.create(
+        	model="gpt-4o",
+        	messages=[{"role": "user", "content": "Help me"}],
+        	tools=session["tools"]
+    	)
+
+        if response.choices[0].message.tool_calls:
+            results = await session.call_tools(response.choices[0].message.tool_calls)
+            # Add results to messages and continue conversation...
+
+asyncio.run(main())
+```
+
+</CodeGroup>

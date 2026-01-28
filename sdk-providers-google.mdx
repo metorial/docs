@@ -1,0 +1,70 @@
+---
+title: "Using with Google"
+description: "Use Metorial with Google Gemini models"
+---
+
+The Google provider integration lets you use Metorial's MCP tools with Google's Gemini models. The integration converts Metorial tools into Google's function calling format, allowing Gemini to use tools from your MCP servers.
+
+Gemini models offer competitive performance and pricing, with strong multimodal capabilities. You'll need both a Metorial API key and a Google AI API key to use this integration.
+
+**What this example does:**
+
+1. Initializes both Metorial and Google AI clients
+2. Creates a Metorial session that provides tools in Google's format
+3. Passes those tools when creating a Gemini model instance
+4. The model can then call tools as needed during generation
+
+## Example
+
+<CodeGroup>
+
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialGoogle } from '@metorial/google';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+let genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+
+await metorial.withProviderSession(
+    metorialGoogle,
+    { serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }] },
+    async ({ tools, closeSession }) => {
+        let model = genAI.getGenerativeModel({
+            model: 'gemini-pro',
+            tools: tools
+        });
+
+        await closeSession();
+    }
+);
+```
+
+
+```python Python
+from metorial import Metorial
+import google.generativeai as genai
+import asyncio
+import os
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+async def main():
+    async with metorial.provider_session(
+        provider="google",
+        server_deployments=["your-deployment-id"],
+    ) as session:
+        model = genai.GenerativeModel("gemini-1.5-pro", tools=session.tools)
+        chat = model.start_chat()
+        response = chat.send_message("What's trending on Hacker News?")
+
+        for part in response.parts:
+            if fn := part.function_call:
+                result = await session.call_tool(fn.name, dict(fn.args))
+                # Continue conversation with result...
+
+asyncio.run(main())
+```
+
+</CodeGroup>

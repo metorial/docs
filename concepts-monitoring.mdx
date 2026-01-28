@@ -1,0 +1,77 @@
+---
+title: "Monitoring and Observability"
+description: "Metorial provides monitoring tools to help you understand how your MCP servers are performing and debug issues."
+---
+
+<Note>
+**What you'll learn:**
+- How to view logs
+- How to debug issues
+
+**References:**
+- [Testing in Dashboard](/metorial-101-monitoring)
+</Note>
+
+## Viewing Logs
+
+Access logs for your deployments through the Metorial dashboard:
+
+1. Navigate to your deployment
+2. Select the **Logs** tab
+
+![Logs tab showing Sessions view](/images/concepts/monitoring/logs-tab.png)
+
+### Session Logs
+
+See details for each session:
+- Creation timestamp
+- Deployments used
+- Tool calls made
+- Any errors
+
+![Session detail view with logs](/images/concepts/monitoring/tool-call-details.png)
+
+### Tool Call Details
+
+Expand individual tool calls to see:
+- Input parameters
+- Response data
+- Execution time
+- Error messages (if any)
+
+![Tool call details with outputs and logs](/images/concepts/monitoring/session-detail.png)
+
+## Debugging Common Issues
+
+### Authentication Errors
+
+- Verify your API key is correct
+- Check that OAuth tokens haven't expired
+- Ensure deployment ID is valid
+
+### Tool Execution Errors
+
+- Verify tool parameters match the schema
+- Check for rate limiting from external services
+- Review error messages in logs
+
+<Info>
+**Getting Help**
+
+If you can't resolve an issue:
+
+1. **Export relevant logs** from the dashboard
+2. **Note deployment IDs** for affected deployments
+3. **Contact support** at support@metorial.com
+</Info>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Testing Guide" icon="vial" href="/metorial-101-monitoring">
+    Learn more about testing deployments.
+  </Card>
+  <Card title="Error Handling" icon="circle-exclamation" href="/sdk-error-handling">
+    Handle errors gracefully in your code.
+  </Card>
+</CardGroup>

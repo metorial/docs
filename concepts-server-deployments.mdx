@@ -1,0 +1,103 @@
+---
+title: "Server Deployments"
+description: "Server deployments are the core building blocks of Metorial. They define which integrations and tools your AI applications can access."
+---
+
+<Note>
+**What you'll learn:**
+- What server deployments are and how they work
+- The difference between servers and deployments
+- How to use deployments in your applications
+
+**References:**
+- [Deploy Your First Server](/metorial-101-deploying)
+- [Sessions Guide](/concepts-sessions)
+</Note>
+
+## Understanding the Concepts
+
+### MCP Servers vs Deployments
+
+**MCP Server**: A template or blueprint for an integration (e.g., "GitHub Integration", "Slack Bot", "Exa Search").
+
+**Server Deployment**: A configured, ready-to-use instance of a server with your specific credentials and settings.
+
+<Info>
+Think of it like this:
+- **Server** = Your Class template
+- **Deployment** = Your instance with a particular configuration
+</Info>
+
+### Why Deployments?
+
+Deployments allow you to:
+
+- **Configure once, use everywhere**: Set up credentials once and reuse across your applications
+- **Manage multiple instances**: Create separate deployments for dev and production
+- **Control access**: Different API keys and OAuth sessions per deployment
+
+## Types of Servers
+
+### Out-of-the-box servers
+
+Deploy pre-built servers from the Metorial catalog.
+
+**Configuration types**:
+- **API Key-based**: Provide your API credentials (Exa, Tavily)
+- **OAuth-based**: Users authorize access (Slack, GitHub, Google Calendar)
+
+### Custom Server Deployments
+
+Deploy your own MCP server code:
+
+- **Managed**: Metorial hosts and runs your code
+- **External**: Connect your self-hosted server
+- **Forked**: Clone and modify an existing server
+
+<Note>
+**Deployment IDs**
+
+Every deployment has a unique ID. You'll use this ID when:
+- Creating sessions with the SDK
+- Making API calls
+
+**Finding your deployment ID**: Go to the deployment details page and copy the ID.
+</Note>
+
+## Using Deployments in Code
+
+<CodeGroup>
+```typescript TypeScript
+await metorial.withProviderSession(
+    provider,
+    { serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }] },
+    async ({ tools, closeSession }) => {
+        // Use tools
+        await closeSession();
+    }
+);
+```
+
+```python Python
+async def session_handler(session):
+    # Use session["tools"] and session["callTools"]
+    pass
+
+await metorial.with_provider_session(
+    MetorialAnthropic,
+    [{"serverDeploymentId": "your-deployment-id"}],
+    session_handler
+)
+```
+</CodeGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Sessions Guide" icon="circle-dot" href="/concepts-sessions">
+    Understand how sessions connect to deployments.
+  </Card>
+  <Card title="OAuth Integrations" icon="shield" href="/integrations-oauth">
+    Set up OAuth-based deployments.
+  </Card>
+</CardGroup>

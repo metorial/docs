@@ -1,0 +1,56 @@
+---
+title: "Using with AI SDK"
+description: "Use Metorial with Vercel AI SDK (recommended for TypeScript)"
+---
+
+The Vercel AI SDK integration (`@metorial/ai-sdk`) is the recommended way to use Metorial in TypeScript applications. It provides excellent streaming support, a unified interface across multiple model providers, and seamless tool integration.
+
+This integration works with any model provider supported by the AI SDK, including Anthropic, OpenAI, Google, and more. You get all the benefits of the AI SDK's streaming and tool handling while Metorial manages your MCP server connections.
+
+**What this example does:**
+
+1. Creates a Metorial session with streaming enabled
+2. Passes MCP tools directly to the AI SDK's `streamText` function
+3. Streams the AI's response in real-time
+4. Automatically closes the session when streaming completes
+
+## Example
+
+<CodeGroup>
+
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAiSdk } from '@metorial/ai-sdk';
+import { anthropic } from '@ai-sdk/anthropic';
+import { streamText } from 'ai';
+
+let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+
+await metorial.withProviderSession(
+    metorialAiSdk,
+    {
+        serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }],
+        streaming: true
+    },
+    async ({ tools, closeSession }) => {
+        let result = streamText({
+            model: anthropic('claude-sonnet-4-5'),
+            prompt: 'Help me',
+            tools: tools,
+            onFinish: async () => await closeSession()
+        });
+
+        for await (let text of result.textStream) {
+            process.stdout.write(text);
+        }
+    }
+);
+```
+
+
+```python Python
+# AI SDK is TypeScript-only
+# Use provider-specific client for Python (see Anthropic, OpenAI pages)
+```
+
+</CodeGroup>

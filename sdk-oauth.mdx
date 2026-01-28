@@ -1,0 +1,279 @@
+---
+title: "OAuth"
+description: "Handle user authorization for OAuth-enabled integrations"
+---
+
+<Note>
+  **What you'll learn:**
+
+  - How OAuth works with Metorial
+  - Creating OAuth sessions
+  - Waiting for user authorization
+  - Using OAuth sessions with your AI models
+
+  **External resources:**
+
+  - [OAuth Integrations](/integrations-oauth)
+</Note>
+
+OAuth sessions allow your users to authorize access to their accounts on services like Slack, GitHub, Google Calendar, and more. This enables your AI agents to perform actions on behalf of your users with their explicit permission.
+
+## How OAuth Works
+
+The OAuth flow in Metorial follows a simple 4-step process:
+
+1. **Create an OAuth session** for each service that needs user authorization
+2. **Send the authorization URL** to your user (they approve access in their browser)
+3. **Wait for completion** until the user finishes authorizing
+4. **Use the OAuth session ID** when creating provider sessions to give your AI access to user-authenticated tools
+
+This flow ensures that your users maintain control over which services your AI can access and what actions it can perform on their behalf.
+
+## Creating OAuth Sessions
+
+When you need to access a service that requires user authorization, create an OAuth session. This generates a unique authorization URL that you send to your user.
+
+<CodeGroup>
+
+```typescript TypeScript
+let oauthSession = await metorial.oauth.sessions.create({
+  serverDeploymentId: 'slack-deployment-id',
+  callbackUrl: 'https://yourapp.com/oauth/callback'
+});
+
+// Send this URL to your user
+console.log('Authorize:', oauthSession.url);
+```
+
+
+```python Python
+oauth_session = await metorial.oauth.sessions.create(
+    server_deployment_id="slack-deployment-id",
+    callback_url="https://yourapp.com/oauth/callback"
+)
+
+# Send this URL to your user
+print(f"Authorize: {oauth_session.url}")
+```
+
+</CodeGroup>
+
+The `callbackUrl` is where the user will be redirected after they complete authorization. You can use this to show a confirmation page or return them to your application.
+
+## Waiting for Authorization
+
+After sending the OAuth URL to your user, your application needs to wait until they complete the authorization flow. The `waitForCompletion` method blocks until the user has authorized (or the request times out).
+
+<CodeGroup>
+
+```typescript TypeScript
+// Wait for user to complete OAuth authorization
+await metorial.oauth.waitForCompletion([oauthSession.id]);
+
+// User has now authorized - you can proceed
+```
+
+
+```python Python
+# Wait for user to complete OAuth authorization
+await metorial.oauth.wait_for_completion([oauth_session.id])
+
+# User has now authorized - you can proceed
+```
+
+</CodeGroup>
+
+You can wait for multiple OAuth sessions at once by passing an array of session IDs. This is useful when your AI needs access to multiple services (like both Slack and GitHub).
+
+## Using OAuth Sessions
+
+Once a user has authorized, store their OAuth session ID in your database. When you create provider sessions, pass this ID to give your AI access to the user's authenticated account.
+
+<CodeGroup>
+
+```typescript TypeScript
+await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+        serverDeployments: [
+            {
+                serverDeploymentId: 'slack-deployment-id',
+                oauthSessionId: storedOAuthSessionId // From your database
+            }
+        ]
+    },
+    async ({ tools, closeSession }) => {
+        // Tools now have access to user's Slack account
+        // Your AI can send messages, read channels, etc.
+        await closeSession();
+    }
+);
+```
+
+
+```python Python
+async with metorial.provider_session(
+    provider="openai",
+    server_deployments=[
+        {
+            "serverDeploymentId": "slack-deployment-id",
+            "oauthSessionId": oauth_session.id
+        }
+    ]
+) as session:
+    # Tools from all services available
+    tools = session.tools
+```
+
+</CodeGroup>
+
+## Multiple OAuth Services
+
+You can combine multiple OAuth-enabled services in a single provider session. This allows your AI to use tools from several user-authenticated services at once.
+
+**Example: AI agent with access to GitHub and Slack**
+
+<CodeGroup>
+
+```typescript TypeScript
+await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+        serverDeployments: [
+            {
+                serverDeploymentId: 'github-deployment',
+                oauthSessionId: githubOAuthSessionId
+            },
+            {
+                serverDeploymentId: 'slack-deployment',
+                oauthSessionId: slackOAuthSessionId
+            },
+            {
+                serverDeploymentId: 'exa-deployment' // No OAuth needed
+            }
+        ]
+    },
+    async ({ tools, closeSession }) => {
+        // AI can now use GitHub, Slack, and Exa tools
+        await closeSession();
+    }
+);
+```
+
+
+```python Python
+# Use everything in one session
+async with metorial.provider_session(
+    provider="openai",
+    server_deployments=[
+        {"server_deployment_id": "gmail-deployment", "oauth_session_id": gmail_oauth.id},
+        {"server_deployment_id": "slack-deployment", "oauth_session_id": slack_oauth.id},
+        "exa-search-deployment",  # Non-OAuth deployment (just string)
+    ],
+) as session:
+    # Tools from all services available
+    tools = session.tools
+```
+
+</CodeGroup>
+
+Notice that you can mix OAuth-required deployments with deployments that don't need OAuth (like API key-based integrations) in the same session.
+
+## Complete OAuth Example
+
+Here's a complete example showing the full OAuth flow from creation to usage:
+
+<CodeGroup>
+
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAnthropic } from '@metorial/anthropic';
+
+let metorial = new Metorial({
+    apiKey: process.env.METORIAL_API_KEY
+});
+
+// 1. Create OAuth session
+let slackOAuth = await metorial.oauth.sessions.create({
+    serverDeploymentId: 'your-slack-deployment-id',
+    callbackUrl: 'https://yourapp.com/oauth/callback'
+});
+
+// 2. Send URL to user
+console.log('Please authorize:', slackOAuth.url);
+
+// 3. Wait for user to complete OAuth
+await metorial.oauth.waitForCompletion([slackOAuth.id]);
+
+// 4. Store the OAuth session ID in your database
+// database.saveOAuthSession(userId, slackOAuth.id);
+
+// 5. Use the OAuth session
+await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+        serverDeployments: [
+            {
+                serverDeploymentId: 'your-slack-deployment-id',
+                oauthSessionId: slackOAuth.id
+            }
+        ]
+    },
+    async ({ tools, closeSession }) => {
+        // Your AI now has access to user's Slack
+        await closeSession();
+    }
+);
+```
+
+
+```python Python
+import asyncio
+from metorial import Metorial
+
+async def main():
+    metorial = Metorial(api_key="your-metorial-api-key")
+
+    # 1. Create OAuth session
+    slack_oauth = await metorial.oauth.sessions.create(
+        server_deployment_id="your-slack-deployment-id",
+        callback_url="https://yourapp.com/oauth/callback"
+    )
+
+    # 2. Send URL to user
+    print(f"Please authorize: {slack_oauth.url}")
+
+    # 3. Wait for user to complete OAuth
+    await metorial.oauth.wait_for_completion([slack_oauth.id])
+
+    # 4. Store the OAuth session ID in your database
+    # database.save_oauth_session(user_id, slack_oauth.id)
+
+    # 5. Use the OAuth session
+	async with metorial.provider_session(
+    	provider="openai",
+    	server_deployments=[
+        	{
+				"server_deployment_id": "your-slack-deployment-id",
+				"oauth_session_id": slack_oauth.id
+			}
+    	],
+	) as session:
+    	# Now has access to user's Slack
+    	tools = session.tools
+
+asyncio.run(main())
+```
+
+</CodeGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Provider Examples" href="sdk-providers-overview">
+    See how to use OAuth with different AI providers.
+  </Card>
+  <Card title="OAuth Integrations" href="integrations-oauth">
+    Learn about OAuth-enabled integrations in the catalog.
+  </Card>
+</CardGroup>

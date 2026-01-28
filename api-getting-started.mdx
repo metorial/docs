@@ -1,0 +1,109 @@
+---
+title: "Getting Started with the API"
+description: "Learn how to use the Metorial API, get your API key, and make your first request"
+---
+
+Welcome to the Metorial API! This guide will help you quickly understand how to start using our API and make your first requests.
+
+<Note>
+**What you'll learn:**
+- How to use the Metorial API
+- How to get your API key
+- How to make your first API request
+
+**Recommended reading:**
+- [Deploying Your First MCP Server](/metorial-101-deploying)
+</Note>
+
+## What is the Metorial API?
+
+The Metorial API is a simple, user-friendly way to interact with Metorial's services. It uses standard web communication (REST) and always returns data in JSON format, making it easy to work with across different programming languages.
+
+## Before You Begin: Getting Your API Key
+
+To use the Metorial API, you'll need an API key. You can generate these in two types:
+
+**Publishable API Keys** (`metorial_pk_`):
+
+- Used for public data access
+- Safe to use in client-side code
+- Starts with `metorial_pk_`
+
+**Secret API Keys** (`metorial_sk_`):
+
+- Provides full project access
+- Must be kept private
+- Starts with `metorial_sk_`
+
+<Note>
+You can generate both publishable and secret API keys in your Metorial dashboard by navigating to **Developer** → **API Keys**.
+</Note>
+
+![Create API Key dialog in Metorial dashboard](/images/api-getting-started/create-api-key.png)
+
+## Making Your First API Request
+
+When making a request, you'll always use this base URL:
+
+```
+https://api.metorial.com
+```
+
+To authenticate, include your API key in the request header:
+
+```http
+Authorization: Bearer metorial_pk_abc123
+```
+
+To get started, let's make a simple request to fetch a list of threads:
+
+```bash
+curl -X GET https://api.metorial.com/secrets \
+  -H "Authorization: Bearer metorial_pk_abc123"
+```
+
+## Client Libraries
+
+We make integration super easy with official SDKs for:
+
+<CardGroup cols={2}>
+  <Card title="JavaScript" icon="js" href="/sdk-javascript">
+    Use Metorial with JavaScript or TypeScript.
+  </Card>
+  <Card title="Python" icon="python" href="/sdk-python">
+    Use Metorial with Python.
+  </Card>
+</CardGroup>
+
+## Important Things to Know
+
+### Rate Limits
+
+We have some basic usage limits to keep things fair:
+
+- 1000 requests per IP every 10 seconds
+- Development environments: 100 requests per 10 minutes
+- Production environments: 5000 requests per 10 minutes
+
+### Handling Responses
+
+Our API uses standard HTTP response codes:
+
+- `200`: Success!
+- `400`: Something's wrong with your request
+- `401`: Invalid API key
+- `403`: Not enough permissions
+- `404`: Can't find what you're looking for
+- `429`: You've hit the rate limit
+
+### Pagination
+
+When fetching lists of items, we support pagination. Each response includes cursors to help you fetch more items easily.
+
+## Need More Help?
+
+Check out our full documentation or reach out to our support team. Happy coding!
+
+<Card title="SDK Documentation" icon="book" href="/sdk-quickstart">
+  Explore SDKs for easier integration.
+</Card>

@@ -1,0 +1,62 @@
+---
+title: "Getting Started with Managed Servers"
+description: "Deploy custom MCP server code without managing infrastructure."
+---
+
+<Note>
+**What you'll learn:**
+- How to create a managed server
+- Supported languages
+</Note>
+
+Managed servers let you deploy custom MCP server code without managing infrastructure. Upload your code and Metorial handles hosting, scaling, and deployment.
+
+## Supported Languages
+
+Metorial supports two languages for managed servers:
+
+<Info>
+**TypeScript/JavaScript (Node.js)**
+- Full npm package support
+- Automatic TypeScript compilation
+- Node.js 18+ runtime
+</Info>
+
+<Info>
+**Python**
+- Standard Python packages with pip
+- Python 3.10+ runtime
+- Support for async/await
+</Info>
+
+## Creating a Managed Server
+
+<Steps>
+  <Step title="Navigate to Custom Servers">
+    Go to **Gateway** → **Managed Servers**.
+
+    ![Navigate to managed servers](/images/custom-servers/navigate-managed-servers.png)
+  </Step>
+  <Step title="Create Server">
+    Click **Created Managed Server** and select **Managed Server**.
+
+    ![Create managed server](/images/custom-servers/create-managed-server.png)
+  </Step>
+  <Step title="Upload Code">
+    Upload your MCP server code.
+  </Step>
+  <Step title="Deploy">
+    Click **Deploy** and wait for the build to complete.
+  </Step>
+</Steps>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/custom-servers-managed-configuration">
+    Configure environment variables and resource limits.
+  </Card>
+  <Card title="Deployment Guide" icon="rocket" href="/custom-servers-managed-deployment">
+    Learn about versions and deployments.
+  </Card>
+</CardGroup>

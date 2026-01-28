@@ -1,0 +1,171 @@
+---
+title: "Using your first MCP server"
+description: "Learn how to connect your MCP server to an LLM provider and build a chat-enabled app"
+---
+
+Now that you've deployed your first MCP server and confirmed it's working, you can connect it to an LLM provider like OpenAI.
+
+In this guide, you'll learn how to build a chat-enabled app that automatically handles tool calls from your Metorial-powered MCP server.
+
+<Note>
+  **What you'll learn:**
+
+  - How to use a Metorial MCP server
+  - How to use the Metorial SDKs
+
+  **Before you start:**
+
+  - Complete the [Introduction](/metorial-101-introduction) guide
+  - Complete the [Deploying your first MCP server](/metorial-101-deploying) guide
+  - Complete the [Testing your first MCP server](/metorial-101-testing) guide
+</Note>
+
+<Steps>
+  <Step title="1. Install the SDKs">
+    Run the installer for your language of choice:
+
+    <CodeGroup>
+
+    ```bash TypeScript
+    npm install metorial @metorial/openai openai
+    ```
+
+    
+    ```bash Python
+    pip install metorial openai
+    ```
+
+    </CodeGroup>
+  </Step>
+  <Step title="2. Configure Clients">
+    Instantiate both clients with your API keys and your MCP server ID.
+
+    <CodeGroup>
+
+    ```typescript TypeScript
+    import Metorial from 'metorial';
+    import OpenAI from 'openai';
+    
+    const metorial = new Metorial({
+      apiKey: '$$SECRET_TOKEN$$'
+    });
+    const openai = new OpenAI({
+      apiKey: '...your-openai-api-key...'
+    });
+    ```
+
+    
+    ```python Python
+    from metorial import Metorial
+    from openai import OpenAI
+    
+    metorial = Metorial(api_key="$$SECRET_TOKEN$$")
+    openai = OpenAI(api_key="...your-openai-api-key...")
+    ```
+
+    </CodeGroup>
+  </Step>
+  <Step title="3. Fetch Your Server Tools">
+    Retrieve the session object that exposes your deployed MCP tools.
+
+    <CodeGroup>
+
+    ```typescript TypeScript
+    const session = await metorial.withProviderSession(
+      metorialOpenAI.chatCompletions,
+      { serverDeployments: ['...server-deployment-id...'] }
+    );
+    ```
+
+    
+    ```python Python
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=[
+    		{ server_deployment_id: "...server_deployment_id..." }
+        ],
+    ) as session:
+        tools = session.tools
+    ```
+
+    </CodeGroup>
+  </Step>
+  <Step title="4. Send Your First Prompt">
+    Kick off the loop by sending an initial message.
+
+    <CodeGroup>
+
+    ```typescript TypeScript
+    let messages = [
+      { role: "user", content: "Summarize the README.md file of the metorial/websocket-explorer repository on GitHub." }
+    ];
+    ```
+
+    
+    ```python Python
+    messages = [
+      {"role": "user", "content": "Summarize the README.md file of the metorial/websocket-explorer repository on GitHub."}
+    ]
+    ```
+
+    </CodeGroup>
+  </Step>
+  <Step title="5. Loop & Handle Tool Calls">
+    1. Send `messages` to OpenAI, passing `tools: session.tools` (TS) or `tools=session.tools` (Py).
+    2. If the assistant response contains `tool_calls`, invoke it:
+
+    <CodeGroup>
+
+    ```typescript TypeScript
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages,
+      tools: session.tools
+    });
+    const choice = response.choices[0]!;
+    const toolCalls = choice.message.tool_calls;
+    const toolResults = await session.callTools(toolCalls);
+    ```
+
+    
+    ```python Python
+    response = openai_client.chat.completions.create(
+      model="gpt-4o",
+      messages=messages,
+      tools=session.tools
+    )
+    choice = response.choices[0]
+    tool_calls = choice.message.tool_calls
+    tool_results = session.call_tools(tool_calls)
+    ```
+
+    </CodeGroup>
+
+    3. Append both the tool call requests and their results to `messages`.
+    4. Repeat until the assistant's response has no more `tool_calls`.
+  </Step>
+  <Step title="6. Display the Final Output">
+    Once there are no more tool calls, your assistant's final reply is in:
+
+    <CodeGroup>
+
+    ```typescript TypeScript
+    console.log(choice.message.content);
+    ```
+
+    
+    ```python Python
+    print(choice.message.content)
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## What's Next?
+
+You are all set on having a production-ready MCP server to use in your AI apps. Next, you will learn about all the dev tooling available.
+
+<Card title="Next Up: How to monitor your server and tool calls" icon="chart-line" href="/metorial-101-monitoring">
+  Learn how to use the observability & logging features.
+</Card>

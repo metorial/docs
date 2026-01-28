@@ -1,0 +1,107 @@
+---
+title: 'Enterprise BYO'
+description: 'Bring Your Own credentials for enterprise deployments with dynamic server deployments'
+---
+
+<Note>
+**What you'll learn:**
+- Dynamic server deployment creation via API
+- BYO OAuth app configuration
+- Enterprise compliance patterns
+
+**Related resources:**
+- [Getting Started with the API](/api-getting-started)
+- [OAuth Integrations](/integrations-oauth)
+</Note>
+
+Need full control over OAuth apps and API keys for compliance, branding, or security? Metorial lets you create server deployments dynamically via the API using your own credentials—no dashboard required.
+
+## Why BYO?
+
+Using your own credentials gives you full control over how your users authenticate and how your infrastructure handles sensitive data. Enterprise teams choose BYO for three main reasons:
+
+<Info>
+**Compliance & Security:**
+- Keep credentials in your own infrastructure
+- Meet data residency requirements
+- Audit and rotate credentials on your schedule
+</Info>
+
+<Info>
+**Branding & Control:**
+- OAuth consent screens show your company name
+- Use your company's existing OAuth apps
+- Control which permissions are requested
+</Info>
+
+<Info>
+**Multi-tenancy:**
+- Create isolated deployments per customer
+- Different credentials for different organizations
+- Scale deployment creation programmatically
+</Info>
+
+## Dynamic Server Deployments
+
+Create server deployments programmatically via the Metorial API instead of using the dashboard.
+
+**The flow:**
+1. Call the API with your credentials to create a deployment
+2. Receive a deployment ID
+3. Use the deployment ID in your SDK like any other integration
+
+Ideal for multi-tenant applications where each customer needs isolated credentials, or enterprises managing multiple OAuth apps across teams.
+
+See the [Metorial API documentation](/api-getting-started) for endpoint details, authentication, and request/response schemas.
+
+## BYO OAuth Apps
+
+Use your own OAuth app credentials instead of Metorial's default OAuth apps.
+
+**Setup process:**
+
+<Steps>
+  <Step title="Register OAuth App">
+    Register your OAuth app with the service (GitHub, Slack, Google, etc.). Save your client ID and client secret.
+  </Step>
+
+  <Step title="Create Deployment via API">
+    Call the Metorial API or use the Dashboard to create a server deployment, passing your OAuth app credentials in the request body.
+  </Step>
+
+  <Step title="Use the Deployment">
+    Use the returned deployment ID in your SDK code like any other deployment. Users will see your OAuth app name when authorizing.
+  </Step>
+</Steps>
+
+<Info>
+**Benefits:**
+- Consent screens show your company name and branding
+- Full control over scopes and permissions
+- Integrate with existing identity systems
+- Credentials stay in your infrastructure
+</Info>
+
+## BYO API Keys
+
+Use your own API keys for integrations like Exa, Brave, or Tavily.
+
+<Info>
+**Use cases:**
+- Isolate usage per customer or team
+- Track costs per deployment
+- Rotate keys without affecting other deployments
+</Info>
+
+Create deployments via the API with your keys—Metorial uses them when tools are called.
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="API Guide" icon="code" href="/api-getting-started">
+    Learn how to use the Metorial API.
+  </Card>
+  <Card title="OAuth Setup" icon="shield" href="/integrations-oauth">
+    Learn about OAuth integration patterns.
+  </Card>
+</CardGroup>

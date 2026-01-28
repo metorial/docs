@@ -1,0 +1,27 @@
+---
+title: "External Server Authentication"
+description: "Secure your external MCP server connections."
+---
+
+<Note>
+**What you'll learn:**
+- Authentication methods
+- Security best practices
+</Note>
+
+Secure your external server with bearer token authentication. Metorial sends a token with every request that your server must validate before processing.
+
+## Authentication Token
+
+Metorial provides a unique bearer token when you register your external server. Include this token validation in your server's request handling code. Check the Authorization header on every incoming request and reject any requests without a valid token.
+
+## HTTPS Required
+
+External servers must use HTTPS for all connections. This encrypts traffic between Metorial and your server, protecting sensitive data and authentication tokens.
+
+<Info>
+**Security Requirements:**
+- HTTPS required for production
+- Self-signed certificates not supported
+- Valid SSL certificate needed
+</Info>

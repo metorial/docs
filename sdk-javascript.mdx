@@ -1,0 +1,89 @@
+---
+title: "JavaScript SDK"
+description: "Learn how to use the Metorial JavaScript SDK for TypeScript and JavaScript applications"
+---
+
+<Note>
+**What you'll learn:**
+- How to install the Metorial JavaScript SDK
+- How to use the SDK in the browser, Node.js, and Deno environments
+- How to make requests to the Metorial API using the SDK
+
+**Before you start:**
+- [Create your API Keys](/api-getting-started)
+
+**External resources:**
+- [JavaScript SDK on GitHub](https://github.com/metorial/metorial-node)
+</Note>
+
+The Metorial JavaScript SDK provides a type-safe interface for interacting with the Metorial API. Use it to manage your server deployments, create sessions, handle OAuth flows, and integrate MCP tools into your applications.
+
+The SDK works across all JavaScript environments including Node.js, browser applications, and Deno.
+
+<Info>
+**Explore Node.js Examples:**
+Check out practical examples and sample code in the [metorial-node examples directory](https://github.com/metorial/metorial-node/tree/main/examples) on GitHub.
+</Info>
+
+<Steps>
+  <Step title="Install the SDK">
+    Install the SDK using your preferred package manager:
+
+    <CodeGroup>
+    ```bash npm
+    npm install metorial
+    ```
+
+    ```bash yarn
+    yarn add metorial
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Using the SDK">
+    To use the SDK, import the `Metorial` class and create an instance with your API key:
+
+    ```javascript
+    import Metorial from 'metorial';
+
+    let metorial = new Metorial({
+      apiKey: '$$SECRET_TOKEN$$'
+    });
+    ```
+
+    You can now use the `metorial` instance to make requests to the Metorial API.
+  </Step>
+
+  <Step title="Making Requests">
+    The SDK organizes API resources into logical namespaces (like `servers`, `serverImplementations`, `oauth`, etc.). Each resource provides methods for common operations like `get()`, `list()`, `create()`, `update()`, and `delete()`.
+
+    ```javascript
+    // Get a server by ID
+    let server = await metorial.servers.get('srv_Rm4Mnheq2bfEPhBhP7SY');
+
+    // Update a server instance
+    let result = await metorial.serverImplementations.update('svi_Rm4Mnheq2bfEPhBhP7SY', {
+      name: "updated name",
+      description: "updated description"
+    });
+    ```
+
+    Each method returns a Promise that resolves with the response data. Use `async/await` or `.then()` to handle the results.
+  </Step>
+
+  <Step title="Using TypeScript">
+    The SDK is written in TypeScript and includes type definitions for all API resources.
+    You can use TypeScript to benefit from type checking and IntelliSense support:
+
+    ```typescript
+    import Metorial from 'metorial';
+
+    let metorial = new Metorial({
+      apiKey: '$$SECRET_TOKEN$$'
+    });
+
+    let server = await metorial.servers.get('srv_Rm4Mnheq2bfEPhBhP7SY');
+
+    ```
+  </Step>
+</Steps>

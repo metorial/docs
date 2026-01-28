@@ -1,0 +1,88 @@
+---
+title: "Error Handling"
+description: "Handle errors gracefully in your Metorial SDK applications"
+---
+
+<Note>
+  **What you'll learn:**
+
+  - Common error types
+  - Error handling patterns
+  - Debugging tips
+</Note>
+
+The Metorial SDK throws typed errors that help you identify and handle specific failure scenarios. All API-related errors are instances of `MetorialAPIError`, which includes the error message, HTTP status code, and error type.
+
+## Catching Errors
+
+Wrap your Metorial SDK calls in try-catch blocks to handle errors gracefully. Check if the error is a `MetorialAPIError` to access structured error information.
+
+<CodeGroup>
+
+```typescript TypeScript
+import { MetorialAPIError } from 'metorial';
+
+try {
+    await metorial.withProviderSession(
+        provider,
+        { serverDeployments: [{ serverDeploymentId: 'dep_123' }] },
+        async ({ tools, closeSession }) => {
+            // Your logic
+            await closeSession();
+        }
+    );
+} catch (error) {
+    if (error instanceof MetorialAPIError) {
+        console.error(`API Error: ${error.message}`);
+    }
+}
+```
+
+
+```python Python
+from metorial import (
+    Metorial,
+    AuthenticationError,
+    NotFoundError,
+    RateLimitError,
+    OAuthRequiredError,
+)
+import os
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+
+try:
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=["your-deployment-id"],
+    ) as session:
+        tools = session.tools
+except AuthenticationError:
+    # Invalid API key
+    print("Check your METORIAL_API_KEY")
+except NotFoundError:
+    # Deployment doesn't exist or not accessible
+    print("Deployment not found - verify your deployment ID")
+except OAuthRequiredError:
+    # Server requires OAuth but no session was provided
+    print("This server requires OAuth - see the OAuth section above")
+except RateLimitError:
+    # Too many requests
+    print("Rate limited - try again later")
+```
+
+</CodeGroup>
+
+<Info>
+  ## Common Errors
+
+  Here are the most common error types you'll encounter and how to handle them:
+
+  **`AuthenticationError`**: You have provided an invalid Metorial API key.
+
+  **`NotFoundError`**: The deployment ID doesn't exist or you don't have access to it. Double-check your deployment ID in the Metorial dashboard.
+
+  **`OAuthRequiredError`**: The user's OAuth authorization has expired. Prompt them to re-authorize through the OAuth flow.
+
+  **`RateLimitError`**: You're making too many requests. Implement exponential backoff and respect rate limit headers.
+</Info>

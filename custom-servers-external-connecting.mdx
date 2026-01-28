@@ -1,0 +1,51 @@
+---
+title: "Connecting External Servers"
+description: "Connect your self-hosted MCP server to Metorial."
+---
+
+<Note>
+**What you'll learn:**
+- How external servers work
+- Connection requirements
+- Security
+</Note>
+
+External servers run on your own infrastructure and connect to Metorial via HTTP/HTTPS. You maintain complete control over hosting, deployment, and security while using Metorial for tool distribution.
+
+## External Server Requirements
+
+Your server must meet these requirements to connect to Metorial:
+
+<Info>
+**Requirements:**
+- HTTP/HTTPS endpoint that Metorial can reach
+- MCP protocol implementation
+- Bearer token authentication
+- HTTPS required for production
+</Info>
+
+## Registering External Server
+
+<Steps>
+  <Step title="Add Server URL">
+    Enter your server's URL in the Metorial dashboard.
+    ![External server registration](/images/custom-servers/external-server-registration.png)
+  </Step>
+  <Step title="Receive Token">
+    Metorial generates a unique authentication token.
+  </Step>
+  <Step title="Implement Validation">
+    Add token validation to your server's request handler.
+  </Step>
+  <Step title="Create Deployment">
+    Create a deployment that connects to your external server.
+  </Step>
+</Steps>
+
+## What's Next?
+
+<CardGroup cols={1}>
+  <Card title="Authentication" icon="shield" href="/custom-servers-external-authentication">
+    Learn how to secure your external server connections.
+  </Card>
+</CardGroup>

@@ -1,68 +1,137 @@
 {
   "$schema": "https://mintlify.com/docs.json",
+  "name": "Metorial Documentation",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "defaultColorMode": "light",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#0099ff",
+    "light": "#4eb8ff",
+    "dark": "#006ab1"
+  },
+  "font": {
+    "headings": "Inter",
+    "body": "Inter",
+    "code": "JetBrains Mono"
   },
   "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Getting Started",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Metorial 101",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "metorial-101-introduction",
+              "metorial-101-deploying",
+              "metorial-101-testing",
+              "metorial-101-using",
+              "metorial-101-monitoring"
             ]
           },
           {
-            "group": "Customization",
+            "group": "API",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "api-getting-started"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Concepts",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Core Concepts",
             "pages": [
-              "api-reference/introduction"
+              "concepts-projects-organizations",
+              "concepts-server-deployments",
+              "concepts-sessions",
+              "concepts-environments",
+              "concepts-monitoring"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Custom Servers",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "custom-servers-overview"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Managed Servers",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "custom-servers-managed-getting-started",
+              "custom-servers-managed-configuration",
+              "custom-servers-managed-deployment"
+            ]
+          },
+          {
+            "group": "External Servers",
+            "pages": [
+              "custom-servers-external-connecting",
+              "custom-servers-external-authentication"
+            ]
+          },
+          {
+            "group": "Forked Servers",
+            "pages": [
+              "custom-servers-forking-overview",
+              "custom-servers-forking-customizing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "integrations-overview",
+              "integrations-browsing-catalog"
+            ]
+          },
+          {
+            "group": "Setup Guides",
+            "pages": [
+              "integrations-api-key",
+              "integrations-oauth",
+              "integrations-enterprise-byo"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDK",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "sdk-quickstart",
+              "sdk-javascript",
+              "sdk-python",
+              "sdk-oauth",
+              "sdk-error-handling"
+            ]
+          },
+          {
+            "group": "Providers",
+            "pages": [
+              "sdk-providers-overview",
+              "sdk-providers-ai-sdk",
+              "sdk-providers-openai",
+              "sdk-providers-anthropic",
+              "sdk-providers-google",
+              "sdk-providers-openai-compatible"
             ]
           }
         ]
@@ -71,52 +140,54 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Dashboard",
+          "href": "https://app.metorial.com",
+          "icon": "square-terminal"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Status",
+          "href": "https://status.metorial.com",
+          "icon": "circle-check"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/metorial",
+          "icon": "github"
         }
       ]
     }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@metorial.com"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://app.metorial.com",
+      "color": "#0099ff"
     }
+  },
+  "ai": {
+    "enabled": true,
+    "instructions": "You are a helpful assistant for Metorial documentation. Metorial is a platform for deploying and managing MCP (Model Context Protocol) servers. When answering questions, always cite specific documentation pages when possible. If you're unsure about something, direct users to the relevant documentation section or support at support@metorial.com."
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "cursor"
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/metorial",
+      "x": "https://x.com/MetorialAi"
     }
   }
 }

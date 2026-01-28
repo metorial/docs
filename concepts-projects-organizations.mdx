@@ -1,0 +1,92 @@
+---
+title: "Projects and Organizations"
+description: "Organizations and projects help you structure your work in Metorial and manage access to resources."
+---
+
+<Note>
+  **What you'll learn:**
+
+  - How organizations and projects are structured
+  - How to organize your deployments
+</Note>
+
+## Understanding the Hierarchy
+
+Metorial uses a hierarchy to organize your work:
+
+```
+Organization
+└── Project(s)
+    └── Instance(s)
+        └── Server Deployments
+        └── API Keys
+        └── OAuth Sessions
+```
+
+### Organizations
+
+An **organization** is your top-level workspace - typically representing your company, team, or personal account.
+
+### Projects
+
+A **project** is a container for related work - typically representing an application or product.
+
+### Instances
+
+An **instance** represents an environment within a project (e.g., Development, Production).
+
+## Creating Your Workspace
+
+<Steps>
+  <Step title="First-Time Setup">
+    When you sign up, you'll create your first organization and project.
+  </Step>
+  <Step title="Add Projects">
+    Create additional projects for different applications.
+
+    ![Create additional projects in Metorial](/images/concepts/projects-organizations/step-2.png)
+  </Step>
+</Steps>
+
+## Using Different API Keys
+
+Projects and Instances are isolated - use different API keys for different projects:
+
+<CodeGroup>
+
+```typescript TypeScript
+// Project A
+let metorialA = new Metorial({
+    apiKey: process.env.METORIAL_PROJECT_A_KEY
+});
+
+// Project B
+let metorialB = new Metorial({
+    apiKey: process.env.METORIAL_PROJECT_B_KEY
+});
+```
+
+
+```python Python
+import os
+from metorial import Metorial
+
+# Project A
+metorial_a = Metorial(api_key=os.getenv("METORIAL_PROJECT_A_KEY"))
+
+# Project B
+metorial_b = Metorial(api_key=os.getenv("METORIAL_PROJECT_B_KEY"))
+```
+
+</CodeGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Environments Guide" icon="layers" href="/concepts-environments">
+    Learn about development vs production instances.
+  </Card>
+  <Card title="Server Deployments" icon="server" href="/concepts-server-deployments">
+    Create deployments within your projects.
+  </Card>
+</CardGroup>

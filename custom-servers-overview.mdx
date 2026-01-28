@@ -1,0 +1,61 @@
+---
+title: "Custom MCP Servers"
+description: "Deploy your own custom MCP servers beyond the pre-built integrations."
+---
+
+<Note>
+**What you'll learn:**
+- The types of custom servers available
+- When to use each type
+</Note>
+
+Beyond the pre-built integrations in the Metorial catalog, you can deploy your own custom MCP servers. Choose from three deployment options based on your requirements.
+
+## Types of Custom Servers
+
+### Managed Servers
+
+Upload your MCP server code and Metorial hosts it for you. Your code runs in Metorial's infrastructure with automatic scaling and monitoring. Supported languages include TypeScript/JavaScript (Node.js) and Python.
+
+<Info>
+**Best for:**
+- Custom business logic and internal APIs
+- Teams that want to focus on code rather than infrastructure
+- Rapid prototyping and deployment
+</Info>
+
+### External Servers
+
+Connect your self-hosted MCP server to Metorial. Your server runs on your own infrastructure and Metorial connects to it via HTTP/HTTPS. You maintain full control over hosting, security, and deployment.
+
+<Info>
+**Best for:**
+- On-premises requirements
+- Existing infrastructure you want to integrate
+- Sensitive data that must stay in your environment
+</Info>
+
+### Forking
+
+Clone and modify an existing integration from the catalog. Start with a working integration and customize it to your needs. The forked server becomes a managed server that you can deploy and update.
+
+<Info>
+**Best for:**
+- Customizing existing integrations
+- Adding features to catalog servers
+- Learning from existing implementations
+</Info>
+
+## Getting Started
+
+<CardGroup cols={3}>
+  <Card title="Managed Servers" icon="cloud-upload" href="/custom-servers-managed-getting-started">
+    Deploy code hosted by Metorial.
+  </Card>
+  <Card title="External Servers" icon="link" href="/custom-servers-external-connecting">
+    Connect your self-hosted server.
+  </Card>
+  <Card title="Fork a Server" icon="code-branch" href="/custom-servers-forking-overview">
+    Customize an existing integration.
+  </Card>
+</CardGroup>

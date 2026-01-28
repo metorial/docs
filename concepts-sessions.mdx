@@ -1,0 +1,215 @@
+---
+title: "Sessions"
+description: "Sessions are active connections between your application and MCP server deployments."
+---
+
+<Note>
+**What you'll learn:**
+- What sessions are and how they work
+- How to create and close sessions
+- Streaming mode for real-time responses
+- Using OAuth with sessions
+</Note>
+
+## What is a Session?
+
+A **session** is an active connection to one or more MCP server deployments. During a session, your AI application can:
+
+- Discover available tools
+- Execute tool calls
+- Handle OAuth-authenticated requests
+
+## Creating Sessions
+
+<CodeGroup>
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAiSdk } from '@metorial/ai-sdk';
+
+let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+
+await metorial.withProviderSession(
+    metorialAiSdk,
+    {
+        serverDeployments: [
+            { serverDeploymentId: 'your-deployment-id' }
+        ]
+    },
+    async ({ tools, callTools, closeSession }) => {
+        // tools: Array of tools formatted for your provider
+        // callTools: Function to execute tool calls
+        // closeSession: Function to close the session
+
+        await closeSession();
+    }
+);
+```
+
+```python Python
+import os
+from metorial import Metorial, MetorialAnthropic
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+
+async def session_handler(session):
+    # session["tools"]: List of tools
+    # session["callTools"]: Function to execute tool calls
+    pass
+
+await metorial.with_provider_session(
+    MetorialAnthropic,
+    [{"serverDeploymentId": "your-deployment-id"}],
+    session_handler
+)
+```
+</CodeGroup>
+
+## Session Options
+
+### Streaming Mode
+
+Enable streaming for real-time AI responses:
+
+<CodeGroup>
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAiSdk } from '@metorial/ai-sdk';
+import { anthropic } from '@ai-sdk/anthropic';
+import { streamText } from 'ai';
+
+let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+
+await metorial.withProviderSession(
+    metorialAiSdk,
+    {
+        serverDeployments: [
+            { serverDeploymentId: 'your-deployment-id' }
+        ],
+        streaming: true
+    },
+    async ({ tools, closeSession }) => {
+        let result = streamText({
+            model: anthropic('claude-sonnet-4-5'),
+            prompt: 'Your prompt',
+            tools: tools,
+            onFinish: async () => await closeSession()
+        });
+
+        for await (let text of result.textStream) {
+            process.stdout.write(text);
+        }
+    }
+);
+```
+
+```python Python
+import os
+from metorial import Metorial, MetorialAnthropic
+from anthropic import AsyncAnthropic
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+async def session_handler(session):
+    async with anthropic.messages.stream(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": "Your prompt"}],
+        tools=session["tools"]
+    ) as stream:
+        async for text in stream.text_stream:
+            print(text, end="", flush=True)
+
+await metorial.with_provider_session(
+    MetorialAnthropic,
+    [{"serverDeploymentId": "your-deployment-id"}],
+    session_handler
+)
+```
+</CodeGroup>
+
+### With OAuth
+
+Include OAuth session for authenticated integrations:
+
+<CodeGroup>
+```typescript TypeScript
+{
+    serverDeployments: [
+        {
+            serverDeploymentId: 'slack-deployment',
+            oauthSessionId: 'oauth_abc123'
+        }
+    ]
+}
+```
+
+```python Python
+[
+    {
+        "serverDeploymentId": "slack-deployment",
+        "oauthSessionId": "oauth_abc123"
+    }
+]
+```
+</CodeGroup>
+
+### Multiple Deployments
+
+Combine tools from multiple deployments in one session:
+
+<CodeGroup>
+```typescript TypeScript
+{
+    serverDeployments: [
+        { serverDeploymentId: 'github-deployment' },
+        { serverDeploymentId: 'slack-deployment' },
+        { serverDeploymentId: 'exa-deployment' }
+    ]
+}
+```
+
+```python Python
+[
+    {"serverDeploymentId": "github-deployment"},
+    {"serverDeploymentId": "slack-deployment"},
+    {"serverDeploymentId": "exa-deployment"}
+]
+```
+</CodeGroup>
+
+## Closing Sessions
+
+Always close your session when done to free up resources:
+
+<CodeGroup>
+```typescript TypeScript
+async ({ tools, closeSession }) => {
+    try {
+        // Your code
+    } finally {
+        await closeSession(); // Always called
+    }
+}
+```
+
+```python Python
+async def session_handler(session):
+    try:
+        # Your code
+        pass
+    finally:
+        await session["closeSession"]()  # Always called
+```
+</CodeGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="OAuth Guide" icon="shield" href="sdk-oauth">
+    Handle OAuth sessions for authenticated integrations.
+  </Card>
+  <Card title="Provider Examples" icon="code" href="sdk-providers-overview">
+    Use sessions with OpenAI, Anthropic, Google, and more.
+  </Card>
+</CardGroup>

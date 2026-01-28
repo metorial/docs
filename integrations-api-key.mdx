@@ -1,0 +1,117 @@
+---
+title: "Setting Up API Key Integrations"
+description: "Deploy and configure API key-based integrations in Metorial"
+---
+
+API key integrations use a single set of credentials for your entire application. Perfect for services like search APIs (Exa, Tavily) where you don't need user-specific authorization—just get an API key, deploy, and start building.
+
+<Note>
+  **What you'll learn:**
+
+  - How to deploy API key-based integrations
+  - How to configure and test integrations
+
+  **Related resources:**
+
+  - [Deploy Your First Server](metorial-101-deploying)
+  - [Integrations Overview](integrations-overview)
+</Note>
+
+## Deploying an API Key Integration
+
+<Steps>
+  <Step title="Get Your API Key">
+    Sign up for the service (e.g., Exa, Tavily) and generate an API key.
+  </Step>
+  <Step title="Find Integration">
+    In Metorial, go to **Servers** and search for the integration.
+  </Step>
+  <Step title="Create Deployment">
+    Click **Deploy**, name your deployment, and paste your API key.
+  </Step>
+  <Step title="Test">
+    Use the test console to verify the deployment works.
+  </Step>
+</Steps>
+
+## Using API Key Integrations
+
+After deploying your integration, pass the deployment ID to your Metorial session. The integration handles authentication automatically using the API key you configured.
+
+<CodeGroup>
+
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAiSdk } from '@metorial/ai-sdk';
+import { anthropic } from '@ai-sdk/anthropic';
+import { streamText } from 'ai';
+
+let metorial = new Metorial({
+    apiKey: process.env.METORIAL_API_KEY
+});
+
+await metorial.withProviderSession(
+    metorialAiSdk,
+    {
+        serverDeployments: [
+            { serverDeploymentId: 'your-exa-deployment-id' }
+        ],
+        streaming: true
+    },
+    async ({ tools, closeSession }) => {
+        let result = streamText({
+            model: anthropic('claude-sonnet-4-5'),
+            prompt: 'Search for AI news',
+            tools: tools,
+            onFinish: async () => await closeSession()
+        });
+
+        for await (let text of result.textStream) {
+            process.stdout.write(text);
+        }
+    }
+);
+```
+
+
+```python Python
+from metorial import Metorial
+from anthropic import AsyncAnthropic
+import asyncio
+import os
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+async def main():
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=["your-deployment-id"],
+    ) as session:
+        response = await anthropic.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            tools=session.tools,
+            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
+        )
+
+        if response.stop_reason == "tool_use":
+            tool_calls = [b for b in response.content if b.type == "tool_use"]
+            results = await session.call_tools(tool_calls)
+            # Add results to messages and continue conversation...
+
+asyncio.run(main())
+```
+
+</CodeGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="OAuth Integrations" icon="shield" href="integrations-oauth">
+    Set up user-authorized integrations.
+  </Card>
+  <Card title="SDK Quickstart" icon="code" href="sdk-quickstart">
+    Build your first AI agent.
+  </Card>
+</CardGroup>
