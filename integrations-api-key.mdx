@@ -1,18 +1,20 @@
 ---
-title: 'Setting Up API Key Integrations'
-description: 'Deploy and configure API key-based integrations in Metorial'
+title: "Setting Up API Key Integrations"
+description: "Deploy and configure API key-based integrations in Metorial"
 ---
 
 API key integrations use a single set of credentials for your entire application. Perfect for services like search APIs (Exa, Tavily) where you don't need user-specific authorization—just get an API key, deploy, and start building.
 
 <Note>
-**What you'll learn:**
-- How to deploy API key-based integrations
-- How to configure and test integrations
+  **What you'll learn:**
 
-**Related resources:**
-- [Deploy Your First Server](metorial-101-deploying)
-- [Integrations Overview](integrations-overview)
+  - How to deploy API key-based integrations
+  - How to configure and test integrations
+
+  **Related resources:**
+
+  - [Deploy Your First Server](metorial-101-deploying)
+  - [Integrations Overview](integrations-overview)
 </Note>
 
 ## Deploying an API Key Integration
@@ -37,6 +39,7 @@ API key integrations use a single set of credentials for your entire application
 After deploying your integration, pass the deployment ID to your Metorial session. The integration handles authentication automatically using the API key you configured.
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { Metorial } from 'metorial';
 import { metorialAiSdk } from '@metorial/ai-sdk';
@@ -70,33 +73,36 @@ await metorial.withProviderSession(
 );
 ```
 
+
 ```python Python
+from metorial import Metorial
+from anthropic import AsyncAnthropic
 import asyncio
 import os
-from metorial import Metorial, MetorialAnthropic
-from anthropic import AsyncAnthropic
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 async def main():
-    metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
-    anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-    async def session_handler(session):
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=["your-deployment-id"],
+    ) as session:
         response = await anthropic.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1024,
-            messages=[{"role": "user", "content": "Search for AI news"}],
-            tools=session["tools"]
+            tools=session.tools,
+            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
         )
-        print(response.content)
 
-    await metorial.with_provider_session(
-        MetorialAnthropic,
-        [{"serverDeploymentId": "your-exa-deployment-id"}],
-        session_handler
-    )
+        if response.stop_reason == "tool_use":
+            tool_calls = [b for b in response.content if b.type == "tool_use"]
+            results = await session.call_tools(tool_calls)
+            # Add results to messages and continue conversation...
 
 asyncio.run(main())
 ```
+
 </CodeGroup>
 
 ## What's Next?

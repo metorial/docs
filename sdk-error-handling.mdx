@@ -4,10 +4,11 @@ description: "Handle errors gracefully in your Metorial SDK applications"
 ---
 
 <Note>
-**What you'll learn:**
-- Common error types
-- Error handling patterns
-- Debugging tips
+  **What you'll learn:**
+
+  - Common error types
+  - Error handling patterns
+  - Debugging tips
 </Note>
 
 The Metorial SDK throws typed errors that help you identify and handle specific failure scenarios. All API-related errors are instances of `MetorialAPIError`, which includes the error message, HTTP status code, and error type.
@@ -17,6 +18,7 @@ The Metorial SDK throws typed errors that help you identify and handle specific 
 Wrap your Metorial SDK calls in try-catch blocks to handle errors gracefully. Check if the error is a `MetorialAPIError` to access structured error information.
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { MetorialAPIError } from 'metorial';
 
@@ -36,6 +38,7 @@ try {
 }
 ```
 
+
 ```python Python
 from metorial import (
     Metorial,
@@ -44,8 +47,9 @@ from metorial import (
     RateLimitError,
     OAuthRequiredError,
 )
+import os
 
-metorial = Metorial()
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
 
 try:
     async with metorial.provider_session(
@@ -66,18 +70,19 @@ except RateLimitError:
     # Too many requests
     print("Rate limited - try again later")
 ```
+
 </CodeGroup>
 
 <Info>
-## Common Errors
+  ## Common Errors
 
-Here are the most common error types you'll encounter and how to handle them:
+  Here are the most common error types you'll encounter and how to handle them:
 
-**`AuthenticationError`**: You have provided an invalid Metorial API key.
+  **`AuthenticationError`**: You have provided an invalid Metorial API key.
 
-**`NotFoundError`**: The deployment ID doesn't exist or you don't have access to it. Double-check your deployment ID in the Metorial dashboard.
+  **`NotFoundError`**: The deployment ID doesn't exist or you don't have access to it. Double-check your deployment ID in the Metorial dashboard.
 
-**`OAuthRequiredError`**: The user's OAuth authorization has expired. Prompt them to re-authorize through the OAuth flow.
+  **`OAuthRequiredError`**: The user's OAuth authorization has expired. Prompt them to re-authorize through the OAuth flow.
 
-**`RateLimitError`**: You're making too many requests. Implement exponential backoff and respect rate limit headers.
+  **`RateLimitError`**: You're making too many requests. Implement exponential backoff and respect rate limit headers.
 </Info>

@@ -8,14 +8,16 @@ Now that you've deployed your first MCP server and confirmed it's working, you c
 In this guide, you'll learn how to build a chat-enabled app that automatically handles tool calls from your Metorial-powered MCP server.
 
 <Note>
-**What you'll learn:**
-- How to use a Metorial MCP server
-- How to use the Metorial SDKs
+  **What you'll learn:**
 
-**Before you start:**
-- Complete the [Introduction](/metorial-101-introduction) guide
-- Complete the [Deploying your first MCP server](/metorial-101-deploying) guide
-- Complete the [Testing your first MCP server](/metorial-101-testing) guide
+  - How to use a Metorial MCP server
+  - How to use the Metorial SDKs
+
+  **Before you start:**
+
+  - Complete the [Introduction](/metorial-101-introduction) guide
+  - Complete the [Deploying your first MCP server](/metorial-101-deploying) guide
+  - Complete the [Testing your first MCP server](/metorial-101-testing) guide
 </Note>
 
 <Steps>
@@ -23,24 +25,27 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     Run the installer for your language of choice:
 
     <CodeGroup>
+
     ```bash TypeScript
     npm install metorial @metorial/openai openai
     ```
 
+    
     ```bash Python
     pip install metorial openai
     ```
+
     </CodeGroup>
   </Step>
-
   <Step title="2. Configure Clients">
     Instantiate both clients with your API keys and your MCP server ID.
 
     <CodeGroup>
+
     ```typescript TypeScript
     import Metorial from 'metorial';
     import OpenAI from 'openai';
-
+    
     const metorial = new Metorial({
       apiKey: '$$SECRET_TOKEN$$'
     });
@@ -49,20 +54,22 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     });
     ```
 
+    
     ```python Python
     from metorial import Metorial
     from openai import OpenAI
-
+    
     metorial = Metorial(api_key="$$SECRET_TOKEN$$")
     openai = OpenAI(api_key="...your-openai-api-key...")
     ```
+
     </CodeGroup>
   </Step>
-
   <Step title="3. Fetch Your Server Tools">
     Retrieve the session object that exposes your deployed MCP tools.
 
     <CodeGroup>
+
     ```typescript TypeScript
     const session = await metorial.withProviderSession(
       metorialOpenAI.chatCompletions,
@@ -70,38 +77,45 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     );
     ```
 
+    
     ```python Python
-    session = metorial.with_provider_session(
-      metorial_openai.chat_completions,
-      { server_deployments: ['...server-deployment-id...'] }
-    )
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=[
+    		{ server_deployment_id: "...server_deployment_id..." }
+        ],
+    ) as session:
+        tools = session.tools
     ```
+
     </CodeGroup>
   </Step>
-
   <Step title="4. Send Your First Prompt">
     Kick off the loop by sending an initial message.
 
     <CodeGroup>
+
     ```typescript TypeScript
     let messages = [
       { role: "user", content: "Summarize the README.md file of the metorial/websocket-explorer repository on GitHub." }
     ];
     ```
 
+    
     ```python Python
     messages = [
       {"role": "user", "content": "Summarize the README.md file of the metorial/websocket-explorer repository on GitHub."}
     ]
     ```
+
     </CodeGroup>
   </Step>
-
   <Step title="5. Loop & Handle Tool Calls">
     1. Send `messages` to OpenAI, passing `tools: session.tools` (TS) or `tools=session.tools` (Py).
     2. If the assistant response contains `tool_calls`, invoke it:
 
     <CodeGroup>
+
     ```typescript TypeScript
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -113,6 +127,7 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     const toolResults = await session.callTools(toolCalls);
     ```
 
+    
     ```python Python
     response = openai_client.chat.completions.create(
       model="gpt-4o",
@@ -123,23 +138,26 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     tool_calls = choice.message.tool_calls
     tool_results = session.call_tools(tool_calls)
     ```
+
     </CodeGroup>
 
     3. Append both the tool call requests and their results to `messages`.
     4. Repeat until the assistant's response has no more `tool_calls`.
   </Step>
-
   <Step title="6. Display the Final Output">
     Once there are no more tool calls, your assistant's final reply is in:
 
     <CodeGroup>
+
     ```typescript TypeScript
     console.log(choice.message.content);
     ```
 
+    
     ```python Python
     print(choice.message.content)
     ```
+
     </CodeGroup>
   </Step>
 </Steps>

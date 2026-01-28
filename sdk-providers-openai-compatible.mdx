@@ -6,6 +6,7 @@ description: "Use Metorial with DeepSeek, TogetherAI, XAI, and other OpenAI-comp
 Many AI providers offer APIs that are compatible with OpenAI's format. This means you can use the same code patterns and tools, just by changing the base URL and API key. Metorial supports all of these OpenAI-compatible providers.
 
 **Supported OpenAI-compatible providers:**
+
 - **DeepSeek** - Cost-effective models with strong performance
 - **TogetherAI** - Open-source models with flexible deployment
 - **XAI (Grok)** - Models from xAI
@@ -14,6 +15,7 @@ Many AI providers offer APIs that are compatible with OpenAI's format. This mean
 The integration uses the OpenAI SDK with a custom base URL, making it easy to switch between different OpenAI-compatible providers without changing your code structure.
 
 **What this example does:**
+
 1. Creates an OpenAI client pointed at DeepSeek's API endpoint
 2. Uses Metorial's DeepSeek provider integration (or OpenAI provider for generic APIs)
 3. Passes tools to the model in OpenAI's function calling format
@@ -22,6 +24,7 @@ The integration uses the OpenAI SDK with a custom base URL, making it easy to sw
 ## Example
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { Metorial } from 'metorial';
 import { metorialDeepSeek } from '@metorial/deepseek';
@@ -48,10 +51,12 @@ await metorial.withProviderSession(
 );
 ```
 
+
 ```python Python
-import os
-from metorial import Metorial, MetorialOpenAI
+from metorial import Metorial
 from openai import AsyncOpenAI
+import asyncio
+import os
 
 metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
 deepseek = AsyncOpenAI(
@@ -59,17 +64,22 @@ deepseek = AsyncOpenAI(
     base_url="https://api.deepseek.com"
 )
 
-async def session_handler(session):
-    response = await deepseek.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{"role": "user", "content": "Help me"}],
-        tools=session["tools"]
-    )
+async def main():
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=["your-deployment-id"],
+    ) as session:
+        response = await deepseek.chat.completions.create(
+            model="deepseek-chat",
+            tools=session.tools,
+            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
+        )
 
-await metorial.with_provider_session(
-    MetorialOpenAI,  # Use OpenAI provider for compatible APIs
-    [{"serverDeploymentId": "your-deployment-id"}],
-    session_handler
-)
+        if response.choices[0].message.tool_calls:
+            results = await session.call_tools(response.choices[0].message.tool_calls)
+            # Add results to messages and continue conversation...
+
+asyncio.run(main())
 ```
+
 </CodeGroup>

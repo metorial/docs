@@ -1,19 +1,21 @@
 ---
-title: 'Setting Up OAuth Integrations'
-description: 'Deploy and configure OAuth-based integrations that require user authorization'
+title: "Setting Up OAuth Integrations"
+description: "Deploy and configure OAuth-based integrations that require user authorization"
 ---
 
 OAuth integrations let users authorize access to their personal accounts—like Slack workspaces, GitHub repos, or Google Calendars—so your AI can perform actions on their behalf.
 
 <Note>
-**What you'll learn:**
-- Setting up OAuth for your users
-- Managing OAuth sessions
-- Advanced patterns (BYO OAuth, export/import)
+  **What you'll learn:**
 
-**Related resources:**
-- [SDK OAuth Guide](sdk-oauth)
-- [Enterprise BYO](/integrations-enterprise-byo)
+  - Setting up OAuth for your users
+  - Managing OAuth sessions
+  - Advanced patterns (BYO OAuth, export/import)
+
+  **Related resources:**
+
+  - [SDK OAuth Guide](sdk-oauth)
+  - [Enterprise BYO](/integrations-enterprise-byo)
 </Note>
 
 ## Basic OAuth Setup
@@ -21,12 +23,14 @@ OAuth integrations let users authorize access to their personal accounts—like 
 Each user authorizes once, you store their OAuth session ID in your database, then reuse it for future requests.
 
 **The flow:**
+
 1. User clicks "Connect Slack" (or GitHub, Google, etc.) in your app
 2. They authorize access via the OAuth screen
 3. You receive an `oauthSessionId` and store it for that user
 4. Pass that session ID whenever creating MCP sessions for that user
 
 <CodeGroup>
+
 ```typescript TypeScript
 // Create OAuth session (once per user)
 let oauthSession = await metorial.oauth.sessions.create({
@@ -43,6 +47,7 @@ await metorial.oauth.waitForCompletion([oauthSession]);
 await db.users.update(userId, { slackOAuthSessionId: oauthSession.id });
 ```
 
+
 ```python Python
 # Create OAuth session (once per user)
 oauth_session = metorial.oauth.sessions.create(
@@ -58,6 +63,7 @@ await metorial.oauth.wait_for_completion([oauth_session])
 # Store oauth_session.id for this user in your database
 await db.users.update(user_id, slack_oauth_session_id=oauth_session.id)
 ```
+
 </CodeGroup>
 
 ## Using OAuth Sessions
@@ -65,6 +71,7 @@ await db.users.update(user_id, slack_oauth_session_id=oauth_session.id)
 After a user authorizes, retrieve their stored OAuth session ID from your database and pass it when creating MCP sessions. This connects the session to their authorized account, giving your AI access to their data.
 
 <CodeGroup>
+
 ```typescript TypeScript
 await metorial.withProviderSession(
     provider,
@@ -83,23 +90,21 @@ await metorial.withProviderSession(
 );
 ```
 
-```python Python
-async def session_handler(session):
-    # Tools now have access to user's Slack
-    # Use session["tools"] and session["callTools"]
-    pass
 
-await metorial.with_provider_session(
-    MetorialAnthropic,
-    [
+```python Python
+async with metorial.provider_session(
+    provider="openai",
+    server_deployments=[
         {
             "serverDeploymentId": "slack-deployment-id",
-            "oauthSessionId": stored_oauth_session_id  # From your database
+            "oauthSessionId": oauth_session.id
         }
-    ],
-    session_handler
-)
+    ]
+) as session:
+    # Tools from all services available
+    tools = session.tools
 ```
+
 </CodeGroup>
 
 ## Advanced Features
@@ -109,11 +114,12 @@ await metorial.with_provider_session(
 Need to use your own OAuth apps instead of Metorial's? Create server deployments via the API with your own credentials.
 
 <Info>
-**Why use BYO OAuth:**
-- OAuth consent screens show your company name
-- Use existing OAuth apps from your organization
-- Meet enterprise security and compliance requirements
-- Full control over OAuth scopes and permissions
+  **Why use BYO OAuth:**
+
+  - OAuth consent screens show your company name
+  - Use existing OAuth apps from your organization
+  - Meet enterprise security and compliance requirements
+  - Full control over OAuth scopes and permissions
 </Info>
 
 **How it works:** Call the Server Deployment API with your OAuth app credentials (client ID, client secret) to create a custom deployment. Users authorize via your OAuth app, and you use the deployment like any other.
@@ -129,15 +135,18 @@ Manage OAuth tokens outside of Metorial or migrate from existing systems.
 Extract OAuth credentials from Metorial sessions for use in your own infrastructure, migration to another system, or backup purposes.
 
 <CodeGroup>
+
 ```typescript TypeScript
 // Export OAuth session credentials
 let credentials = await metorial.oauth.sessions.export(oauthSessionId);
 ```
 
+
 ```python Python
 # Export OAuth session credentials
 credentials = await metorial.oauth.sessions.export(oauth_session_id)
 ```
+
 </CodeGroup>
 
 **Importing tokens:**
@@ -145,6 +154,7 @@ credentials = await metorial.oauth.sessions.export(oauth_session_id)
 Import existing OAuth tokens into Metorial instead of asking users to re-authorize. Useful when migrating from another system or if users already have OAuth tokens from your app.
 
 <CodeGroup>
+
 ```typescript TypeScript
 // Import existing OAuth credentials
 let oauthSession = await metorial.oauth.sessions.import({
@@ -153,6 +163,7 @@ let oauthSession = await metorial.oauth.sessions.import({
 });
 ```
 
+
 ```python Python
 # Import existing OAuth credentials
 oauth_session = await metorial.oauth.sessions.import_(
@@ -160,6 +171,7 @@ oauth_session = await metorial.oauth.sessions.import_(
     credentials=existing_oauth_credentials
 )
 ```
+
 </CodeGroup>
 
 ## What's Next?

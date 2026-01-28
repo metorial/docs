@@ -4,15 +4,18 @@ description: "Learn how to use the Metorial Python SDK for Python applications"
 ---
 
 <Note>
-**What you'll learn:**
-- How to install the Metorial Python SDK
-- How to make requests to the Metorial API using the SDK
+  **What you'll learn:**
 
-**Before you start:**
-- [Create your API Keys](/api-getting-started)
+  - How to install the Metorial Python SDK
+  - How to make requests to the Metorial API using the SDK
 
-**External resources:**
-- [Python SDK on GitHub](https://github.com/metorial/metorial-python)
+  **Before you start:**
+
+  - [Create your API Keys](/api-getting-started)
+
+  **External resources:**
+
+  - [Python SDK on GitHub](https://github.com/metorial/metorial-python)
 </Note>
 
 The Metorial Python SDK provides a Pythonic interface for interacting with the Metorial API. Use it to manage deployments, create sessions, handle OAuth flows, and integrate MCP tools into your Python applications.
@@ -20,8 +23,7 @@ The Metorial Python SDK provides a Pythonic interface for interacting with the M
 The SDK is fully typed with type hints for all methods and resources, making it ideal for use with modern Python development tools.
 
 <Info>
-**Explore Python Examples:**
-Check out practical examples and sample code in the [metorial-python examples directory](https://github.com/metorial/metorial-python/tree/main/examples) on GitHub.
+  **Explore Python Examples:** Check out practical examples and sample code in the [metorial-python examples directory](https://github.com/metorial/metorial-python/tree/main/examples) on GitHub.
 </Info>
 
 <Steps>
@@ -32,41 +34,38 @@ Check out practical examples and sample code in the [metorial-python examples di
     pip install metorial
     ```
   </Step>
-
   <Step title="Using the SDK">
     To use the SDK, import the `Metorial` class and create an instance with your API key:
 
     ```python
-   import asyncio
-   from metorial import Metorial
-   
-   metorial = Metorial(api_key="your-api-key")
+    import asyncio
+    from metorial import Metorial
+    
+    metorial = Metorial(api_key="your-api-key")
     ```
 
     You can now use the `metorial` instance to make requests to the Metorial API.
   </Step>
-
   <Step title="Making Requests">
     Create a provider session to interact with your deployed MCP servers. The session automatically formats tools for your chosen provider and handles the connection lifecycle:
 
     ```python
     async def main():
-    async with metorial.provider_session(
-        provider="openai",  # Tool format: "openai", "anthropic", "google", etc.
-        server_deployments=["your-deployment-id"],
-    ) as session:
-        # See your available tools
-        for tool in session.tools:
-            print(f"- {tool['function']['name']}")
-
-        # Call a tool directly
-        result = await session.call_tool("search", {"query": "python news"})
-        print(result)
-
-asyncio.run(main())
+        async with metorial.provider_session(
+            provider="openai",  # Tool format: "openai", "anthropic", "google", etc.
+            server_deployments=["your-deployment-id"],
+        ) as session:
+            # See your available tools
+            for tool in session.tools:
+                print(f"- {tool['function']['name']}")
+    
+            # Call a tool directly
+            result = await session.call_tool("search", {"query": "python news"})
+            print(result)
+    
+    asyncio.run(main())
     ```
   </Step>
-
   <Step title="Using Types">
     The SDK includes type hints for all API resources. Use tools like mypy or your IDE's type checker to catch errors before runtime and get autocomplete suggestions for all API methods and parameters.
   </Step>

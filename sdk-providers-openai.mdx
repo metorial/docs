@@ -8,6 +8,7 @@ The OpenAI provider integration lets you use Metorial's MCP tools with OpenAI's 
 You'll need both a Metorial API key and an OpenAI API key to use this integration. The Metorial SDK manages the MCP server connections, while the OpenAI SDK handles the model interactions.
 
 **What this example does:**
+
 1. Initializes both Metorial and OpenAI clients
 2. Creates a Metorial session that provides tools in OpenAI's format
 3. Passes those tools to OpenAI's chat completions API
@@ -16,6 +17,7 @@ You'll need both a Metorial API key and an OpenAI API key to use this integratio
 ## Example
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { Metorial } from 'metorial';
 import { metorialOpenAI } from '@metorial/openai';
@@ -40,27 +42,32 @@ await metorial.withProviderSession(
 );
 ```
 
+
 ```python Python
-import os
-from metorial import Metorial, MetorialOpenAI
+from metorial import Metorial
 from openai import AsyncOpenAI
+import asyncio
+import os
 
 metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-async def session_handler(session):
-    response = await openai.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": "Help me"}],
-        tools=session["tools"]
-    )
+async def main():
+    async with metorial.provider_session(
+        provider="openai",
+        server_deployments=["your-deployment-id"]
+    ) as session:
+   		response = await openai.chat.completions.create(
+        	model="gpt-4o",
+        	messages=[{"role": "user", "content": "Help me"}],
+        	tools=session["tools"]
+    	)
 
-    # Handle tool calls with session["callTools"]
+        if response.choices[0].message.tool_calls:
+            results = await session.call_tools(response.choices[0].message.tool_calls)
+            # Add results to messages and continue conversation...
 
-await metorial.with_provider_session(
-    MetorialOpenAI,
-    [{"serverDeploymentId": "your-deployment-id"}],
-    session_handler
-)
+asyncio.run(main())
 ```
+
 </CodeGroup>

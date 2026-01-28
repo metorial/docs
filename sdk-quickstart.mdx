@@ -4,19 +4,22 @@ description: "Get up and running with Metorial in under 5 minutes"
 ---
 
 <Note>
-**What you'll learn:**
-- How to install the Metorial SDK
-- Available AI providers and integrations
-- How to create sessions and use tools
-- OAuth flow for authenticated services
-- Streaming and session management
+  **What you'll learn:**
 
-**Before you begin:**
-- [Create API Keys](/api-getting-started)
+  - How to install the Metorial SDK
+  - Available AI providers and integrations
+  - How to create sessions and use tools
+  - OAuth flow for authenticated services
+  - Streaming and session management
 
-**References:**
-- [GitHub: metorial-node](https://github.com/metorial/metorial-node)
-- [GitHub: metorial-python](https://github.com/metorial/metorial-python)
+  **Before you begin:**
+
+  - [Create API Keys](/api-getting-started)
+
+  **References:**
+
+  - [GitHub: metorial-node](https://github.com/metorial/metorial-node)
+  - [GitHub: metorial-python](https://github.com/metorial/metorial-python)
 </Note>
 
 ## Prerequisites
@@ -30,6 +33,7 @@ description: "Get up and running with Metorial in under 5 minutes"
 The Metorial SDK consists of two parts: the core SDK (which handles sessions and tool management) and a provider package (which integrates with your chosen AI model). Install both to get started.
 
 <CodeGroup>
+
 ```bash TypeScript
 # Install the core SDK
 npm install metorial
@@ -43,6 +47,7 @@ npm install @metorial/mistral     # Mistral
 npm install @metorial/deepseek    # DeepSeek
 ```
 
+
 ```bash Python
 # Install the SDK
 pip install metorial
@@ -51,6 +56,7 @@ pip install metorial
 pip install anthropic   # For Claude
 pip install openai      # For OpenAI/DeepSeek
 ```
+
 </CodeGroup>
 
 We support OpenAI, Anthropic, Google, Mistral, DeepSeek, and any OpenAI-compatible API. See the [TypeScript SDK](https://github.com/metorial/metorial-node) and [Python SDK](https://github.com/metorial/metorial-python) repos for all available providers.
@@ -60,6 +66,7 @@ We support OpenAI, Anthropic, Google, Mistral, DeepSeek, and any OpenAI-compatib
 This example shows how to create an AI agent that can use tools from your deployed MCP servers. The agent will have access to any tools provided by your server deployment (like search, file operations, or API calls).
 
 **What this code does:**
+
 1. Initializes the Metorial SDK with your API key
 2. Creates a session connected to your server deployment
 3. Passes the available tools to your AI model
@@ -67,6 +74,7 @@ This example shows how to create an AI agent that can use tools from your deploy
 5. Automatically closes the session when complete
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { Metorial } from 'metorial';
 import { metorialAiSdk } from '@metorial/ai-sdk';
@@ -104,43 +112,37 @@ await metorial.withProviderSession(
 );
 ```
 
+
 ```python Python
+from metorial import Metorial
+from anthropic import AsyncAnthropic
 import asyncio
 import os
-from metorial import Metorial, MetorialAnthropic
-from anthropic import AsyncAnthropic
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 async def main():
-    metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
-    anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-    async def session_handler(session):
-        messages = [{"role": "user", "content": "Search for the latest AI research"}]
-
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=["your-deployment-id"],
+    ) as session:
         response = await anthropic.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=1024,
-            messages=messages,
-            tools=session["tools"]
+            tools=session.tools,
+            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
         )
 
-        # Handle tool calls if any
-        tool_calls = [c for c in response.content if c.type == "tool_use"]
-        if tool_calls:
-            tool_responses = await session["callTools"](tool_calls)
-            messages.append({"role": "assistant", "content": response.content})
-            messages.extend(tool_responses)
+        if response.stop_reason == "tool_use":
+            tool_calls = [b for b in response.content if b.type == "tool_use"]
+            results = await session.call_tools(tool_calls)
+            # Add results to messages and continue conversation...
 
-        print(response.content)
-
-    await metorial.with_provider_session(
-        MetorialAnthropic,
-        [{"serverDeploymentId": "your-deployment-id"}],
-        session_handler
-    )
-
+  
 asyncio.run(main())
 ```
+
 </CodeGroup>
 
 ## OAuth Flow
@@ -148,12 +150,14 @@ asyncio.run(main())
 For services requiring user authentication (like Slack, GitHub, or Google Calendar), you need to use OAuth sessions. This allows your users to authorize access to their accounts.
 
 **The OAuth flow works in 4 steps:**
+
 1. Create OAuth sessions for each service that needs authentication
 2. Send the authorization URLs to your users (they'll approve access in their browser)
 3. Wait for the user to complete the OAuth flow
 4. Use the authenticated sessions to create tool-enabled AI agents
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { Metorial } from 'metorial';
 import { metorialAnthropic } from '@metorial/anthropic';
@@ -205,6 +209,7 @@ await metorial.withProviderSession(
 );
 ```
 
+
 ```python Python
 import asyncio
 from metorial import Metorial, MetorialAnthropic
@@ -240,6 +245,7 @@ async def main():
 
 asyncio.run(main())
 ```
+
 </CodeGroup>
 
 ## Session Options
@@ -249,6 +255,7 @@ asyncio.run(main())
 When your AI model streams responses back to users in real-time, you need to enable streaming mode in Metorial. This ensures that tool calls work correctly with streamed responses.
 
 <CodeGroup>
+
 ```typescript TypeScript
 await metorial.withProviderSession(
     metorialAiSdk,
@@ -263,6 +270,7 @@ await metorial.withProviderSession(
 );
 ```
 
+
 ```python Python
 await metorial.with_provider_session(
     MetorialAnthropic,
@@ -271,6 +279,7 @@ await metorial.with_provider_session(
     streaming=True  # Required for streaming with tool calls
 )
 ```
+
 </CodeGroup>
 
 ### Closing Sessions
@@ -278,6 +287,7 @@ await metorial.with_provider_session(
 Sessions maintain an active connection to your MCP servers. Always close your session when you're done to free up resources and ensure clean disconnection from your deployments.
 
 <CodeGroup>
+
 ```typescript TypeScript
 async ({ tools, closeSession }) => {
     // Use tools...
@@ -295,6 +305,7 @@ async ({ tools, closeSession }) => {
 }
 ```
 
+
 ```python Python
 async def session_handler(session):
     # Use tools...
@@ -302,6 +313,7 @@ async def session_handler(session):
     # Close when done:
     await session["closeSession"]()
 ```
+
 </CodeGroup>
 
 ## Error Handling
@@ -309,6 +321,7 @@ async def session_handler(session):
 The Metorial SDK provides specific error types to help you handle different failure scenarios. Catch `MetorialAPIError` for API-related issues like authentication failures, rate limits, or invalid deployment IDs.
 
 <CodeGroup>
+
 ```typescript TypeScript
 import { MetorialAPIError } from 'metorial';
 
@@ -323,6 +336,7 @@ try {
 }
 ```
 
+
 ```python Python
 from metorial import MetorialAPIError
 
@@ -333,6 +347,7 @@ except MetorialAPIError as e:
 except Exception as e:
     print(f"Unexpected error: {e}")
 ```
+
 </CodeGroup>
 
 ## What's Next?

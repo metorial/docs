@@ -4,9 +4,10 @@ description: "Organizations and projects help you structure your work in Metoria
 ---
 
 <Note>
-**What you'll learn:**
-- How organizations and projects are structured
-- How to organize your deployments
+  **What you'll learn:**
+
+  - How organizations and projects are structured
+  - How to organize your deployments
 </Note>
 
 ## Understanding the Hierarchy
@@ -52,6 +53,7 @@ An **instance** represents an environment within a project (e.g., Development, P
 Projects and Instances are isolated - use different API keys for different projects:
 
 <CodeGroup>
+
 ```typescript TypeScript
 // Project A
 let metorialA = new Metorial({
@@ -64,6 +66,7 @@ let metorialB = new Metorial({
 });
 ```
 
+
 ```python Python
 import os
 from metorial import Metorial
@@ -74,6 +77,7 @@ metorial_a = Metorial(api_key=os.getenv("METORIAL_PROJECT_A_KEY"))
 # Project B
 metorial_b = Metorial(api_key=os.getenv("METORIAL_PROJECT_B_KEY"))
 ```
+
 </CodeGroup>
 
 ## What's Next?
