@@ -35,6 +35,12 @@
             ]
           },
           {
+            "group": "Sample Projects",
+            "pages": [
+              "sample-projects-support-bot"
+            ]
+          },
+          {
             "group": "API",
             "pages": [
               "api-getting-started"

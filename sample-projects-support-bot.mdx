@@ -1,0 +1,738 @@
+---
+title: "Build a Support Bot with Slack and Zendesk"
+description: "Create an AI-powered support bot that monitors Slack, checks Zendesk tickets, and routes complex issues to humans"
+---
+
+## What You'll Build
+
+Build an intelligent support bot that:
+- Monitors your Slack support channels for customer questions
+- Automatically checks ticket status in Zendesk when customers ask
+- Uses AI to respond to common questions without human intervention
+- Routes complex issues to your support team with proper context
+
+This tutorial demonstrates real-world multi-service integration using Metorial's MCP servers.
+
+<Note>
+**What you'll learn:**
+- Deploying multiple MCP servers (Slack and Zendesk)
+- Setting up OAuth for user authentication
+- Creating an AI agent that uses tools from multiple services
+- Implementing decision logic for automated responses
+
+**Before you begin:**
+- [Create a Metorial account](/metorial-101-introduction)
+- [Create API keys](/api-getting-started)
+- Slack workspace with admin access
+- Zendesk account with API access
+- OpenAI or Anthropic API key
+
+**Time to complete:** 15-20 minutes
+</Note>
+
+## Prerequisites
+
+Before building the support bot, ensure you have:
+
+1. **Metorial setup**:
+   - Active Metorial account at [app.metorial.com](https://app.metorial.com)
+   - Project created in your organization
+   - Metorial API key (generate in Dashboard → Home → Connect to Metorial)
+
+2. **Slack workspace**:
+   - Admin access to create OAuth apps
+   - Support channel where bot will listen (e.g., `#customer-support`)
+
+3. **Zendesk account**:
+   - Admin access to create API tokens
+   - Active tickets for testing
+
+4. **AI provider**:
+   - OpenAI API key (GPT-4 recommended) OR
+   - Anthropic API key (Claude Sonnet 4.5 recommended)
+
+5. **Development environment**:
+   - Node.js 18+ (TypeScript) or Python 3.9+ installed
+   - Basic knowledge of async/await patterns
+
+## Architecture Overview
+
+The support bot follows this workflow:
+
+1. **Listen**: Monitor Slack channels for customer messages
+2. **Analyze**: AI determines if message is about ticket status, common question, or complex issue
+3. **Act**:
+   - **Ticket status**: Query Zendesk and post status to Slack
+   - **Common question**: AI generates and posts response to Slack
+   - **Complex issue**: Tag support team in dedicated channel with context
+
+**Services used:**
+- **Slack MCP Server**: Read messages, post responses, send DMs
+- **Zendesk MCP Server**: Search tickets, read ticket details, add internal notes
+- **AI Model**: Decision-making and response generation
+
+## Step 1: Deploy Slack MCP Server
+
+Deploy the Slack MCP server from Metorial's catalog to enable your bot to interact with Slack.
+
+<Steps>
+  <Step title="Navigate to Server Catalog">
+    In the Metorial Dashboard, go to **Servers** and search for "Slack".
+  </Step>
+
+  <Step title="Deploy Slack Server">
+    Click the **Slack** server, then click **Deploy Server** → **Server Deployment**.
+
+    Give your deployment a descriptive name like "Support Bot Slack".
+  </Step>
+
+  <Step title="Configure OAuth (Next Step)">
+    Note your **Server Deployment ID** (shown on the deployment page). You'll need this for OAuth setup.
+
+    We'll configure Slack OAuth in Step 3.
+  </Step>
+</Steps>
+
+<Info>
+Keep your Slack deployment ID handy. You'll use it when setting up OAuth and writing bot code.
+</Info>
+
+## Step 2: Deploy Zendesk MCP Server
+
+Deploy the Zendesk MCP server to enable ticket querying and management.
+
+<Steps>
+  <Step title="Find Zendesk in Catalog">
+    In the Metorial Dashboard, search for "Zendesk" in the Servers section.
+  </Step>
+
+  <Step title="Deploy Zendesk Server">
+    Click **Deploy Server** → **Server Deployment**.
+
+    Name it "Support Bot Zendesk".
+  </Step>
+
+  <Step title="Configure API Authentication">
+    Zendesk requires API token authentication:
+
+    1. In Zendesk Admin Center, go to **Apps and Integrations** → **APIs** → **Zendesk API**
+    2. Enable **Token Access**
+    3. Click **Add API token**, give it a description (e.g., "Metorial Support Bot")
+    4. Copy the token and paste it in the Metorial deployment configuration
+    5. Enter your Zendesk subdomain (e.g., `yourcompany.zendesk.com`)
+  </Step>
+
+  <Step title="Save Configuration">
+    Click **Deploy**. Note your **Server Deployment ID** for use in the code.
+  </Step>
+</Steps>
+
+## Step 3: Set Up OAuth Authentication
+
+Your support bot needs permission to access your Slack workspace on behalf of your team.
+
+<Steps>
+  <Step title="Install Dependencies">
+    Install the Metorial SDK and your chosen AI provider:
+
+    <CodeGroup>
+    ```bash TypeScript
+    npm install metorial @metorial/anthropic @anthropic-ai/sdk
+    ```
+
+    ```bash Python
+    pip install metorial anthropic
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create OAuth Session">
+    Run this code to generate the Slack OAuth URL:
+
+    <CodeGroup>
+    ```typescript TypeScript
+    import { Metorial } from 'metorial';
+
+    const metorial = new Metorial({
+      apiKey: process.env.METORIAL_API_KEY
+    });
+
+    async function setupSlackOAuth() {
+      const slackOAuth = await metorial.oauth.sessions.create({
+        serverDeploymentId: 'your-slack-deployment-id',
+        callbackUrl: 'https://yourapp.com/oauth/callback' // Optional
+      });
+
+      console.log('Authorize Slack here:', slackOAuth.url);
+      console.log('OAuth Session ID:', slackOAuth.id);
+
+      // Wait for authorization
+      await metorial.oauth.waitForCompletion([slackOAuth.id]);
+      console.log('✓ Slack authorized!');
+
+      // Save slackOAuth.id for future use
+      return slackOAuth.id;
+    }
+
+    setupSlackOAuth();
+    ```
+
+    ```python Python
+    import asyncio
+    import os
+    from metorial import Metorial
+
+    metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+
+    async def setup_slack_oauth():
+        slack_oauth = await metorial.oauth.sessions.create(
+            server_deployment_id="your-slack-deployment-id",
+            callback_url="https://yourapp.com/oauth/callback"  # Optional
+        )
+
+        print(f"Authorize Slack here: {slack_oauth.url}")
+        print(f"OAuth Session ID: {slack_oauth.id}")
+
+        # Wait for authorization
+        await metorial.oauth.wait_for_completion([slack_oauth.id])
+        print("✓ Slack authorized!")
+
+        # Save slack_oauth.id for future use
+        return slack_oauth.id
+
+    asyncio.run(setup_slack_oauth())
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Authorize in Browser">
+    1. Open the printed OAuth URL in your browser
+    2. Select your Slack workspace
+    3. Review and approve the permissions
+    4. You'll be redirected to your callback URL (or see a confirmation page)
+  </Step>
+
+  <Step title="Store OAuth Session ID">
+    Save the OAuth session ID securely. You'll reuse it for all future bot operations without re-authorizing.
+
+    For production apps, store OAuth session IDs in your database per user/workspace.
+  </Step>
+</Steps>
+
+<Note>
+**OAuth vs API Keys:**
+- **Slack** uses OAuth (user authorization)
+- **Zendesk** uses API tokens (configured in deployment)
+
+You only need OAuth setup for Slack.
+</Note>
+
+## Step 4: Build the Support Bot Core Logic
+
+Create the main bot that connects to both Slack and Zendesk with AI-powered decision making.
+
+<CodeGroup>
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAnthropic } from '@metorial/anthropic';
+import Anthropic from '@anthropic-ai/sdk';
+
+const metorial = new Metorial({
+  apiKey: process.env.METORIAL_API_KEY!
+});
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!
+});
+
+// Store your deployment IDs and OAuth session ID
+const SLACK_DEPLOYMENT_ID = 'your-slack-deployment-id';
+const ZENDESK_DEPLOYMENT_ID = 'your-zendesk-deployment-id';
+const SLACK_OAUTH_SESSION_ID = 'your-slack-oauth-session-id';
+
+async function runSupportBot(userMessage: string, slackChannel: string) {
+  await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+      serverDeployments: [
+        {
+          serverDeploymentId: SLACK_DEPLOYMENT_ID,
+          oauthSessionId: SLACK_OAUTH_SESSION_ID
+        },
+        {
+          serverDeploymentId: ZENDESK_DEPLOYMENT_ID
+        }
+      ],
+      streaming: false
+    },
+    async ({ tools, callTools, closeSession }) => {
+      // AI analyzes the message and decides what action to take
+      const messages: Anthropic.MessageParam[] = [
+        {
+          role: 'user',
+          content: `You are a support bot. A customer wrote: "${userMessage}"
+
+Analyze this message and take appropriate action:
+
+1. If asking about ticket status (e.g., "what's the status of ticket #1234"):
+   - Use Zendesk tools to search for and retrieve ticket details
+   - Post a summary to Slack channel ${slackChannel}
+
+2. If asking a common question (e.g., "how do I reset my password"):
+   - Generate a helpful response
+   - Post it to Slack channel ${slackChannel}
+
+3. If it's complex or requires human attention:
+   - Post to #support-escalations channel
+   - Tag @support-team
+   - Include customer's original message
+
+Take action now using the available tools.`
+        }
+      ];
+
+      let response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 2048,
+        messages,
+        tools
+      });
+
+      // Handle tool calls in agentic loop
+      while (response.stop_reason === 'tool_use') {
+        const toolUseBlocks = response.content.filter(
+          (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
+        );
+
+        // Execute tools via Metorial
+        const toolResults = await callTools(toolUseBlocks);
+
+        // Add assistant response and tool results to conversation
+        messages.push(
+          { role: 'assistant', content: response.content },
+          {
+            role: 'user',
+            content: toolResults.map((result, i) => ({
+              type: 'tool_result' as const,
+              tool_use_id: toolUseBlocks[i].id,
+              content: JSON.stringify(result)
+            }))
+          }
+        );
+
+        // Continue conversation
+        response = await anthropic.messages.create({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 2048,
+          messages,
+          tools
+        });
+      }
+
+      // Get final text response
+      const finalText = response.content
+        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+        .map(block => block.text)
+        .join('\n');
+
+      console.log('Bot action completed:', finalText);
+
+      await closeSession();
+    }
+  );
+}
+
+// Example usage
+runSupportBot(
+  "What's the status of ticket #1234?",
+  "#customer-support"
+);
+```
+
+```python Python
+import asyncio
+import os
+from metorial import Metorial
+from anthropic import AsyncAnthropic, MessageParam
+
+metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
+anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+# Store your deployment IDs and OAuth session ID
+SLACK_DEPLOYMENT_ID = "your-slack-deployment-id"
+ZENDESK_DEPLOYMENT_ID = "your-zendesk-deployment-id"
+SLACK_OAUTH_SESSION_ID = "your-slack-oauth-session-id"
+
+async def run_support_bot(user_message: str, slack_channel: str):
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=[
+            {
+                "serverDeploymentId": SLACK_DEPLOYMENT_ID,
+                "oauthSessionId": SLACK_OAUTH_SESSION_ID
+            },
+            {"serverDeploymentId": ZENDESK_DEPLOYMENT_ID}
+        ],
+    ) as session:
+        # AI analyzes the message and decides what action to take
+        messages: list[MessageParam] = [
+            {
+                "role": "user",
+                "content": f"""You are a support bot. A customer wrote: "{user_message}"
+
+Analyze this message and take appropriate action:
+
+1. If asking about ticket status (e.g., "what's the status of ticket #1234"):
+   - Use Zendesk tools to search for and retrieve ticket details
+   - Post a summary to Slack channel {slack_channel}
+
+2. If asking a common question (e.g., "how do I reset my password"):
+   - Generate a helpful response
+   - Post it to Slack channel {slack_channel}
+
+3. If it's complex or requires human attention:
+   - Post to #support-escalations channel
+   - Tag @support-team
+   - Include customer's original message
+
+Take action now using the available tools."""
+            }
+        ]
+
+        response = await anthropic.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=2048,
+            tools=session.tools,
+            messages=messages,
+        )
+
+        # Handle tool calls in agentic loop
+        while response.stop_reason == "tool_use":
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+
+            # Execute tools via Metorial
+            tool_results = await session.call_tools(tool_use_blocks)
+
+            # Add assistant response and tool results to conversation
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({
+                "role": "user",
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_use_blocks[i].id,
+                        "content": str(result)
+                    }
+                    for i, result in enumerate(tool_results)
+                ]
+            })
+
+            # Continue conversation
+            response = await anthropic.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=2048,
+                tools=session.tools,
+                messages=messages,
+            )
+
+        # Get final text response
+        final_text = "\n".join(
+            block.text for block in response.content if block.type == "text"
+        )
+
+        print(f"Bot action completed: {final_text}")
+
+# Example usage
+asyncio.run(run_support_bot(
+    "What's the status of ticket #1234?",
+    "#customer-support"
+))
+```
+</CodeGroup>
+
+**What this code does:**
+
+1. **Creates a provider session** with both Slack and Zendesk tools available
+2. **Sends customer message to AI** with instructions on how to handle different scenarios
+3. **AI decides and executes tools**:
+   - Searches Zendesk if ticket status requested
+   - Posts to Slack with responses
+   - Routes to support team if needed
+4. **Handles multi-step tool calls** in an agentic loop until complete
+
+<Info>
+This example uses **Claude's agentic capabilities**—the AI autonomously decides which tools to call and when. You don't need to write routing logic yourself.
+</Info>
+
+## Step 5: Check Ticket Status
+
+Let's test the bot with a ticket status inquiry.
+
+**Scenario**: Customer asks "What's the status of my ticket #1234?"
+
+The bot will:
+1. Parse ticket number from message
+2. Call Zendesk's `search_tickets` or `get_ticket` tool
+3. Format ticket details (status, assignee, last update)
+4. Post to Slack
+
+<CodeGroup>
+```typescript TypeScript
+// Test ticket status check
+await runSupportBot(
+  "Hi! Can you check the status of ticket #1234?",
+  "#customer-support"
+);
+
+// Expected flow:
+// 1. AI calls Zendesk tool: zendesk_get_ticket(ticket_id: 1234)
+// 2. AI formats response: "Ticket #1234 is currently 'In Progress' and assigned to Sarah. Last updated 2 hours ago."
+// 3. AI calls Slack tool: slack_post_message(channel: "#customer-support", text: "...")
+```
+
+```python Python
+# Test ticket status check
+await run_support_bot(
+    "Hi! Can you check the status of ticket #1234?",
+    "#customer-support"
+)
+
+# Expected flow:
+# 1. AI calls Zendesk tool: zendesk_get_ticket(ticket_id: 1234)
+# 2. AI formats response: "Ticket #1234 is currently 'In Progress' and assigned to Sarah. Last updated 2 hours ago."
+# 3. AI calls Slack tool: slack_post_message(channel: "#customer-support", text: "...")
+```
+</CodeGroup>
+
+<Note>
+The AI autonomously chains tool calls:
+1. First calls `zendesk_get_ticket`
+2. Receives ticket data
+3. Then calls `slack_post_message` with formatted response
+
+This is the power of agentic AI with multi-tool access.
+</Note>
+
+## Step 6: AI-Powered Auto-Response
+
+Test the bot with a common question that doesn't require tools.
+
+**Scenario**: Customer asks "How do I reset my password?"
+
+The bot will:
+1. Recognize this as a common question
+2. Generate helpful response using its knowledge
+3. Post directly to Slack
+
+<CodeGroup>
+```typescript TypeScript
+// Test auto-response for common question
+await runSupportBot(
+  "How do I reset my password?",
+  "#customer-support"
+);
+
+// Expected flow:
+// 1. AI recognizes common question (no Zendesk needed)
+// 2. AI generates response with password reset steps
+// 3. AI calls Slack tool: slack_post_message(channel: "#customer-support", text: "To reset your password: 1. Go to...")
+```
+
+```python Python
+# Test auto-response for common question
+await run_support_bot(
+    "How do I reset my password?",
+    "#customer-support"
+)
+
+# Expected flow:
+# 1. AI recognizes common question (no Zendesk needed)
+# 2. AI generates response with password reset steps
+# 3. AI calls Slack tool: slack_post_message(channel: "#customer-support", text: "To reset your password: 1. Go to...")
+```
+</CodeGroup>
+
+<Info>
+**Customizing Auto-Responses:**
+
+For production bots, enhance the system prompt with:
+- Your company's knowledge base articles
+- FAQs and standard responses
+- Links to help documentation
+- Escalation criteria (e.g., "always escalate billing questions")
+</Info>
+
+## Step 7: Route Complex Issues to Humans
+
+Test the bot with a complex issue that needs human attention.
+
+**Scenario**: Customer reports "Your API is returning 500 errors and our production is down!"
+
+The bot will:
+1. Recognize this as urgent and complex
+2. Post to escalation channel
+3. Tag support team
+4. Include original message and urgency
+
+<CodeGroup>
+```typescript TypeScript
+// Test escalation for complex issue
+await runSupportBot(
+  "Your API is returning 500 errors and our production is down!",
+  "#customer-support"
+);
+
+// Expected flow:
+// 1. AI recognizes urgency and complexity
+// 2. AI calls Slack tool: slack_post_message(
+//      channel: "#support-escalations",
+//      text: "🚨 URGENT: Production issue reported by customer..."
+//      mentions: ["@support-team"]
+//    )
+// 3. AI calls Slack tool: slack_post_message(
+//      channel: "#customer-support",
+//      text: "I've escalated this to our engineering team. Someone will assist you shortly."
+//    )
+```
+
+```python Python
+# Test escalation for complex issue
+await run_support_bot(
+    "Your API is returning 500 errors and our production is down!",
+    "#customer-support"
+)
+
+# Expected flow:
+# 1. AI recognizes urgency and complexity
+# 2. AI calls Slack tool: slack_post_message(
+#      channel="#support-escalations",
+#      text="🚨 URGENT: Production issue reported by customer..."
+#      mentions=["@support-team"]
+#    )
+# 3. AI calls Slack tool: slack_post_message(
+#      channel="#customer-support",
+#      text="I've escalated this to our engineering team. Someone will assist you shortly."
+#    )
+```
+</CodeGroup>
+
+<Info>
+**Configuring Escalation Rules:**
+
+Update the system prompt to define when to escalate:
+- Keywords: "down", "urgent", "billing", "refund", "legal"
+- Customer sentiment: angry or frustrated tone
+- Business rules: questions about enterprise plans, integrations
+</Info>
+
+## Step 8: Test End-to-End
+
+Run a complete test to verify all functionality.
+
+<Steps>
+  <Step title="Monitor Slack Channel">
+    Open your Slack workspace and watch the `#customer-support` channel.
+  </Step>
+
+  <Step title="Simulate Customer Messages">
+    Run the bot with different test messages:
+
+    <CodeGroup>
+    ```typescript TypeScript
+    // Test all scenarios
+    await runSupportBot("What's the status of ticket #1234?", "#customer-support");
+    await runSupportBot("How do I reset my password?", "#customer-support");
+    await runSupportBot("API is down in production!", "#customer-support");
+    ```
+
+    ```python Python
+    # Test all scenarios
+    await run_support_bot("What's the status of ticket #1234?", "#customer-support")
+    await run_support_bot("How do I reset my password?", "#customer-support")
+    await run_support_bot("API is down in production!", "#customer-support")
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Verify Bot Behavior">
+    Check that:
+    - ✓ Ticket status posted to Slack with correct details
+    - ✓ Password reset instructions posted clearly
+    - ✓ Urgent issue escalated to #support-escalations
+    - ✓ Acknowledgment posted to customer in original channel
+  </Step>
+
+  <Step title="Check Zendesk Integration">
+    Verify the bot can read tickets:
+    1. Go to your Zendesk dashboard
+    2. Create a test ticket
+    3. Ask the bot about that ticket ID
+    4. Confirm details match
+  </Step>
+</Steps>
+
+<Note>
+**Debugging Tips:**
+
+If tools aren't being called:
+- Check OAuth session is active (try re-authorizing)
+- Verify deployment IDs are correct
+- Check API tokens for Zendesk haven't expired
+- Review Metorial dashboard logs under Monitoring
+</Note>
+
+## What's Next?
+
+Congratulations! You've built a production-ready support bot that integrates Slack and Zendesk with AI-powered decision making.
+
+### Enhancements to Try
+
+<CardGroup cols={2}>
+  <Card title="Add Message Monitoring" icon="eye">
+    Use Slack's Events API to trigger bot on new messages automatically instead of manual calls.
+  </Card>
+
+  <Card title="Sentiment Analysis" icon="face-smile">
+    Enhance AI prompt to detect frustrated customers and escalate proactively.
+  </Card>
+
+  <Card title="Create Zendesk Tickets" icon="ticket">
+    Allow bot to create new tickets when customers report issues without ticket IDs.
+  </Card>
+
+  <Card title="Multi-Language Support" icon="language">
+    Add language detection and translation for global support teams.
+  </Card>
+</CardGroup>
+
+### Learn More
+
+<CardGroup cols={3}>
+  <Card title="SDK Documentation" icon="book" href="/sdk-quickstart">
+    Explore advanced SDK features and patterns.
+  </Card>
+
+  <Card title="OAuth Guide" icon="shield" href="/sdk-oauth">
+    Learn more about managing user authorizations.
+  </Card>
+
+  <Card title="Monitoring Guide" icon="chart-line" href="/metorial-101-monitoring">
+    Monitor tool calls and debug issues.
+  </Card>
+</CardGroup>
+
+### Production Considerations
+
+Before deploying to production:
+
+1. **Error handling**: Add try/catch blocks and retry logic
+2. **Rate limiting**: Implement backoff for high-volume channels
+3. **Security**: Store API keys in environment variables or secrets manager
+4. **Monitoring**: Set up alerts for failed tool calls
+5. **Testing**: Create automated tests for common scenarios
+
+<Info>
+Need help? Email us at [support@metorial.com](mailto:support@metorial.com).
+</Info>
