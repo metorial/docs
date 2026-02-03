@@ -733,35 +733,6 @@ Common issues and solutions when building your code review bot:
 If you encounter errors not covered here, check the Metorial dashboard logs (Monitoring section) to see detailed tool execution traces and error messages. You can also inspect the actual API requests being made.
 </Note>
 
-## Understanding the Review Workflow
-
-The code review bot uses a hybrid approach combining local git and GitHub's API:
-
-<Info>
-**How It Works:**
-
-**Local Code Analysis:**
-- Bot uses `git diff` to read changes from your local repository
-- Compares feature branch against base branch (e.g., `main`)
-- Extracts the full diff with file paths and line numbers
-- Sends diff content to AI for analysis
-
-**GitHub MCP Server Tool:**
-
-- **create_pull_request_review**: Posts a complete review to the PR with overall feedback and optional line-specific comments
-  - Parameters: owner, repo, pull_number, body (summary), event (`APPROVE`/`REQUEST_CHANGES`/`COMMENT`), comments (array)
-  - Returns: Review object with ID
-  - Use case: Primary tool for posting structured reviews with overall summary and decision to GitHub
-
-**Workflow:**
-1. Read code changes locally using git
-2. AI analyzes the diff for issues
-3. AI calls `create_pull_request_review` to post findings to GitHub
-4. Review appears on GitHub PR with comments and status
-
-**Why this approach?** Reading diffs locally is faster and doesn't require GitHub API calls for file content. The GitHub MCP server is only used for posting the final review, minimizing API usage and rate limit concerns.
-</Info>
-
 ## Advanced Customization
 
 Enhance your code review bot with these customizations:
@@ -849,11 +820,7 @@ Congratulations! You've built an AI-powered code review bot that analyzes pull r
 
 ### Related Sample Projects
 
-<CardGroup cols={2}>
-  <Card title="Support Bot" icon="headset" href="/sample-projects-support-bot">
-    Build a multi-service AI support bot with Slack and Zendesk.
-  </Card>
-
+<CardGroup cols={1}>
   <Card title="Custom MCP Servers" icon="server" href="/custom-servers-overview">
     Learn to build your own MCP servers for specialized integrations.
   </Card>
