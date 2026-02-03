@@ -1,0 +1,900 @@
+---
+title: "Build a Code Review Bot with GitHub"
+description: "Create an AI-powered bot that analyzes pull requests for security issues, code smells, and style violations"
+---
+
+## What You'll Build
+
+Build an AI-powered code review bot that:
+- Reads code changes locally from your git repository
+- Analyzes code for security vulnerabilities, code smells, and style issues
+- Posts detailed review comments to GitHub (both general feedback and line-specific suggestions)
+- Automatically requests changes for issues or approves clean PRs
+
+This tutorial demonstrates practical AI-driven code analysis using Metorial's GitHub integration.
+
+<Note>
+**What you'll learn:**
+- Deploying the GitHub MCP server
+- Setting up OAuth for GitHub repositories
+- Creating an AI agent that reviews code
+- Posting GitHub review comments programmatically
+
+**Before you begin:**
+- [Create a Metorial account](/metorial-101-introduction)
+- [Create API keys](/api-getting-started)
+- GitHub account with a repository and at least one PR
+- Anthropic API key (Claude Sonnet 4 or newer recommended)
+
+**Time to complete:** 10-15 minutes
+</Note>
+
+## Prerequisites
+
+Before building the code review bot, ensure you have:
+
+1. **Metorial setup**:
+   - Active Metorial account at [app.metorial.com](https://app.metorial.com)
+   - Project created in your organization
+   - Metorial API key (generate in Dashboard → Home → Connect to Metorial)
+
+2. **GitHub repository**:
+   - Local clone of your GitHub repository
+   - Repository with write access on GitHub
+   - At least one pull request for testing
+   - Admin access to authorize OAuth
+
+3. **AI provider**:
+   - Anthropic API key (Claude Sonnet 4 or newer recommended for code analysis)
+
+4. **Development environment**:
+   - Node.js 18+ (TypeScript) or Python 3.9+ installed
+   - Basic knowledge of async/await patterns
+
+## Architecture Overview
+
+The code review bot workflow:
+
+1. **Input**: User provides local repository path, branch names, and PR number
+2. **Fetch Code Changes**: Bot reads git diff locally from your repository
+3. **AI Analysis**: Claude analyzes the diff for:
+   - Security vulnerabilities (SQL injection, XSS, exposed secrets)
+   - Code smells (duplication, long functions, complexity)
+   - Style violations (naming, formatting, consistency)
+   - Best practices (error handling, documentation, testing)
+4. **Post Review**: Bot posts the review to GitHub via the GitHub MCP server:
+   - Overall summary comment
+   - Line-specific feedback on issues
+   - Review decision (approve or request changes)
+
+**Tools used**: Local git (read code changes) + AI Model (code analysis) + GitHub MCP Server (post reviews)
+
+## Step 1: Deploy GitHub MCP Server
+
+Deploy the GitHub MCP server from Metorial's catalog to enable your bot to interact with GitHub.
+
+<Steps>
+  <Step title="Navigate to Server Catalog">
+    In the Metorial Dashboard, go to **Servers** and search for "GitHub".
+  </Step>
+
+  <Step title="Deploy GitHub Server">
+    Click the **GitHub** server, then click **Deploy Server** → **Server Deployment**.
+
+    Give your deployment a descriptive name like "Code Review Bot GitHub".
+  </Step>
+
+  <Step title="Note Your Deployment ID">
+    After deployment, copy your **Server Deployment ID** from the deployment page. You'll need this for OAuth setup and in your bot code.
+  </Step>
+</Steps>
+
+<Info>
+Save your GitHub deployment ID—you'll need it for OAuth setup (Step 2) and in your bot code (Step 3).
+</Info>
+
+## Step 2: Set Up OAuth Authentication
+
+Your code review bot needs permission to access your GitHub repositories.
+
+<Steps>
+  <Step title="Install Dependencies">
+    Install the Metorial SDK and Anthropic:
+
+    <CodeGroup>
+    ```bash TypeScript
+    npm install metorial @metorial/anthropic @anthropic-ai/sdk
+    ```
+
+    ```bash Python
+    pip install metorial anthropic
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create OAuth Session">
+    Run this code to generate the GitHub OAuth URL:
+
+    <CodeGroup>
+    ```typescript TypeScript
+    import { Metorial } from 'metorial';
+
+    const metorial = new Metorial({
+      apiKey: process.env.METORIAL_API_KEY
+    });
+
+    async function setupGitHubOAuth() {
+      const githubOAuth = await metorial.oauth.sessions.create({
+        serverDeploymentId: 'your-github-deployment-id',
+        callbackUrl: 'https://yourapp.com/oauth/callback' // Optional
+      });
+
+      console.log('Authorize GitHub here:', githubOAuth.url);
+      console.log('OAuth Session ID:', githubOAuth.id);
+
+      // Wait for authorization
+      await metorial.oauth.waitForCompletion([githubOAuth.id]);
+      console.log('✓ GitHub authorized!');
+
+      // Save githubOAuth.id for future use
+      return githubOAuth.id;
+    }
+
+    setupGitHubOAuth();
+    ```
+
+    ```python Python
+    import asyncio
+    from metorial import Metorial
+
+    async def setup_github_oauth():
+        metorial = Metorial(api_key="YOUR-METORIAL-API-KEY")
+
+        github_oauth = metorial.oauth.sessions.create(
+            server_deployment_id="YOUR-GITHUB-DEPLOYMENT-ID",
+            callback_url="https://yourapp.com/oauth/callback"  # Optional
+        )
+
+        print(f"Authorize GitHub here: {github_oauth.url}")
+        print(f"OAuth Session ID: {github_oauth.id}")
+
+        # Wait for authorization
+        await metorial.oauth.wait_for_completion([github_oauth])
+        print("✓ GitHub authorized!")
+
+        # Save github_oauth.id for future use
+        return github_oauth.id
+
+    asyncio.run(setup_github_oauth())
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Authorize in Browser">
+    1. Open the printed OAuth URL in your browser
+    2. Sign in to GitHub if needed
+    3. Review and approve the permissions (the bot needs `repo` scope to read PRs and post comments)
+    4. You'll be redirected to your callback URL (or see a confirmation page)
+  </Step>
+
+  <Step title="Store OAuth Session ID">
+    Save the OAuth session ID securely. You'll reuse it for all future bot operations without re-authorizing.
+
+    For production apps, store OAuth session IDs in your database per user/repository.
+  </Step>
+</Steps>
+
+<Note>
+**Required OAuth Scopes:**
+
+The GitHub MCP server requires the `repo` scope for posting reviews, which provides:
+- Write access to post review comments and line-specific feedback
+- Permission to approve PRs or request changes on your repositories
+
+**Note**: If you plan to implement webhook-based automation (mentioned in Production Considerations), you may need additional scopes like `admin:repo_hook`. The basic bot functionality shown in this tutorial only requires `repo`.
+
+The required scopes are automatically requested when you authorize via the OAuth URL.
+</Note>
+
+## Step 3: Build the Code Review Bot
+
+Create the main bot that analyzes pull requests and posts review comments.
+
+<CodeGroup>
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAnthropic } from '@metorial/anthropic';
+import Anthropic from '@anthropic-ai/sdk';
+import { execSync } from 'child_process';
+import * as path from 'path';
+import * as fs from 'fs';
+
+const metorial = new Metorial({
+  apiKey: process.env.METORIAL_API_KEY!
+});
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!
+});
+
+// GitHub integration credentials
+const GITHUB_DEPLOYMENT_ID = 'your-github-deployment-id';
+const GITHUB_OAUTH_SESSION_ID = 'your-github-oauth-session-id';
+
+async function reviewPullRequest(
+  repoPath: string,
+  owner: string,
+  repo: string,
+  branchName: string,
+  prNumber: number,
+  baseBranch: string = 'main'
+) {
+  console.log(`Starting review of PR #${prNumber} (${branchName})`);
+
+  // Validate repository path
+  if (!fs.existsSync(repoPath)) {
+    throw new Error(`Repository path does not exist: ${repoPath}`);
+  }
+
+  const gitDir = path.join(repoPath, '.git');
+  if (!fs.existsSync(gitDir)) {
+    throw new Error(`Not a git repository: ${repoPath}`);
+  }
+
+  // Get diff from local repository
+  console.log(`Fetching diff: ${baseBranch}...${branchName}`);
+  const gitDiffCmd = `cd "${repoPath}" && git diff ${baseBranch}...${branchName}`;
+
+  let diffContent: string;
+  try {
+    diffContent = execSync(gitDiffCmd, { encoding: 'utf-8' });
+  } catch (error) {
+    throw new Error(`Git diff failed: ${error}`);
+  }
+
+  if (!diffContent.trim()) {
+    console.log('No changes found in diff');
+    return;
+  }
+
+  console.log(`Analyzing ${diffContent.length} characters of diff`);
+
+  // Create Metorial session with GitHub integration
+  await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+      serverDeployments: [
+        {
+          serverDeploymentId: GITHUB_DEPLOYMENT_ID,
+          oauthSessionId: GITHUB_OAUTH_SESSION_ID
+        }
+      ],
+      streaming: false
+    },
+    async ({ tools, callTools, closeSession }) => {
+      // Prepare review prompt with diff content
+      const messages: Anthropic.MessageParam[] = [
+        {
+          role: 'user',
+          content: `You are an expert code reviewer. You MUST post a review to GitHub after analyzing the code.
+
+Repository: ${owner}/${repo}
+Branch: ${branchName}
+PR Number: #${prNumber}
+
+DIFF CONTENT:
+\`\`\`diff
+${diffContent}
+\`\`\`
+
+CRITICAL: You MUST call the create_pull_request_review tool. Do NOT just provide analysis - you must POST the review to GitHub.
+
+INSTRUCTIONS:
+1. Analyze the diff for:
+   - Security vulnerabilities (SQL injection, XSS, exposed secrets, unsafe operations)
+   - Code quality issues (duplication, complexity, error handling)
+   - Style problems (naming, formatting, consistency)
+   - Best practices (documentation, testing, edge cases)
+
+2. IMMEDIATELY call create_pull_request_review tool with:
+   - owner: "${owner}"
+   - repo: "${repo}"
+   - pull_number: ${prNumber}
+   - body: Your summary of findings
+   - event: "APPROVE" (if no issues) or "REQUEST_CHANGES" (if issues found)
+   - comments: Array of line-specific comments if you found issues
+
+You MUST use the tool to post the review. START NOW.`
+        }
+      ];
+
+      // Send initial request to Claude
+      let response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 8192,
+        tools,
+        messages
+      });
+
+      // Handle tool calls in agentic loop
+      while (response.stop_reason === 'tool_use') {
+        const toolUseBlocks = response.content.filter(
+          (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
+        );
+
+        console.log(`Executing ${toolUseBlocks.length} tool(s)...`);
+
+        // Execute tools via Metorial
+        const toolResults = await callTools(toolUseBlocks);
+
+        // Add assistant response and tool results to conversation
+        messages.push(
+          { role: 'assistant', content: response.content },
+          {
+            role: 'user',
+            content: toolResults.map((result, i) => ({
+              type: 'tool_result' as const,
+              tool_use_id: toolUseBlocks[i].id,
+              content: JSON.stringify(result)
+            }))
+          }
+        );
+
+        // Continue conversation
+        response = await anthropic.messages.create({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 8192,
+          messages,
+          tools
+        });
+      }
+
+      // Get final summary
+      const finalText = response.content
+        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+        .map(block => block.text)
+        .join('\n');
+
+      console.log(`Review completed: ${finalText}`);
+
+      await closeSession();
+    }
+  );
+}
+
+// Example usage
+reviewPullRequest(
+  '/path/to/your/local/repo',
+  'your-username',
+  'your-repo',
+  'feature-branch',
+  123,
+  'main'
+);
+```
+
+```python Python
+import asyncio
+import subprocess
+from pathlib import Path
+from metorial import Metorial
+from anthropic import AsyncAnthropic
+
+# Initialize clients
+metorial = Metorial(api_key="METORIAL_API_KEY")
+anthropic = AsyncAnthropic(api_key="ANTHROPIC_API_KEY")
+
+# GitHub integration credentials
+GITHUB_DEPLOYMENT_ID = "GITHUB_DEPLOYMENT_ID"
+GITHUB_OAUTH_SESSION_ID = "GITHUB_OAUTH_SESSION_ID"
+
+async def review_pull_request(
+    repo_path: str,
+    owner: str,
+    repo: str,
+    branch_name: str,
+    pr_number: int,
+    base_branch: str = "main"
+):
+    """
+    Review a pull request by analyzing local git diff and posting to GitHub.
+
+    Args:
+        repo_path: Local path to the git repository
+        owner: GitHub repository owner
+        repo: GitHub repository name
+        branch_name: Branch with changes to review
+        pr_number: GitHub PR number
+        base_branch: Base branch to compare against (default: "main")
+    """
+    print(f"Starting review of PR #{pr_number} ({branch_name})")
+
+    # Validate repository path
+    repo_dir = Path(repo_path)
+    if not repo_dir.exists():
+        raise ValueError(f"Repository path does not exist: {repo_path}")
+
+    git_dir = repo_dir / ".git"
+    if not git_dir.exists():
+        raise ValueError(f"Not a git repository: {repo_path}")
+
+    # Get diff from local repository
+    print(f"Fetching diff: {base_branch}...{branch_name}")
+    git_diff_cmd = f"cd '{repo_path}' && git diff {base_branch}...{branch_name}"
+    diff_result = subprocess.run(git_diff_cmd, shell=True, capture_output=True, text=True)
+
+    if diff_result.returncode != 0:
+        raise RuntimeError(f"Git diff failed: {diff_result.stderr}")
+
+    diff_content = diff_result.stdout
+    if not diff_content.strip():
+        print("No changes found in diff")
+        return
+
+    print(f"Analyzing {len(diff_content)} characters of diff")
+
+    # Create Metorial session with GitHub integration
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=[
+            {
+                "serverDeploymentId": GITHUB_DEPLOYMENT_ID,
+                "oauthSessionId": GITHUB_OAUTH_SESSION_ID
+            }
+        ],
+    ) as session:
+        # Prepare review prompt with diff content
+        messages = [
+            {
+                "role": "user",
+                "content": f"""You are an expert code reviewer. You MUST post a review to GitHub after analyzing the code.
+
+Repository: {owner}/{repo}
+Branch: {branch_name}
+PR Number: #{pr_number}
+
+DIFF CONTENT:
+{diff_content}
+
+CRITICAL: You MUST call the create_pull_request_review tool. Do NOT just provide analysis - you must POST the review to GitHub.
+
+INSTRUCTIONS:
+1. Analyze the diff for:
+   - Security vulnerabilities (SQL injection, XSS, exposed secrets, unsafe operations)
+   - Code quality issues (duplication, complexity, error handling)
+   - Style problems (naming, formatting, consistency)
+   - Best practices (documentation, testing, edge cases)
+
+2. IMMEDIATELY call create_pull_request_review tool with:
+   - owner: "{owner}"
+   - repo: "{repo}"
+   - pull_number: {pr_number}
+   - body: Your summary of findings
+   - event: "APPROVE" (if no issues) or "REQUEST_CHANGES" (if issues found)
+   - comments: Array of line-specific comments if you found issues
+
+You MUST use the tool to post the review. START NOW."""
+            }
+        ]
+
+        # Send initial request to Claude
+        response = await anthropic.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=8192,
+            tools=session.tools,
+            messages=messages,
+        )
+
+        # Handle tool calls in agentic loop
+        while response.stop_reason == "tool_use":
+            # Extract tool use blocks from response
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+
+            print(f"Executing {len(tool_use_blocks)} tool(s)...")
+
+            # Execute tools via Metorial
+            tool_results = await session.call_tools(tool_use_blocks)
+
+            # Add assistant response to conversation
+            messages.append({"role": "assistant", "content": response.content})
+
+            # Format and add tool results to conversation
+            formatted_results = []
+            for tool_block, result in zip(tool_use_blocks, tool_results):
+                # Extract content from MCP-style or simple dict results
+                if isinstance(result, dict) and "contents" in result:
+                    content = result["contents"][0]["text"] if result["contents"] else str(result)
+                elif isinstance(result, dict) and "content" in result:
+                    content = result["content"]
+                else:
+                    content = str(result)
+
+                formatted_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": tool_block.id,
+                    "content": content
+                })
+
+            messages.append({"role": "user", "content": formatted_results})
+
+            # Continue conversation
+            response = await anthropic.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=8192,
+                tools=session.tools,
+                messages=messages,
+            )
+
+        # Extract final response
+        final_text = "\n".join(
+            block.text for block in response.content if block.type == "text"
+        )
+
+        print(f"Review completed: {final_text}")
+```
+</CodeGroup>
+
+**What this code does:**
+
+1. **Reads git diff locally** from your repository between the base and feature branches
+2. **Creates a provider session** with GitHub MCP server for posting reviews
+3. **Sends the diff to Claude** with analysis instructions
+4. **AI analyzes the code** and identifies issues
+5. **AI posts review to GitHub** using `create_pull_request_review` tool with findings
+6. **Handles multi-step workflow** through agentic loop until review is complete
+7. **Handles errors gracefully**: If tool calls fail, the AI receives error messages and can retry or adjust its approach
+
+<Info>
+This uses **Claude's agentic capabilities**—the AI decides which tools to call and when. You don't need to write explicit logic for fetching files, analyzing code, or posting comments.
+</Info>
+
+## Step 4: Test with a Security Issue
+
+Let's test the bot with a PR containing a security vulnerability.
+
+**Scenario**: Create a test PR with SQL injection vulnerability.
+
+**Test PR content** (example):
+
+```javascript
+// app.js - PR changes
+function getUserData(userId) {
+  // Security issue: SQL injection vulnerability
+  const query = `SELECT * FROM users WHERE id = ${userId}`;
+  return database.query(query);
+}
+```
+
+**Run the bot**:
+
+<CodeGroup>
+```typescript TypeScript
+await reviewPullRequest(
+  '/path/to/your/local/repo',
+  'your-username',
+  'your-repo',
+  'feature-branch',
+  123
+);
+```
+
+```python Python
+await review_pull_request(
+    repo_path="/path/to/your/local/repo",
+    owner="your-username",
+    repo="your-repo",
+    branch_name="feature-branch",
+    pr_number=123
+)
+```
+</CodeGroup>
+
+**Expected behavior**:
+1. Bot reads git diff from local repository for PR #123
+2. AI detects SQL injection vulnerability in the query string
+3. Bot posts review with:
+   - **General comment**: "Found 1 security vulnerability that needs immediate attention."
+   - **Line-specific comment** on the SQL query line: "🚨 SQL injection vulnerability detected. User input is directly interpolated into the query. Use parameterized queries instead: `SELECT * FROM users WHERE id = ?` with bound parameters."
+4. Bot submits review with **REQUEST_CHANGES** status
+
+<Note>
+The bot workflow:
+1. Reads git diff from your local repository
+2. Sends diff content to AI for analysis
+3. AI identifies the security issue in the code
+4. AI calls `create_pull_request_review` tool to post review to GitHub with `REQUEST_CHANGES` status and detailed comments
+
+The AI autonomously analyzes code and posts reviews—no manual orchestration needed!
+</Note>
+
+## Step 5: Test with Clean Code
+
+Test the bot with a clean PR to verify the approval workflow.
+
+**Scenario**: PR with well-written code.
+
+**Test PR content** (example):
+
+```typescript
+// utils.ts - PR changes
+/**
+ * Validates user email format
+ * @param email - Email address to validate
+ * @returns true if email is valid
+ */
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+/**
+ * Sanitizes user input to prevent XSS attacks
+ * @param input - Raw user input
+ * @returns Sanitized string safe for HTML rendering
+ */
+export function sanitizeInput(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+```
+
+**Run the bot**:
+
+<CodeGroup>
+```typescript TypeScript
+await reviewPullRequest(
+  '/path/to/your/local/repo',
+  'your-username',
+  'your-repo',
+  'feature-branch',
+  124
+);
+```
+
+```python Python
+await review_pull_request(
+    repo_path="/path/to/your/local/repo",
+    owner="your-username",
+    repo="your-repo",
+    branch_name="feature-branch",
+    pr_number=124
+)
+```
+</CodeGroup>
+
+**Expected behavior**:
+1. Bot reads git diff from local repository for PR #124
+2. AI finds:
+   - ✓ Proper documentation with JSDoc comments
+   - ✓ Clear function names following conventions
+   - ✓ Security-conscious implementation (XSS prevention)
+   - ✓ No code smells or style violations
+3. Bot posts review comment: "Code looks excellent! Clean implementation with proper documentation, security considerations, and clear naming. The XSS sanitization is thorough and the email validation regex is appropriate."
+4. Bot submits review with **APPROVE** status
+
+## Troubleshooting
+
+Common issues and solutions when building your code review bot:
+
+<AccordionGroup>
+  <Accordion title="Bot doesn't post reviews or returns empty responses">
+    **Possible causes**:
+    - OAuth session expired or invalid
+    - PR doesn't exist or has no changed files
+    - AI model didn't call the review tools
+
+    **Solutions**:
+    1. Verify your OAuth session is active: re-run the OAuth setup if needed
+    2. Check the PR exists and has commits: `gh pr view <pr-number>`
+    3. Increase `max_tokens` in the AI request (try 8192 instead of 4096)
+    4. Review Metorial dashboard logs to see which tools were called
+    5. Ensure your prompt explicitly instructs the AI to post reviews (see code examples)
+  </Accordion>
+
+  <Accordion title="Error: Tool not found or tool call failed">
+    **Possible causes**:
+    - Incorrect tool name in code
+    - GitHub MCP server deployment not active
+    - OAuth permissions insufficient
+
+    **Solutions**:
+    1. Verify you're using the correct tool name: `create_pull_request_review`
+    2. Check your GitHub server deployment is running in Metorial dashboard
+    3. Confirm OAuth session is associated with the correct deployment ID
+    4. Verify the `repo` scope was granted during OAuth authorization
+  </Accordion>
+
+  <Accordion title="Reviews are generic or miss obvious issues">
+    **Possible causes**:
+    - AI prompt lacks specific guidelines
+    - Code context is truncated
+    - Model capabilities insufficient
+
+    **Solutions**:
+    1. Add specific coding standards to your prompt (see "Custom Review Rules" in Advanced Customization)
+    2. Increase `max_tokens` to allow longer analysis (8192-16384 for large PRs)
+    3. Use Claude Sonnet 4 or newer for better code understanding
+    4. Provide example issues in the prompt to guide the AI's analysis style
+  </Accordion>
+
+  <Accordion title="OAuth authorization fails or shows permission errors">
+    **Possible causes**:
+    - Callback URL mismatch
+    - Missing repository access
+    - GitHub App permissions not configured
+
+    **Solutions**:
+    1. Verify your callback URL matches exactly (including http/https)
+    2. Ensure you have admin access to the repository you're testing with
+    3. Check the OAuth authorization screen shows the `repo` scope
+    4. Try revoking and re-authorizing the OAuth connection
+    5. Confirm your Metorial account and GitHub account are properly linked
+  </Accordion>
+
+  <Accordion title="Bot times out on large pull requests">
+    **Possible causes**:
+    - Too many changed files
+    - AI context window exceeded
+    - API rate limits
+
+    **Solutions**:
+    1. Filter files by extension or directory (modify the prompt to focus on specific file types)
+    2. Implement batching: review files in chunks rather than all at once
+    3. Set a maximum file size limit (skip files >1000 lines)
+    4. Use streaming responses to handle longer processing times
+    5. For PRs with >20 files, consider the performance optimizations in Production Considerations
+  </Accordion>
+
+  <Accordion title="Rate limiting: GitHub API requests failing">
+    **GitHub API limits**: 5,000 requests/hour for authenticated apps
+
+    **Solutions**:
+    1. Implement exponential backoff when rate limit errors occur
+    2. Cache PR data when running multiple reviews on the same PR
+    3. Use conditional requests with ETags to avoid fetching unchanged data
+    4. For production deployment, consider GitHub Enterprise with higher limits
+    5. Track your usage in the Metorial dashboard to identify bottlenecks
+
+    **Prevention**: Queue bot reviews rather than triggering all at once, especially during peak hours.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+If you encounter errors not covered here, check the Metorial dashboard logs (Monitoring section) to see detailed tool execution traces and error messages. You can also inspect the actual API requests being made.
+</Note>
+
+## Understanding the Review Workflow
+
+The code review bot uses a hybrid approach combining local git and GitHub's API:
+
+<Info>
+**How It Works:**
+
+**Local Code Analysis:**
+- Bot uses `git diff` to read changes from your local repository
+- Compares feature branch against base branch (e.g., `main`)
+- Extracts the full diff with file paths and line numbers
+- Sends diff content to AI for analysis
+
+**GitHub MCP Server Tool:**
+
+- **create_pull_request_review**: Posts a complete review to the PR with overall feedback and optional line-specific comments
+  - Parameters: owner, repo, pull_number, body (summary), event (`APPROVE`/`REQUEST_CHANGES`/`COMMENT`), comments (array)
+  - Returns: Review object with ID
+  - Use case: Primary tool for posting structured reviews with overall summary and decision to GitHub
+
+**Workflow:**
+1. Read code changes locally using git
+2. AI analyzes the diff for issues
+3. AI calls `create_pull_request_review` to post findings to GitHub
+4. Review appears on GitHub PR with comments and status
+
+**Why this approach?** Reading diffs locally is faster and doesn't require GitHub API calls for file content. The GitHub MCP server is only used for posting the final review, minimizing API usage and rate limit concerns.
+</Info>
+
+## Advanced Customization
+
+Enhance your code review bot with these customizations:
+
+<CardGroup cols={2}>
+  <Card title="Custom Review Rules" icon="list-check">
+    Add company-specific coding standards to the AI prompt (e.g., "all public functions must have JSDoc comments", "use async/await instead of promises").
+  </Card>
+
+  <Card title="Language-Specific Analysis" icon="code">
+    Customize prompts for different languages:
+    - Python: PEP 8 compliance, type hints
+    - TypeScript: strict mode, interface usage
+    - JavaScript: ESLint rules, modern syntax
+  </Card>
+
+  <Card title="Review Severity Levels" icon="signal">
+    Categorize issues as CRITICAL, WARNING, or SUGGESTION and adjust review status accordingly. Only block PRs for critical security issues.
+  </Card>
+
+  <Card title="Automatic Fixes" icon="wand-magic-sparkles">
+    Generate suggested code fixes for common issues. The AI can propose corrections in review comments (e.g., reformatted code, added error handling).
+  </Card>
+</CardGroup>
+
+**Example: Adding custom rules**
+
+Update the AI prompt with your standards:
+
+```typescript
+const customPrompt = `You are an expert code reviewer following these standards:
+
+Company Coding Standards:
+- All functions must have JSDoc comments
+- Use async/await instead of .then() promises
+- Maximum function length: 50 lines
+- All API responses must include error handling
+- Never use "any" type in TypeScript
+
+Review pull request #${prNumber}...`;
+```
+
+## Production Considerations
+
+Before deploying to production:
+
+1. **Webhook Integration**: Set up GitHub webhooks to trigger reviews automatically when PRs are opened or updated. You'll need the `admin:repo_hook` OAuth scope and a webhook endpoint that receives GitHub events. See GitHub's [Webhook documentation](https://docs.github.com/webhooks) for implementation details.
+2. **Rate Limiting**: Implement rate limiting to avoid hitting GitHub API limits (5000 requests/hour for authenticated apps)
+3. **Concurrency**: Queue reviews to handle multiple PRs simultaneously without overwhelming the AI API
+4. **Error Handling**: Add try/catch blocks and retry logic for API failures
+5. **Review History**: Store review results in a database for analytics and team insights
+6. **Configurable Rules**: Allow teams to customize review criteria per repository via config files
+7. **Cost Management**: Monitor AI API usage and token costs, especially for large PRs with many files
+8. **Privacy**: Ensure sensitive code doesn't get logged or sent to unauthorized services
+
+<Info>
+**Performance Tip:**
+
+For large PRs (>20 files), consider:
+- Reviewing only changed lines instead of full files
+- Batching file reviews to reduce token usage
+- Implementing a maximum file size limit
+- Allowing users to request specific file reviews
+</Info>
+
+## What's Next?
+
+Congratulations! You've built an AI-powered code review bot that analyzes pull requests for security issues, code quality, and best practices.
+
+### Learn More
+
+<CardGroup cols={3}>
+  <Card title="SDK Documentation" icon="book" href="/sdk-quickstart">
+    Explore advanced SDK features and patterns.
+  </Card>
+
+  <Card title="OAuth Guide" icon="shield" href="/sdk-oauth">
+    Learn more about managing GitHub authorization.
+  </Card>
+
+  <Card title="Monitoring Guide" icon="chart-line" href="/metorial-101-monitoring">
+    Monitor bot performance and review activity.
+  </Card>
+</CardGroup>
+
+### Related Sample Projects
+
+<CardGroup cols={2}>
+  <Card title="Support Bot" icon="headset" href="/sample-projects-support-bot">
+    Build a multi-service AI support bot with Slack and Zendesk.
+  </Card>
+
+  <Card title="Custom MCP Servers" icon="server" href="/custom-servers-overview">
+    Learn to build your own MCP servers for specialized integrations.
+  </Card>
+</CardGroup>
+
+<Info>
+Need help? Email us at [support@metorial.com](mailto:support@metorial.com).
+</Info>

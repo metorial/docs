@@ -37,7 +37,8 @@
           {
             "group": "Sample Projects",
             "pages": [
-              "sample-projects-support-bot"
+              "sample-projects-support-bot",
+              "sample-projects-code-review-bot"
             ]
           },
           {
