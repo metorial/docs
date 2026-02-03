@@ -120,13 +120,12 @@ Your code review bot needs permission to access your GitHub repositories.
     import { Metorial } from 'metorial';
 
     const metorial = new Metorial({
-      apiKey: process.env.METORIAL_API_KEY
+      apiKey: "YOUR-METORIAL-API-KEY"
     });
 
     async function setupGitHubOAuth() {
       const githubOAuth = await metorial.oauth.sessions.create({
-        serverDeploymentId: 'your-github-deployment-id',
-        callbackUrl: 'https://yourapp.com/oauth/callback' // Optional
+        serverDeploymentId: 'YOUR-GITHUB-DEPLOYMENT-ID'
       });
 
       console.log('Authorize GitHub here:', githubOAuth.url);
@@ -209,16 +208,16 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 const metorial = new Metorial({
-  apiKey: process.env.METORIAL_API_KEY!
+  apiKey: "YOUR-METORIAL-API-KEY"
 });
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!
+  apiKey: "YOUR_ANTHROPIC_API_KEY"
 });
 
 // GitHub integration credentials
-const GITHUB_DEPLOYMENT_ID = 'your-github-deployment-id';
-const GITHUB_OAUTH_SESSION_ID = 'your-github-oauth-session-id';
+const GITHUB_DEPLOYMENT_ID = "GITHUB_DEPLOYMENT_ID";
+const GITHUB_OAUTH_SESSION_ID = "GITHUB_OAUTH_SESSION_ID";
 
 async function reviewPullRequest(
   repoPath: string,
@@ -270,7 +269,7 @@ async function reviewPullRequest(
       ],
       streaming: false
     },
-    async ({ tools, callTools, closeSession }) => {
+    async ({ tools, callTools }) => {
       // Prepare review prompt with diff content
       const messages: Anthropic.MessageParam[] = [
         {
@@ -327,17 +326,8 @@ You MUST use the tool to post the review. START NOW.`
         const toolResults = await callTools(toolUseBlocks);
 
         // Add assistant response and tool results to conversation
-        messages.push(
-          { role: 'assistant', content: response.content },
-          {
-            role: 'user',
-            content: toolResults.map((result, i) => ({
-              type: 'tool_result' as const,
-              tool_use_id: toolUseBlocks[i].id,
-              content: JSON.stringify(result)
-            }))
-          }
-        );
+        messages.push({ role: 'assistant', content: response.content });
+        messages.push(toolResults);
 
         // Continue conversation
         response = await anthropic.messages.create({
@@ -355,21 +345,9 @@ You MUST use the tool to post the review. START NOW.`
         .join('\n');
 
       console.log(`Review completed: ${finalText}`);
-
-      await closeSession();
     }
   );
 }
-
-// Example usage
-reviewPullRequest(
-  '/path/to/your/local/repo',
-  'your-username',
-  'your-repo',
-  'feature-branch',
-  123,
-  'main'
-);
 ```
 
 ```python Python
@@ -380,8 +358,8 @@ from metorial import Metorial
 from anthropic import AsyncAnthropic
 
 # Initialize clients
-metorial = Metorial(api_key="METORIAL_API_KEY")
-anthropic = AsyncAnthropic(api_key="ANTHROPIC_API_KEY")
+metorial = Metorial(api_key="YOUR_METORIAL_API_KEY")
+anthropic = AsyncAnthropic(api_key="YOUR_ANTHROPIC_API_KEY")
 
 # GitHub integration credentials
 GITHUB_DEPLOYMENT_ID = "GITHUB_DEPLOYMENT_ID"
@@ -568,7 +546,7 @@ function getUserData(userId) {
 
 <CodeGroup>
 ```typescript TypeScript
-await reviewPullRequest(
+reviewPullRequest(
   '/path/to/your/local/repo',
   'your-username',
   'your-repo',
@@ -634,7 +612,7 @@ export function sanitizeInput(input: string): string {
 
 <CodeGroup>
 ```typescript TypeScript
-await reviewPullRequest(
+reviewPullRequest(
   '/path/to/your/local/repo',
   'your-username',
   'your-repo',
