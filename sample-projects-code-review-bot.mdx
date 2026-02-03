@@ -151,8 +151,7 @@ Your code review bot needs permission to access your GitHub repositories.
         metorial = Metorial(api_key="YOUR-METORIAL-API-KEY")
 
         github_oauth = metorial.oauth.sessions.create(
-            server_deployment_id="YOUR-GITHUB-DEPLOYMENT-ID",
-            callback_url="https://yourapp.com/oauth/callback"  # Optional
+            server_deployment_id="YOUR-GITHUB-DEPLOYMENT-ID"
         )
 
         print(f"Authorize GitHub here: {github_oauth.url}")
@@ -559,9 +558,7 @@ Let's test the bot with a PR containing a security vulnerability.
 **Test PR content** (example):
 
 ```javascript
-// app.js - PR changes
 function getUserData(userId) {
-  // Security issue: SQL injection vulnerability
   const query = `SELECT * FROM users WHERE id = ${userId}`;
   return database.query(query);
 }
@@ -581,13 +578,13 @@ await reviewPullRequest(
 ```
 
 ```python Python
-await review_pull_request(
+asyncio.run(review_pull_request(
     repo_path="/path/to/your/local/repo",
     owner="your-username",
     repo="your-repo",
     branch_name="feature-branch",
     pr_number=123
-)
+))
 ```
 </CodeGroup>
 
@@ -618,22 +615,11 @@ Test the bot with a clean PR to verify the approval workflow.
 **Test PR content** (example):
 
 ```typescript
-// utils.ts - PR changes
-/**
- * Validates user email format
- * @param email - Email address to validate
- * @returns true if email is valid
- */
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-/**
- * Sanitizes user input to prevent XSS attacks
- * @param input - Raw user input
- * @returns Sanitized string safe for HTML rendering
- */
 export function sanitizeInput(input: string): string {
   return input
     .replace(/&/g, '&amp;')
@@ -658,13 +644,13 @@ await reviewPullRequest(
 ```
 
 ```python Python
-await review_pull_request(
+asyncio.run(review_pull_request(
     repo_path="/path/to/your/local/repo",
     owner="your-username",
     repo="your-repo",
     branch_name="feature-branch",
     pr_number=124
-)
+))
 ```
 </CodeGroup>
 
