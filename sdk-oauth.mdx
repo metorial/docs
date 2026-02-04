@@ -203,7 +203,7 @@ let slackOAuth = await metorial.oauth.sessions.create({
 console.log('Please authorize:', slackOAuth.url);
 
 // 3. Wait for user to complete OAuth
-await metorial.oauth.waitForCompletion([slackOAuth.id]);
+await metorial.oauth.waitForCompletion([slackOAuth]);
 
 // 4. Store the OAuth session ID in your database
 // database.saveOAuthSession(userId, slackOAuth.id);
@@ -244,7 +244,7 @@ async def main():
     print(f"Please authorize: {slack_oauth.url}")
 
     # 3. Wait for user to complete OAuth
-    await metorial.oauth.wait_for_completion([slack_oauth.id])
+    await metorial.oauth.wait_for_completion([slack_oauth])
 
     # 4. Store the OAuth session ID in your database
     # database.save_oauth_session(user_id, slack_oauth.id)

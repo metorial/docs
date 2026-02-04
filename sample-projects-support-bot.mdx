@@ -167,7 +167,7 @@ Your support bot needs permission to access your Slack workspace on behalf of yo
       console.log('OAuth Session ID:', slackOAuth.id);
 
       // Wait for authorization
-      await metorial.oauth.waitForCompletion([slackOAuth.id]);
+      await metorial.oauth.waitForCompletion([slackOAuth]);
       console.log('✓ Slack authorized!');
 
       // Save slackOAuth.id for future use
@@ -194,7 +194,7 @@ Your support bot needs permission to access your Slack workspace on behalf of yo
         print(f"OAuth Session ID: {slack_oauth.id}")
 
         # Wait for authorization
-        await metorial.oauth.wait_for_completion([slack_oauth.id])
+        await metorial.oauth.wait_for_completion([slack_oauth])
         print("✓ Slack authorized!")
 
         # Save slack_oauth.id for future use

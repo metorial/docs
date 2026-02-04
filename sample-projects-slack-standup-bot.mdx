@@ -1,5 +1,5 @@
 ---
-title: "Smart Slack Standup Bot"
+title: "PM Slack Standup Bot"
 description: "Create an AI-powered bot that collects daily standup responses, analyzes team progress, and posts executive summaries"
 ---
 
@@ -131,7 +131,7 @@ Your standup bot needs permission to post messages and read thread replies in yo
       console.log('OAuth Session ID:', slackOAuth.id);
 
       // Wait for authorization
-      await metorial.oauth.waitForCompletion([slackOAuth.id]);
+      await metorial.oauth.waitForCompletion([slackOAuth]);
       console.log('✓ Slack authorized!');
 
       // Save slackOAuth.id for future use

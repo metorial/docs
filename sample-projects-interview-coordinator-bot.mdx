@@ -1,5 +1,5 @@
 ---
-title: "Smart Interview Coordinator Bot"
+title: "HR Interview Coordinator"
 description: "Learn how to build an AI agent that schedules interviews, sends professional emails, and coordinates with your team using Google Calendar and Gmail"
 ---
 
@@ -12,11 +12,10 @@ description: "Learn how to build an AI agent that schedules interviews, sends pr
 Coordinating interviews involves juggling multiple calendars, sending professional emails, and ensuring everyone has the right information at the right time. This tutorial shows you how to build an AI-powered interview coordinator that handles all of this automatically.
 
 The bot will:
-- Find available time slots across multiple calendars
-- Create calendar events with video conferencing links
+- Check calendar availability (using the authenticated user's calendar)
+- Create calendar events with multiple attendees
 - Send professional confirmation emails to candidates
 - Notify interview panel members with prep materials
-- Send reminder emails 24 hours before interviews
 - Request feedback from interviewers after completion
 
 By the end of this tutorial, you'll have a working interview coordinator that can handle the entire scheduling and communication workflow with natural language commands.
@@ -44,11 +43,10 @@ Before starting, make sure you have:
 Here's how the interview coordinator works:
 
 1. **User provides interview details** (candidate, role, date preferences, interviewers)
-2. **AI checks calendar availability** using Google Calendar MCP server
-3. **AI creates calendar event** with video conferencing link
+2. **AI checks calendar availability** using Google Calendar MCP server (checks the authenticated user's calendar)
+3. **AI creates calendar event** and adds interviewers as attendees
 4. **AI sends confirmation email** to candidate via Gmail
 5. **AI sends prep email** to interview panel via Gmail
-6. **AI can send reminders** and collect feedback (optional)
 
 **Tools used**: Google Calendar MCP Server (scheduling) + Gmail MCP Server (communications) + AI Model (coordination)
 
@@ -74,6 +72,8 @@ First, deploy the Google Calendar server from the Metorial catalog:
 
 <Note>
 Save your Calendar deployment ID - you'll need it in Step 3. It looks like: `svd_abc123def456`
+
+**Note on Multiple Interviewers**: This deployment accesses **one** Google Calendar (the authenticated user's calendar). To check availability across multiple interviewers' calendars, each interviewer would need their own Calendar MCP deployment and OAuth session. For simplicity, this tutorial uses a single calendar instance.
 </Note>
 
 ## Step 1b: Deploy Gmail MCP Server
@@ -130,7 +130,7 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
         console.log("Calendar OAuth Session ID:", calendarOAuth.id);
 
         // Wait for authorization
-        await metorial.oauth.waitForCompletion([calendarOAuth.id]);
+        await metorial.oauth.waitForCompletion([calendarOAuth]);
         console.log("✓ Calendar authorized!");
 
         // Gmail OAuth
@@ -142,7 +142,7 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
         console.log("Gmail OAuth Session ID:", gmailOAuth.id);
 
         // Wait for authorization
-        await metorial.oauth.waitForCompletion([gmailOAuth.id]);
+        await metorial.oauth.waitForCompletion([gmailOAuth]);
         console.log("✓ Gmail authorized!");
 
         console.log("\nSave these OAuth Session IDs for your bot:");
@@ -167,7 +167,7 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
       print("Calendar OAuth Session ID:", calendar_oauth.id)
 
       # Wait for authorization
-      metorial.oauth.wait_for_completion([calendar_oauth.id])
+      metorial.oauth.wait_for_completion([calendar_oauth])
       print("✓ Calendar authorized!")
 
       # Gmail OAuth
@@ -179,7 +179,7 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
       print("Gmail OAuth Session ID:", gmail_oauth.id)
 
       # Wait for authorization
-      metorial.oauth.wait_for_completion([gmail_oauth.id])
+      metorial.oauth.wait_for_completion([gmail_oauth])
       print("✓ Gmail authorized!")
 
       print("\nSave these OAuth Session IDs for your bot:")
@@ -209,7 +209,7 @@ Now let's build the main coordinator that orchestrates interview scheduling and 
 <CodeGroup>
 ```typescript TypeScript
 import { Metorial } from "metorial";
-import { MetorialAnthropic } from "@metorial/anthropic";
+import { metorialAnthropic } from "@metorial/anthropic";
 import Anthropic from "@anthropic-ai/sdk";
 
 // Initialize clients
@@ -221,13 +221,11 @@ const anthropic = new Anthropic({
   apiKey: "YOUR_ANTHROPIC_API_KEY",
 });
 
-const metorialAnthropic = new MetorialAnthropic(metorial, anthropic);
-
 // Server deployment credentials
-const CALENDAR_DEPLOYMENT_ID = "YOUR_CALENDAR_DEPLOYMENT_ID";
-const CALENDAR_OAUTH_SESSION_ID = "YOUR_CALENDAR_OAUTH_SESSION_ID";
-const GMAIL_DEPLOYMENT_ID = "YOUR_GMAIL_DEPLOYMENT_ID";
-const GMAIL_OAUTH_SESSION_ID = "YOUR_GMAIL_OAUTH_SESSION_ID";
+const CALENDAR_DEPLOYMENT_ID = "CALENDAR_DEPLOYMENT_ID";
+const CALENDAR_OAUTH_SESSION_ID = "CALENDAR_OAUTH_SESSION_ID";
+const GMAIL_DEPLOYMENT_ID = "GMAIL_DEPLOYMENT_ID";
+const GMAIL_OAUTH_SESSION_ID = "GMAIL_OAUTH_SESSION_ID";
 
 interface InterviewRequest {
   candidateName: string;
@@ -274,11 +272,10 @@ Steps to complete:
 1. Check calendar availability for all interviewers on preferred dates
 2. Create calendar event with:
    - Title: "${request.role} Interview - ${request.candidateName}"
-   - Include video conferencing link
    - Add all interviewers as attendees
 3. Send confirmation email to candidate (${request.candidateEmail}) with:
    - Subject: "Interview Scheduled - ${request.role}"
-   - Professional email including: interview date/time, meeting link, what to prepare, who they'll meet
+   - Professional email including: interview date/time, what to prepare, who they'll meet
 4. Send prep email to interviewers (${request.interviewers.join(", ")}) with:
    - Subject: "Interview Prep - ${request.candidateName}"
    - Candidate background, interview format, evaluation guidelines
@@ -328,18 +325,17 @@ CRITICAL: Only use actual calendar data. If no slots available, inform user. DO 
 
 // Example usage
 scheduleInterview({
-  candidateName: "Sarah Johnson",
-  candidateEmail: "sarah.johnson@example.com",
+  candidateName: "John Novak",
+  candidateEmail: "john.novak@sample.com",
   role: "Senior Software Engineer",
   interviewers: [
-    "hiring.manager@company.com",  // Hiring manager
-    "tech.lead@company.com",        // Technical lead
+    "user@yourCompany.com",  // Hiring manager
   ],
-  durationMinutes: 60,
+  durationMinutes: 45,
   preferredDates: [
-    "2026-02-10T14:00:00Z",  // First preference
-    "2026-02-11T10:00:00Z",  // Second preference
-    "2026-02-12T15:00:00Z",  // Third preference
+    "2026-02-7T14:00:00Z",  // First preference
+    "2026-02-7T5:00:00Z",  // Second preference
+    "2026-02-7T15:00:00Z",  // Third preference
   ],
   interviewType: "technical",
 });
@@ -401,11 +397,10 @@ Steps to complete:
 1. Check calendar availability for all interviewers on preferred dates
 2. Create calendar event with:
    - Title: "{role} Interview - {candidate_name}"
-   - Include video conferencing link
    - Add all interviewers as attendees
 3. Send confirmation email to candidate ({candidate_email}) with:
    - Subject: "Interview Scheduled - {role}"
-   - Professional email including: interview date/time, meeting link, what to prepare, who they'll meet
+   - Professional email including: interview date/time, what to prepare, who they'll meet
 4. Send prep email to interviewers ({", ".join(interviewers)}) with:
    - Subject: "Interview Prep - {candidate_name}"
    - Candidate background, interview format, evaluation guidelines
@@ -450,18 +445,17 @@ CRITICAL: Only use actual calendar data. If no slots available, inform user. DO 
 
 # Example usage
 asyncio.run(schedule_interview(
-    candidate_name="Sarah Johnson",
-    candidate_email="sarah.johnson@example.com",
+    candidate_name="John Novak",
+    candidate_email="john.novak@sample.com",
     role="Senior Software Engineer",
     interviewers=[
-        "hiring.manager@company.com",  # Hiring manager
-        "tech.lead@company.com",        # Technical lead
+        "user@yourCompany.com",  # Hiring manager
     ],
-    duration_minutes=60,
+    duration_minutes=45,
     preferred_dates=[
-        "2026-02-10T14:00:00Z",  # First preference
-        "2026-02-11T10:00:00Z",  # Second preference
-        "2026-02-12T15:00:00Z",  # Third preference
+        "2026-02-7T14:00:00Z",  # First preference
+        "2026-02-7T5:00:00Z",  # Second preference
+        "2026-02-7T15:00:00Z",  # Third preference
     ],
     interview_type="technical"
 ))
@@ -475,6 +469,15 @@ asyncio.run(schedule_interview(
 - **Anti-Hallucination**: The prompt explicitly instructs using only actual calendar data to prevent AI from making up availability
 - **Professional Communications**: AI generates context-appropriate emails for candidates and interviewers
 </Note>
+
+<Warning>
+**Multiple Interviewer Calendars**: The current implementation uses a single Google Calendar MCP server instance, which only accesses **one** Google Calendar (the calendar of the authenticated user). To check availability across **multiple interviewers' calendars**, you would need to:
+- Deploy a separate Calendar MCP server instance for each interviewer
+- Set up OAuth for each interviewer's calendar
+- Pass multiple calendar server deployments to the session
+
+For now, this tutorial demonstrates scheduling with a single calendar owner who can view their own availability. The `interviewers` array is used for adding attendees to the calendar event and sending prep emails, but **not** for checking their individual calendar availability.
+</Warning>
 
 ## Email Templates
 
@@ -493,9 +496,7 @@ Interview Details:
 - Date: Tuesday, February 10, 2026
 - Time: 2:00 PM - 3:00 PM EST
 - Duration: 60 minutes
-- Format: Technical Interview via Google Meet
-
-Meeting Link: https://meet.google.com/abc-defg-hij
+- Format: Technical Interview
 
 You'll be meeting with:
 - Alex Chen, Hiring Manager
@@ -529,7 +530,6 @@ Position: Senior Software Engineer
 Interview Type: Technical
 Date: Tuesday, February 10, 2026 at 2:00 PM EST
 Duration: 60 minutes
-Meeting Link: https://meet.google.com/abc-defg-hij
 
 Interview Format:
 - First 10 minutes: Introductions and company overview
@@ -548,33 +548,6 @@ If you need to reschedule, please notify the team immediately.
 
 Thanks,
 Recruiting Team
-```
-</Accordion>
-
-<Accordion title="24-Hour Reminder Email">
-**Subject**: Reminder: Interview Tomorrow - Sarah Johnson
-
-**Body**:
-```
-Hi Sarah,
-
-This is a friendly reminder about your interview tomorrow:
-
-Interview: Senior Software Engineer
-Date: Tomorrow, Tuesday, February 10, 2026
-Time: 2:00 PM - 3:00 PM EST
-Meeting Link: https://meet.google.com/abc-defg-hij
-
-Pre-Interview Checklist:
-✓ Test your audio and video
-✓ Have your development environment ready
-✓ Review your recent projects
-✓ Prepare questions for the team
-
-We're looking forward to meeting you!
-
-Best regards,
-Hiring Team
 ```
 </Accordion>
 
@@ -632,15 +605,19 @@ Scheduling panel interview for Alex Rivera...
 AI using 3 tool(s)...
 AI using 2 tool(s)...
 AI using 2 tool(s)...
-Interview coordination complete: Successfully scheduled panel interview for Alex Rivera on February 15, 2026 at 1:00 PM EST. Calendar event created with Google Meet link. Confirmation email sent to candidate and prep email sent to all 3 interviewers (Engineering Director, Senior Engineer, Product Manager).
+Interview coordination complete: Successfully scheduled panel interview for Alex Rivera on February 15, 2026 at 1:00 PM EST. Calendar event created. Confirmation email sent to candidate and prep email sent to all 3 interviewers (Engineering Director, Senior Engineer, Product Manager).
 ```
 
 The coordinator will:
-1. Check availability for all 3 interviewers across the preferred dates
+1. Check availability on the authenticated user's calendar (not all 3 interviewers - see note below)
 2. Find the first available slot (Feb 15 at 1:00 PM)
-3. Create a 90-minute calendar event with video link
+3. Create a 90-minute calendar event with all 3 interviewers as attendees
 4. Send confirmation email to Alex with interview details
 5. Send prep email to all interviewers with candidate info
+
+<Note>
+**Calendar Availability Limitation**: This example checks only the authenticated user's calendar availability. To check all 3 interviewers' calendars, you would need to deploy a separate Calendar MCP instance for each interviewer with their OAuth credentials. The interviewers array is used for adding attendees to the event and sending emails, not for checking their individual availability.
+</Note>
 
 ## Troubleshooting
 
@@ -710,6 +687,29 @@ Do not add anyone else as an attendee.
 Also verify the email addresses are correct in your request object.
 </Accordion>
 
+<Accordion title="Cannot check multiple interviewers' calendars">
+**Issue**: Need to verify availability across multiple interviewers' calendars
+
+**Current Limitation**: A single Google Calendar MCP server instance can only access one calendar (the authenticated user's calendar).
+
+**Solution**: To check availability across multiple interviewers:
+1. Deploy a separate Calendar MCP server instance for each interviewer
+2. Set up individual OAuth sessions for each interviewer's calendar
+3. Pass all calendar deployments to `serverDeployments` array in your session
+4. Update your prompt to check all calendar instances before scheduling
+
+Example with multiple calendars:
+```typescript
+serverDeployments: [
+  { serverDeploymentId: CALENDAR_1_ID, oauthSessionId: OAUTH_1_ID },
+  { serverDeploymentId: CALENDAR_2_ID, oauthSessionId: OAUTH_2_ID },
+  { serverDeploymentId: GMAIL_DEPLOYMENT_ID, oauthSessionId: GMAIL_OAUTH_ID }
+]
+```
+
+For this tutorial, we use a single calendar and add interviewers as attendees without checking their availability.
+</Accordion>
+
 ## Advanced Customization
 
 <CardGroup cols={2}>
@@ -745,22 +745,6 @@ Also verify the email addresses are correct in your request object.
     ```
 
     Schedule phone screen, technical, and panel interviews in sequence.
-  </Card>
-
-  <Card title="Automated Reminders" icon="clock">
-    Send reminder emails at specific intervals:
-
-    ```typescript
-    async function sendReminder(
-      eventId: string,
-      hoursBeforeInterview: number
-    ) {
-      // Schedule cron job or use setTimeout
-      // Trigger reminder email via Gmail tools
-    }
-    ```
-
-    Set up 24h and 1h reminders automatically.
   </Card>
 
   <Card title="Feedback Collection" icon="clipboard">
@@ -806,6 +790,20 @@ Also verify the email addresses are correct in your request object.
 
     AI automatically generates emails in requested language.
   </Card>
+
+  <Card title="Multi-Calendar Support" icon="calendar-days">
+    Check availability across multiple interviewers' calendars:
+
+    ```typescript
+    // Deploy separate Calendar MCP for each interviewer
+    const INTERVIEWER_CALENDARS = [
+      { deploymentId: "svd_eng_dir", oauthId: "soas_eng_dir" },
+      { deploymentId: "svd_senior_eng", oauthId: "soas_senior" }
+    ];
+    ```
+
+    Each interviewer needs their own Calendar MCP instance with OAuth.
+  </Card>
 </CardGroup>
 
 ## Production Considerations
@@ -848,7 +846,6 @@ Test edge cases before production:
 ### Privacy and Compliance
 Ensure GDPR/CCPA compliance:
 - Get consent before sending emails
-- Allow candidates to opt out of reminders
 - Don't store candidate data longer than necessary
 - Encrypt sensitive information in transit and at rest
 

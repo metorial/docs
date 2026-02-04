@@ -132,7 +132,7 @@ Your code review bot needs permission to access your GitHub repositories.
       console.log('OAuth Session ID:', githubOAuth.id);
 
       // Wait for authorization
-      await metorial.oauth.waitForCompletion([githubOAuth.id]);
+      await metorial.oauth.waitForCompletion([githubOAuth]);
       console.log('✓ GitHub authorized!');
 
       // Save githubOAuth.id for future use
