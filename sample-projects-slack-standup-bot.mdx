@@ -1,0 +1,823 @@
+---
+title: "Smart Slack Standup Bot"
+description: "Create an AI-powered bot that collects daily standup responses, analyzes team progress, and posts executive summaries"
+---
+
+## What You'll Build
+
+Build an AI-powered Slack standup bot that:
+- Posts daily standup prompts to your team channel
+- Collects responses in organized threads
+- AI analyzes progress, blockers, and team dependencies
+- Generates executive summaries with key insights
+- Posts summaries to leadership channels
+- Tracks recurring blockers and patterns over time
+
+This tutorial demonstrates practical AI-driven team communication using Metorial's Slack integration.
+
+<Note>
+**What you'll learn:**
+- Deploying the Slack MCP server
+- Setting up OAuth for Slack workspace access
+- Creating an AI agent that processes team updates
+- Posting and reading Slack messages programmatically
+
+**Before you begin:**
+- [Create a Metorial account](/metorial-101-introduction)
+- [Create API keys](/api-getting-started)
+- Slack workspace with admin access
+- Anthropic API key (Claude Sonnet 4 or newer recommended)
+
+**Time to complete:** 10-15 minutes
+</Note>
+
+## Prerequisites
+
+Before building the standup bot, ensure you have:
+
+1. **Metorial setup**:
+   - Active Metorial account at [app.metorial.com](https://app.metorial.com)
+   - Project created in your organization
+   - Metorial API key (generate in Dashboard → Home → Connect to Metorial)
+
+2. **Slack workspace**:
+   - Admin access to install apps
+   - Channel where standups will be posted
+   - Leadership/executive channel for summaries (optional)
+
+3. **AI provider**:
+   - Anthropic API key (Claude Sonnet 4 or newer recommended for analysis)
+
+4. **Development environment**:
+   - Node.js 18+ (TypeScript) or Python 3.9+ installed
+   - Basic knowledge of async/await patterns
+
+## Architecture Overview
+
+The standup bot workflow:
+
+1. **Trigger**: Bot posts standup prompt to team channel (scheduled or manual)
+2. **Collection**: Team members reply in thread with their updates
+3. **Analysis**: AI analyzes all responses for:
+   - Individual progress and accomplishments
+   - Blockers and dependencies between team members
+   - Team sentiment and morale
+   - Recurring issues
+4. **Summary**: Bot generates and posts executive summary to leadership channel
+5. **Storage**: Optionally stores historical data for trend analysis
+
+**Tools used**: Slack MCP Server (post messages, read threads) + AI Model (analysis and summarization)
+
+## Step 1: Deploy Slack MCP Server
+
+Deploy the Slack MCP server from Metorial's catalog to enable your bot to interact with Slack.
+
+<Steps>
+  <Step title="Navigate to Server Catalog">
+    In the Metorial Dashboard, go to **Servers** and search for "Slack".
+  </Step>
+
+  <Step title="Deploy Slack Server">
+    Click the **Slack** server, then click **Deploy Server** → **Server Deployment**.
+
+    Give your deployment a descriptive name like "Standup Bot Slack".
+  </Step>
+
+  <Step title="Note Your Deployment ID">
+    After deployment, copy your **Server Deployment ID** from the deployment page. You'll need this for OAuth setup and in your bot code.
+  </Step>
+</Steps>
+
+<Info>
+Save your Slack deployment ID—you'll need it for OAuth setup (Step 2) and in your bot code (Step 3).
+</Info>
+
+## Step 2: Set Up OAuth Authentication
+
+Your standup bot needs permission to post messages and read thread replies in your Slack workspace.
+
+<Steps>
+  <Step title="Install Dependencies">
+    Install the Metorial SDK and Anthropic:
+
+    <CodeGroup>
+    ```bash TypeScript
+    npm install metorial @metorial/anthropic @anthropic-ai/sdk
+    ```
+
+    ```bash Python
+    pip install metorial anthropic
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create OAuth Session">
+    Run this code to generate the Slack OAuth URL:
+
+    <CodeGroup>
+    ```typescript TypeScript
+    import { Metorial } from 'metorial';
+
+    const metorial = new Metorial({
+      apiKey: "YOUR-METORIAL-API-KEY"
+    });
+
+    async function setupSlackOAuth() {
+      const slackOAuth = await metorial.oauth.sessions.create({
+        serverDeploymentId: 'YOUR-SLACK-DEPLOYMENT-ID'
+      });
+
+      console.log('Authorize Slack here:', slackOAuth.url);
+      console.log('OAuth Session ID:', slackOAuth.id);
+
+      // Wait for authorization
+      await metorial.oauth.waitForCompletion([slackOAuth.id]);
+      console.log('✓ Slack authorized!');
+
+      // Save slackOAuth.id for future use
+      return slackOAuth.id;
+    }
+
+    setupSlackOAuth();
+    ```
+
+    ```python Python
+    import asyncio
+    from metorial import Metorial
+
+    async def setup_slack_oauth():
+        metorial = Metorial(api_key="YOUR-METORIAL-API-KEY")
+
+        slack_oauth = metorial.oauth.sessions.create(
+            server_deployment_id="YOUR-SLACK-DEPLOYMENT-ID"
+        )
+
+        print(f"Authorize Slack here: {slack_oauth.url}")
+        print(f"OAuth Session ID: {slack_oauth.id}")
+
+        # Wait for authorization
+        await metorial.oauth.wait_for_completion([slack_oauth])
+        print("✓ Slack authorized!")
+
+        # Save slack_oauth.id for future use
+        return slack_oauth.id
+
+    asyncio.run(setup_slack_oauth())
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Authorize in Browser">
+    1. Open the printed OAuth URL in your browser
+    2. Sign in to Slack if needed
+    3. Review and approve the permissions (the bot needs to post messages and read channels)
+    4. You'll be redirected to your callback URL (or see a confirmation page)
+  </Step>
+
+  <Step title="Store OAuth Session ID">
+    Save the OAuth session ID securely. You'll reuse it for all future bot operations without re-authorizing.
+
+    For production apps, store OAuth session IDs in your database or environment variables.
+  </Step>
+</Steps>
+
+<Note>
+**Required OAuth Scopes:**
+
+The Slack MCP server requires these scopes:
+- `chat:write` - Post messages to channels
+- `channels:read` - Read public channel information
+- `channels:history` - Read message history to collect thread replies
+- `users:read` - Get user information for mentions
+
+The required scopes are automatically requested when you authorize via the OAuth URL.
+</Note>
+
+## Step 3: Build the Standup Bot
+
+Create the main bot that collects standup responses and generates summaries.
+
+<CodeGroup>
+```typescript TypeScript
+import { Metorial } from 'metorial';
+import { metorialAnthropic } from '@metorial/anthropic';
+import Anthropic from '@anthropic-ai/sdk';
+
+const metorial = new Metorial({
+  apiKey: "YOUR-METORIAL-API-KEY"
+});
+
+const anthropic = new Anthropic({
+  apiKey: "YOUR_ANTHROPIC_API_KEY"
+});
+
+// Slack integration credentials
+const SLACK_DEPLOYMENT_ID = "YOUR_SLACK_DEPLOYMENT_ID";
+const SLACK_OAUTH_SESSION_ID = "YOUR_SLACK_OAUTH_SESSION_ID";
+
+async function runStandup(
+  channelId: string,
+  summaryChannelId: string,
+  collectionTimeMinutes: number = 5
+) {
+  console.log(`Starting standup in channel ${channelId}`);
+
+  // Post standup prompt
+  const standupPrompt = `Good morning team! Time for daily standup. Please reply to this thread with:
+
+1. What you accomplished yesterday
+2. What you're working on today
+3. Any blockers or help needed
+
+You have ${collectionTimeMinutes} minutes to respond.`;
+
+  await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+      serverDeployments: [
+        {
+          serverDeploymentId: SLACK_DEPLOYMENT_ID,
+          oauthSessionId: SLACK_OAUTH_SESSION_ID
+        }
+      ],
+      streaming: false
+    },
+    async ({ tools, callTools }) => {
+      // Post the standup prompt
+      const messages: Anthropic.MessageParam[] = [
+        {
+          role: 'user',
+          content: `Post a message to Slack channel ${channelId} with this text:
+
+"${standupPrompt}"
+
+Use the chat_postMessage tool.`
+        }
+      ];
+
+      console.log('Posting standup prompt...');
+      let response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 4096,
+        tools,
+        messages
+      });
+
+      // Handle tool calls
+      while (response.stop_reason === 'tool_use') {
+        const toolUseBlocks = response.content.filter(
+          (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
+        );
+
+        const toolResults = await callTools(toolUseBlocks);
+
+        messages.push({ role: 'assistant', content: response.content });
+        messages.push(toolResults);
+
+        response = await anthropic.messages.create({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 4096,
+          messages,
+          tools
+        });
+      }
+
+      console.log('Standup prompt posted successfully!');
+      console.log(`Waiting ${collectionTimeMinutes} minutes for responses...`);
+
+      // Wait for responses
+      await new Promise(resolve => setTimeout(resolve, collectionTimeMinutes * 60 * 1000));
+
+      console.log('Collecting and analyzing responses...');
+
+      messages.push({
+        role: 'user',
+        content: `Collect standup responses and post summary:
+
+1. List recent messages in channel ${channelId} to find the standup prompt
+2. Get thread replies for that message
+3. Analyze ONLY actual user responses (skip bot's prompt)
+4. Post executive summary to ${summaryChannelId}
+
+Summary format:
+- Team Progress: Actual accomplishments mentioned
+- Today's Focus: Actual plans shared
+- Blockers: Actual issues raised
+- Action Items: Specific help requested
+
+CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses received." DO NOT invent content.`
+      });
+
+      response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 8192,
+        tools,
+        messages
+      });
+
+      // Agentic loop
+      while (response.stop_reason === 'tool_use') {
+        const toolUseBlocks = response.content.filter(
+          (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
+        );
+
+        console.log(`Executing ${toolUseBlocks.length} tool(s)...`);
+
+        const toolResults = await callTools(toolUseBlocks);
+
+        messages.push({ role: 'assistant', content: response.content });
+        messages.push(toolResults);
+
+        response = await anthropic.messages.create({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 8192,
+          messages,
+          tools
+        });
+      }
+
+      // Get final summary
+      const finalText = response.content
+        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+        .map(block => block.text)
+        .join('\n');
+
+      console.log(`Standup complete: ${finalText}`);
+    }
+  );
+}
+
+// Example usage
+runStandup(
+  'C1234567890',  // Your team channel ID
+  'C0987654321',  // Your executive channel ID
+  5               // Minutes to wait for responses
+);
+```
+
+```python Python
+import asyncio
+from metorial import Metorial
+from anthropic import AsyncAnthropic
+
+# Initialize clients
+metorial = Metorial(api_key="YOUR-METORIAL-API-KEY")
+anthropic = AsyncAnthropic(api_key="YOUR-ANTHROPIC-API-KEY")
+
+# Slack integration credentials
+SLACK_DEPLOYMENT_ID = "SLACK_DEPLOYMENT_ID"
+SLACK_OAUTH_SESSION_ID = "SLACK_OAUTH_SESSION_ID"
+
+async def run_standup(
+    channel_id: str,
+    summary_channel_id: str,
+    collection_time_minutes: int = 5
+):
+    print(f"Starting standup in channel {channel_id}")
+
+    # Post standup prompt
+    standup_prompt = f"""Good morning team! Time for daily standup. Please reply to this thread with:
+
+1. What you accomplished yesterday
+2. What you're working on today
+3. Any blockers or help needed
+
+You have {collection_time_minutes} minutes to respond."""
+
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=[
+            {
+                "serverDeploymentId": SLACK_DEPLOYMENT_ID,
+                "oauthSessionId": SLACK_OAUTH_SESSION_ID
+            }
+        ],
+    ) as session:
+        # Post the standup prompt
+        messages = [
+            {
+                "role": "user",
+                "content": f"""Post a message to Slack channel {channel_id} with this text:
+
+"{standup_prompt}"
+
+Use the chat_postMessage tool."""
+            }
+        ]
+
+        print("Posting standup prompt...")
+        response = await anthropic.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=4096,
+            tools=session.tools,
+            messages=messages,
+        )
+
+        # Handle tool calls
+        while response.stop_reason == "tool_use":
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+
+            tool_results = await session.call_tools(tool_use_blocks)
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append(tool_results)
+
+            response = await anthropic.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=4096,
+                tools=session.tools,
+                messages=messages,
+            )
+
+        print(f"Standup prompt posted successfully!")
+        print(f"Waiting {collection_time_minutes} minutes for responses...")
+
+        # Wait for responses
+        await asyncio.sleep(collection_time_minutes * 60)
+
+        print("Collecting and analyzing responses...")
+
+        messages.append({
+            "role": "user",
+            "content": f"""Collect standup responses and post summary:
+
+1. List recent messages in channel {channel_id} to find the standup prompt
+2. Get thread replies for that message
+3. Analyze ONLY actual user responses (skip bot's prompt)
+4. Post executive summary to {summary_channel_id}
+
+Summary format:
+- Team Progress: Actual accomplishments mentioned
+- Today's Focus: Actual plans shared
+- Blockers: Actual issues raised
+- Action Items: Specific help requested
+
+CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses received." DO NOT invent content."""
+        })
+
+        response = await anthropic.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=8192,
+            tools=session.tools,
+            messages=messages,
+        )
+
+        # Agentic loop
+        while response.stop_reason == "tool_use":
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+
+            print(f"Executing {len(tool_use_blocks)} tool(s)...")
+
+            tool_results = await session.call_tools(tool_use_blocks)
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append(tool_results)
+
+            response = await anthropic.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=8192,
+                tools=session.tools,
+                messages=messages,
+            )
+
+        # Get final summary
+        final_text = "\n".join(
+            block.text for block in response.content if block.type == "text"
+        )
+
+        print(f"Standup complete: {final_text}")
+
+# Example usage
+asyncio.run(run_standup(
+    channel_id="C1234567890",  # Your team channel ID
+    summary_channel_id="C0987654321",  # Your executive channel ID
+    collection_time_minutes=5  # Minutes to wait for responses
+))
+```
+</CodeGroup>
+
+**What this code does:**
+
+1. **Posts standup prompt** to the team channel with clear instructions
+2. **Waits for responses** (configurable time)
+3. **Collects all thread replies** using the Slack MCP server
+4. **AI analyzes responses** for progress, blockers, and dependencies
+5. **Generates executive summary** with key insights
+6. **Posts summary** to leadership channel
+7. **Uses agentic workflow** - AI decides which Slack tools to call and when
+
+<Info>
+This uses **Claude's agentic capabilities**—the AI decides when to read the thread, how to analyze the data, and when to post the summary. You don't need to write explicit logic for parsing responses or formatting summaries.
+</Info>
+
+## Step 4: Test the Bot
+
+Let's test the bot with example standup responses.
+
+**Scenario**: Run standup in a test channel with your team.
+
+**Example responses**:
+```
+@alice: Yesterday finished the user auth feature. Today working on password reset. No blockers.
+
+@bob: Completed API endpoints for /users. Today starting the /products endpoints. Blocked on database schema approval.
+
+@charlie: Fixed 5 bugs in the dashboard. Today continuing bug fixes. Could use help reviewing PR #234.
+```
+
+**Run the bot**:
+
+<CodeGroup>
+```typescript TypeScript
+runStandup(
+  'C1234567890',  // Team channel ID
+  'C0987654321',  // Executive channel ID
+  5               // Wait 5 minutes
+);
+```
+
+```python Python
+asyncio.run(run_standup(
+    channel_id="C1234567890",  # Your team channel ID
+    summary_channel_id="C0987654321",  # Your executive channel ID
+    collection_time_minutes=5  # Minutes to wait for responses
+))
+```
+</CodeGroup>
+
+**Expected behavior**:
+1. Bot posts standup prompt to team channel
+2. Team members reply in thread
+3. After 5 minutes, bot collects all responses
+4. AI analyzes and generates summary:
+
+```
+📊 Daily Standup Summary - [Date]
+
+✅ Team Progress (Yesterday):
+• Alice: Completed user authentication feature
+• Bob: Finished API endpoints for /users module
+• Charlie: Resolved 5 dashboard bugs
+
+🎯 Today's Focus:
+• Alice: Password reset functionality
+• Bob: /products API endpoints
+• Charlie: Continue bug fixing
+
+🚧 Blockers & Dependencies:
+• Bob: Waiting on database schema approval (blocking /products work)
+• Charlie: Needs code review on PR #234
+
+📈 Team Health: Positive momentum, steady progress
+
+⚠️ Action Items:
+1. Expedite database schema approval for Bob
+2. Assign reviewer to PR #234 for Charlie
+```
+
+5. Summary is posted to executive channel
+
+## Troubleshooting
+
+Common issues and solutions when building your standup bot:
+
+<AccordionGroup>
+  <Accordion title="Bot doesn't post messages to Slack">
+    **Possible causes**:
+    - OAuth session expired or invalid
+    - Incorrect channel ID
+    - Bot doesn't have permission to post in channel
+
+    **Solutions**:
+    1. Verify your OAuth session is active: re-run the OAuth setup if needed
+    2. Check the channel ID is correct (not channel name)
+    3. Ensure the bot is invited to the channel: `/invite @YourBot`
+    4. Verify OAuth scopes include `chat:write`
+    5. Check Metorial dashboard logs for API errors
+  </Accordion>
+
+  <Accordion title="Bot can't read thread replies">
+    **Possible causes**:
+    - Missing `channels:history` scope
+    - Incorrect thread timestamp
+    - Bot not in channel
+
+    **Solutions**:
+    1. Verify OAuth scopes include `channels:history`
+    2. Check the thread_ts value matches the original message
+    3. Ensure bot is member of the channel
+    4. Try in a public channel first (private channels need additional setup)
+  </Accordion>
+
+  <Accordion title="AI summaries are too generic or miss details">
+    **Possible causes**:
+    - Prompt lacks specific instructions
+    - Not enough context provided
+    - Model running out of tokens
+
+    **Solutions**:
+    1. Add more specific analysis guidelines to the prompt
+    2. Increase `max_tokens` to 8192 or higher
+    3. Use Claude Sonnet 4 or newer for better understanding
+    4. Provide example summaries in the prompt
+    5. Include team-specific context (project names, terminology)
+  </Accordion>
+
+  <Accordion title="OAuth authorization fails">
+    **Possible causes**:
+    - Not a Slack admin
+    - Callback URL mismatch
+    - App not approved for workspace
+
+    **Solutions**:
+    1. Ensure you have admin privileges in Slack workspace
+    2. Verify callback URL matches in Metorial dashboard
+    3. Check workspace settings allow app installations
+    4. Try revoking and re-authorizing
+    5. Contact your Slack workspace admin if permissions are restricted
+  </Accordion>
+
+  <Accordion title="Responses not collected properly">
+    **Possible causes**:
+    - Collection time too short
+    - Wrong thread timestamp
+    - API rate limiting
+
+    **Solutions**:
+    1. Increase `collection_time_minutes` to give team more time
+    2. Verify the thread_ts is correct
+    3. Check Slack API rate limits (50+ requests per minute)
+    4. Add error handling to retry failed API calls
+    5. Log the thread_ts immediately after posting to debug
+  </Accordion>
+
+  <Accordion title="Rate limiting: Slack API requests failing">
+    **Slack API limits**:
+    - Tier 1 methods: 1 request per minute
+    - Tier 2 methods: 20 requests per minute
+    - Tier 3 methods: 50 requests per minute
+
+    **Solutions**:
+    1. Implement exponential backoff for rate limit errors
+    2. Cache channel and user information
+    3. Batch operations when possible
+    4. Use Slack's rate limit headers to track usage
+    5. For high-frequency bots, consider Slack's paid tiers
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+If you encounter errors not covered here, check the Metorial dashboard logs (Monitoring section) to see detailed tool execution traces and Slack API responses.
+</Note>
+
+## Advanced Customization
+
+Enhance your standup bot with these customizations:
+
+<CardGroup cols={2}>
+  <Card title="Custom Questions" icon="list-check">
+    Customize standup questions for your team's needs (e.g., "What are you learning today?", "Team shoutouts", "Health check: 1-5").
+  </Card>
+
+  <Card title="Multi-Team Support" icon="users">
+    Run standups across multiple teams with different channels and schedules. Store team configs in a database.
+  </Card>
+
+  <Card title="Trend Tracking" icon="chart-line">
+    Store historical standup data to track:
+    - Recurring blockers
+    - Team velocity trends
+    - Common challenges
+    Generate weekly/monthly reports
+  </Card>
+
+  <Card title="Reminder System" icon="bell">
+    Send DMs to team members who haven't responded. Use Slack's users.list to track participation rates.
+  </Card>
+
+  <Card title="Project Integration" icon="link">
+    Connect with project management tools (Linear, Jira) to:
+    - Link updates to specific tasks
+    - Auto-update task status
+    - Cross-reference blockers with tickets
+  </Card>
+
+  <Card title="Sentiment Analysis" icon="face-smile">
+    Track team morale over time by analyzing sentiment in standup responses. Alert leadership to significant drops.
+  </Card>
+</CardGroup>
+
+**Example: Custom questions**
+
+Update the standup prompt:
+
+```typescript
+const standupPrompt = `Good morning team! 🌅 Daily standup time:
+
+1. 🎯 What are you working on today?
+2. 🚧 Any blockers?
+3. 💡 What are you learning?
+4. 🙌 Team shoutouts (optional)
+5. ❤️ Health check: 1-5 (1=struggling, 5=great)
+
+Reply in thread, you have ${collectionTimeMinutes} minutes.`;
+```
+
+## Production Considerations
+
+Before deploying to production:
+
+1. **Scheduling**: Set up daily automated runs:
+   - Use cron jobs or cloud schedulers (AWS EventBridge, GCP Cloud Scheduler)
+   - Typical schedule: 9:00 AM team local time, Monday-Friday
+   - Consider time zones for distributed teams
+
+2. **Error Handling**: Add robust error handling:
+   - Retry failed Slack API calls with exponential backoff
+   - Alert admins if standup fails to post or collect responses
+   - Handle missing or malformed responses gracefully
+
+3. **Non-Responders**: Send reminders:
+   - Track who responded vs. who didn't
+   - Send DM reminders 2-3 minutes before deadline
+   - Include non-responder list in summary for follow-up
+
+4. **Data Storage**: Store historical data:
+   - Save standup responses and summaries to database
+   - Track participation rates over time
+   - Enable trend analysis and reporting
+
+5. **Privacy & Security**:
+   - Store OAuth tokens securely (environment variables, secret managers)
+   - Be mindful of sensitive information in standups
+   - Consider data retention policies for historical standups
+   - Allow team members to edit/delete their responses
+
+6. **Customization per Team**:
+   - Store team configs (channel IDs, questions, timing)
+   - Allow teams to opt-in/opt-out
+   - Support different schedules for different teams
+
+7. **Performance**:
+   - Cache Slack user info to reduce API calls
+   - Implement request queuing for multiple teams
+   - Monitor token usage and costs
+
+8. **Testing**:
+   - Test in a sandbox channel first
+   - Have a manual override to skip days (holidays, etc.)
+   - Implement dry-run mode for testing prompts
+
+<Info>
+**Scheduling Tip:**
+
+Use a scheduling service to trigger the bot daily:
+
+```typescript
+// Example with node-cron
+import cron from 'node-cron';
+
+// Run at 9 AM Monday-Friday
+cron.schedule('0 9 * * 1-5', () => {
+  runStandup('C1234567890', 'C0987654321', 5);
+}, {
+  timezone: "America/New_York"
+});
+```
+</Info>
+
+## What's Next?
+
+Congratulations! You've built an AI-powered Slack standup bot that automates team updates and provides executive insights.
+
+### Learn More
+
+<CardGroup cols={3}>
+  <Card title="SDK Documentation" icon="book" href="/sdk-quickstart">
+    Explore advanced SDK features and patterns.
+  </Card>
+
+  <Card title="OAuth Guide" icon="shield" href="/sdk-oauth">
+    Learn more about managing Slack authorization.
+  </Card>
+
+  <Card title="Monitoring Guide" icon="chart-line" href="/metorial-101-monitoring">
+    Monitor bot performance and standup participation.
+  </Card>
+</CardGroup>
+
+### Related Sample Projects
+
+<CardGroup cols={1}>
+  <Card title="Code Review Bot" icon="code" href="/sample-projects-code-review-bot">
+    Build an AI code reviewer for GitHub pull requests.
+  </Card>
+</CardGroup>
+
+<Info>
+Need help? Email us at [support@metorial.com](mailto:support@metorial.com).
+</Info>
