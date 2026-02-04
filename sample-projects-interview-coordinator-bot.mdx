@@ -1,0 +1,894 @@
+---
+title: "Smart Interview Coordinator Bot"
+description: "Learn how to build an AI agent that schedules interviews, sends professional emails, and coordinates with your team using Google Calendar and Gmail"
+---
+
+<Note>
+**What You'll Build**: An intelligent interview coordinator that automatically schedules interviews, sends confirmation emails to candidates, notifies your interview panel, and handles all follow-up communications.
+</Note>
+
+## Introduction
+
+Coordinating interviews involves juggling multiple calendars, sending professional emails, and ensuring everyone has the right information at the right time. This tutorial shows you how to build an AI-powered interview coordinator that handles all of this automatically.
+
+The bot will:
+- Find available time slots across multiple calendars
+- Create calendar events with video conferencing links
+- Send professional confirmation emails to candidates
+- Notify interview panel members with prep materials
+- Send reminder emails 24 hours before interviews
+- Request feedback from interviewers after completion
+
+By the end of this tutorial, you'll have a working interview coordinator that can handle the entire scheduling and communication workflow with natural language commands.
+
+<Info>
+**What You'll Learn**:
+- Deploying Google Calendar and Gmail MCP servers
+- Setting up OAuth for multiple Google services
+- Creating an AI agent that coordinates between multiple tools
+- Sending professional, AI-generated emails
+- Managing complex multi-step workflows with Claude
+</Info>
+
+## Prerequisites
+
+Before starting, make sure you have:
+
+- **Metorial Account**: [Sign up](https://app.metorial.com) and get your API key
+- **Google Workspace Account**: With Calendar and Gmail access
+- **Anthropic API Key**: Get one from [Anthropic Console](https://console.anthropic.com)
+- **Development Environment**: Node.js 18+ or Python 3.9+
+
+## Architecture Overview
+
+Here's how the interview coordinator works:
+
+1. **User provides interview details** (candidate, role, date preferences, interviewers)
+2. **AI checks calendar availability** using Google Calendar MCP server
+3. **AI creates calendar event** with video conferencing link
+4. **AI sends confirmation email** to candidate via Gmail
+5. **AI sends prep email** to interview panel via Gmail
+6. **AI can send reminders** and collect feedback (optional)
+
+**Tools used**: Google Calendar MCP Server (scheduling) + Gmail MCP Server (communications) + AI Model (coordination)
+
+The AI autonomously decides which tools to use and in what order, handling complex multi-step workflows without explicit programming.
+
+## Step 1: Deploy Google Calendar MCP Server
+
+First, deploy the Google Calendar server from the Metorial catalog:
+
+<Steps>
+  <Step title="Navigate to Server Catalog">
+    Go to [app.metorial.com/servers/catalog](https://app.metorial.com/servers/catalog)
+  </Step>
+
+  <Step title="Find Google Calendar Server">
+    Search for "Google Calendar" in the catalog
+  </Step>
+
+  <Step title="Deploy the Server">
+    Click **Deploy** and note your deployment ID (starts with `svd_`)
+  </Step>
+</Steps>
+
+<Note>
+Save your Calendar deployment ID - you'll need it in Step 3. It looks like: `svd_abc123def456`
+</Note>
+
+## Step 1b: Deploy Gmail MCP Server
+
+Next, deploy the Gmail server for email communications:
+
+<Steps>
+  <Step title="Search for Gmail Server">
+    In the same catalog, search for "Gmail"
+  </Step>
+
+  <Step title="Deploy the Server">
+    Click **Deploy** and note your Gmail deployment ID
+  </Step>
+</Steps>
+
+<Note>
+You now have two MCP servers deployed. Both will run in the same session, allowing the AI to coordinate between scheduling and email tools seamlessly.
+</Note>
+
+## Step 2: Set Up OAuth Authentication
+
+Both Calendar and Gmail require OAuth authentication to access your Google Workspace.
+
+<Steps>
+  <Step title="Install Dependencies">
+    <CodeGroup>
+      ```bash TypeScript
+      npm install metorial @metorial/anthropic @anthropic-ai/sdk
+      ```
+
+      ```bash Python
+      pip install metorial anthropic
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create OAuth Setup Script">
+    <CodeGroup>
+      ```typescript TypeScript
+      import { Metorial } from "metorial";
+
+      const metorial = new Metorial({
+        apiKey: "YOUR_METORIAL_API_KEY",
+      });
+
+      async function setupOAuth() {
+        // Calendar OAuth
+        const calendarOAuth = await metorial.oauth.sessions.create({
+          serverDeploymentId: "YOUR_CALENDAR_DEPLOYMENT_ID",
+        });
+
+        console.log("Authorize Calendar here:", calendarOAuth.url);
+        console.log("Calendar OAuth Session ID:", calendarOAuth.id);
+
+        // Wait for authorization
+        await metorial.oauth.waitForCompletion([calendarOAuth.id]);
+        console.log("✓ Calendar authorized!");
+
+        // Gmail OAuth
+        const gmailOAuth = await metorial.oauth.sessions.create({
+          serverDeploymentId: "YOUR_GMAIL_DEPLOYMENT_ID",
+        });
+
+        console.log("\nAuthorize Gmail here:", gmailOAuth.url);
+        console.log("Gmail OAuth Session ID:", gmailOAuth.id);
+
+        // Wait for authorization
+        await metorial.oauth.waitForCompletion([gmailOAuth.id]);
+        console.log("✓ Gmail authorized!");
+
+        console.log("\nSave these OAuth Session IDs for your bot:");
+        console.log("Calendar:", calendarOAuth.id);
+        console.log("Gmail:", gmailOAuth.id);
+      }
+
+      setupOAuth();
+      ```
+
+      ```python Python
+      from metorial import Metorial
+
+      metorial = Metorial(api_key="YOUR_METORIAL_API_KEY")
+
+      # Calendar OAuth
+      calendar_oauth = metorial.oauth.sessions.create(
+          server_deployment_id="YOUR_CALENDAR_DEPLOYMENT_ID"
+      )
+
+      print("Authorize Calendar here:", calendar_oauth.url)
+      print("Calendar OAuth Session ID:", calendar_oauth.id)
+
+      # Wait for authorization
+      metorial.oauth.wait_for_completion([calendar_oauth.id])
+      print("✓ Calendar authorized!")
+
+      # Gmail OAuth
+      gmail_oauth = metorial.oauth.sessions.create(
+          server_deployment_id="YOUR_GMAIL_DEPLOYMENT_ID"
+      )
+
+      print("\nAuthorize Gmail here:", gmail_oauth.url)
+      print("Gmail OAuth Session ID:", gmail_oauth.id)
+
+      # Wait for authorization
+      metorial.oauth.wait_for_completion([gmail_oauth.id])
+      print("✓ Gmail authorized!")
+
+      print("\nSave these OAuth Session IDs for your bot:")
+      print("Calendar:", calendar_oauth.id)
+      print("Gmail:", gmail_oauth.id)
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Authorize in Browser">
+    Visit both URLs in your browser and complete the Google OAuth flow for Calendar and Gmail access. The script will wait for you to authorize before continuing.
+  </Step>
+
+  <Step title="Save OAuth Session IDs">
+    The script outputs your OAuth session IDs (starting with `soas_`). Save these for use in Step 3.
+  </Step>
+</Steps>
+
+<Note>
+**OAuth Scopes**: Calendar needs `calendar.events` and `calendar.readonly`. Gmail needs `gmail.send` and `gmail.readonly`. These are configured automatically by Metorial.
+</Note>
+
+## Step 3: Build the Interview Coordinator
+
+Now let's build the main coordinator that orchestrates interview scheduling and communications.
+
+<CodeGroup>
+```typescript TypeScript
+import { Metorial } from "metorial";
+import { MetorialAnthropic } from "@metorial/anthropic";
+import Anthropic from "@anthropic-ai/sdk";
+
+// Initialize clients
+const metorial = new Metorial({
+  apiKey: "YOUR_METORIAL_API_KEY",
+});
+
+const anthropic = new Anthropic({
+  apiKey: "YOUR_ANTHROPIC_API_KEY",
+});
+
+const metorialAnthropic = new MetorialAnthropic(metorial, anthropic);
+
+// Server deployment credentials
+const CALENDAR_DEPLOYMENT_ID = "YOUR_CALENDAR_DEPLOYMENT_ID";
+const CALENDAR_OAUTH_SESSION_ID = "YOUR_CALENDAR_OAUTH_SESSION_ID";
+const GMAIL_DEPLOYMENT_ID = "YOUR_GMAIL_DEPLOYMENT_ID";
+const GMAIL_OAUTH_SESSION_ID = "YOUR_GMAIL_OAUTH_SESSION_ID";
+
+interface InterviewRequest {
+  candidateName: string;
+  candidateEmail: string;
+  role: string;
+  interviewers: string[]; // Email addresses
+  durationMinutes: number;
+  preferredDates: string[]; // ISO format dates
+  interviewType: "technical" | "behavioral" | "panel";
+}
+
+async function scheduleInterview(request: InterviewRequest) {
+  console.log(`Scheduling ${request.interviewType} interview for ${request.candidateName}...`);
+
+  await metorial.withProviderSession(
+    metorialAnthropic,
+    {
+      serverDeployments: [
+        {
+          serverDeploymentId: CALENDAR_DEPLOYMENT_ID,
+          oauthSessionId: CALENDAR_OAUTH_SESSION_ID,
+        },
+        {
+          serverDeploymentId: GMAIL_DEPLOYMENT_ID,
+          oauthSessionId: GMAIL_OAUTH_SESSION_ID,
+        },
+      ],
+      streaming: false,
+    },
+    async ({ tools, callTools }) => {
+      const messages: Anthropic.MessageParam[] = [
+        {
+          role: "user",
+          content: `Schedule interview and send confirmations:
+
+Candidate: ${request.candidateName} (${request.candidateEmail})
+Role: ${request.role}
+Interviewers: ${request.interviewers.join(", ")}
+Duration: ${request.durationMinutes} minutes
+Preferred dates: ${request.preferredDates.join(", ")}
+Type: ${request.interviewType}
+
+Steps to complete:
+1. Check calendar availability for all interviewers on preferred dates
+2. Create calendar event with:
+   - Title: "${request.role} Interview - ${request.candidateName}"
+   - Include video conferencing link
+   - Add all interviewers as attendees
+3. Send confirmation email to candidate (${request.candidateEmail}) with:
+   - Subject: "Interview Scheduled - ${request.role}"
+   - Professional email including: interview date/time, meeting link, what to prepare, who they'll meet
+4. Send prep email to interviewers (${request.interviewers.join(", ")}) with:
+   - Subject: "Interview Prep - ${request.candidateName}"
+   - Candidate background, interview format, evaluation guidelines
+
+CRITICAL: Only use actual calendar data. If no slots available, inform user. DO NOT create events without checking availability first.`,
+        },
+      ];
+
+      let response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8192,
+        tools: tools,
+        messages: messages,
+      });
+
+      // Agentic loop - let AI use tools autonomously
+      while (response.stop_reason === "tool_use") {
+        const toolUseBlocks = response.content.filter(
+          (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+        );
+
+        console.log(`AI using ${toolUseBlocks.length} tool(s)...`);
+
+        const toolResults = await callTools(toolUseBlocks);
+
+        messages.push({ role: "assistant", content: response.content });
+        messages.push(toolResults);
+
+        response = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 8192,
+          tools: tools,
+          messages: messages,
+        });
+      }
+
+      // Extract final response
+      const finalText = response.content
+        .filter((block): block is Anthropic.TextBlock => block.type === "text")
+        .map((block) => block.text)
+        .join("\n");
+
+      console.log("Interview coordination complete:", finalText);
+    }
+  );
+}
+
+// Example usage
+scheduleInterview({
+  candidateName: "Sarah Johnson",
+  candidateEmail: "sarah.johnson@example.com",
+  role: "Senior Software Engineer",
+  interviewers: [
+    "hiring.manager@company.com",  // Hiring manager
+    "tech.lead@company.com",        // Technical lead
+  ],
+  durationMinutes: 60,
+  preferredDates: [
+    "2026-02-10T14:00:00Z",  // First preference
+    "2026-02-11T10:00:00Z",  // Second preference
+    "2026-02-12T15:00:00Z",  // Third preference
+  ],
+  interviewType: "technical",
+});
+```
+
+```python Python
+import asyncio
+from metorial import Metorial
+from anthropic import AsyncAnthropic
+from typing import List, Literal
+
+# Initialize clients
+metorial = Metorial(api_key="YOUR_METORIAL_API_KEY")
+anthropic = AsyncAnthropic(api_key="YOUR_ANTHROPIC_API_KEY")
+
+# Server deployment credentials
+CALENDAR_DEPLOYMENT_ID = "YOUR_CALENDAR_DEPLOYMENT_ID"
+CALENDAR_OAUTH_SESSION_ID = "YOUR_CALENDAR_OAUTH_SESSION_ID"
+GMAIL_DEPLOYMENT_ID = "YOUR_GMAIL_DEPLOYMENT_ID"
+GMAIL_OAUTH_SESSION_ID = "YOUR_GMAIL_OAUTH_SESSION_ID"
+
+async def schedule_interview(
+    candidate_name: str,
+    candidate_email: str,
+    role: str,
+    interviewers: List[str],
+    duration_minutes: int,
+    preferred_dates: List[str],
+    interview_type: Literal["technical", "behavioral", "panel"]
+):
+    print(f"Scheduling {interview_type} interview for {candidate_name}...")
+
+    async with metorial.provider_session(
+        provider="anthropic",
+        server_deployments=[
+            {
+                "serverDeploymentId": CALENDAR_DEPLOYMENT_ID,
+                "oauthSessionId": CALENDAR_OAUTH_SESSION_ID
+            },
+            {
+                "serverDeploymentId": GMAIL_DEPLOYMENT_ID,
+                "oauthSessionId": GMAIL_OAUTH_SESSION_ID
+            }
+        ],
+    ) as session:
+        messages = [
+            {
+                "role": "user",
+                "content": f"""Schedule interview and send confirmations:
+
+Candidate: {candidate_name} ({candidate_email})
+Role: {role}
+Interviewers: {", ".join(interviewers)}
+Duration: {duration_minutes} minutes
+Preferred dates: {", ".join(preferred_dates)}
+Type: {interview_type}
+
+Steps to complete:
+1. Check calendar availability for all interviewers on preferred dates
+2. Create calendar event with:
+   - Title: "{role} Interview - {candidate_name}"
+   - Include video conferencing link
+   - Add all interviewers as attendees
+3. Send confirmation email to candidate ({candidate_email}) with:
+   - Subject: "Interview Scheduled - {role}"
+   - Professional email including: interview date/time, meeting link, what to prepare, who they'll meet
+4. Send prep email to interviewers ({", ".join(interviewers)}) with:
+   - Subject: "Interview Prep - {candidate_name}"
+   - Candidate background, interview format, evaluation guidelines
+
+CRITICAL: Only use actual calendar data. If no slots available, inform user. DO NOT create events without checking availability first."""
+            }
+        ]
+
+        response = await anthropic.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=8192,
+            tools=session.tools,
+            messages=messages,
+        )
+
+        # Agentic loop - let AI use tools autonomously
+        while response.stop_reason == "tool_use":
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+
+            print(f"AI using {len(tool_use_blocks)} tool(s)...")
+
+            tool_results = await session.call_tools(tool_use_blocks)
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append(tool_results)
+
+            response = await anthropic.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=8192,
+                tools=session.tools,
+                messages=messages,
+            )
+
+        # Extract final response
+        final_text = "\n".join(
+            block.text for block in response.content if block.type == "text"
+        )
+
+        print(f"Interview coordination complete: {final_text}")
+
+# Example usage
+asyncio.run(schedule_interview(
+    candidate_name="Sarah Johnson",
+    candidate_email="sarah.johnson@example.com",
+    role="Senior Software Engineer",
+    interviewers=[
+        "hiring.manager@company.com",  # Hiring manager
+        "tech.lead@company.com",        # Technical lead
+    ],
+    duration_minutes=60,
+    preferred_dates=[
+        "2026-02-10T14:00:00Z",  # First preference
+        "2026-02-11T10:00:00Z",  # Second preference
+        "2026-02-12T15:00:00Z",  # Third preference
+    ],
+    interview_type="technical"
+))
+```
+</CodeGroup>
+
+<Note>
+**Key Implementation Details**:
+- **Single Session**: Both Calendar and Gmail servers run in one session, allowing the AI to seamlessly switch between scheduling and emailing tools
+- **Agentic Workflow**: The AI autonomously decides which tools to use and in what order - no explicit programming needed
+- **Anti-Hallucination**: The prompt explicitly instructs using only actual calendar data to prevent AI from making up availability
+- **Professional Communications**: AI generates context-appropriate emails for candidates and interviewers
+</Note>
+
+## Email Templates
+
+The AI automatically generates professional emails tailored to each recipient. Here are examples of what the coordinator sends:
+
+<Accordion title="Candidate Confirmation Email">
+**Subject**: Interview Scheduled - Senior Software Engineer
+
+**Body**:
+```
+Hi Sarah,
+
+Great news! We've scheduled your interview for the Senior Software Engineer position.
+
+Interview Details:
+- Date: Tuesday, February 10, 2026
+- Time: 2:00 PM - 3:00 PM EST
+- Duration: 60 minutes
+- Format: Technical Interview via Google Meet
+
+Meeting Link: https://meet.google.com/abc-defg-hij
+
+You'll be meeting with:
+- Alex Chen, Hiring Manager
+- Jordan Smith, Technical Lead
+
+What to Prepare:
+- Please have your development environment ready for a live coding session
+- We'll be discussing system design and your recent project experience
+- Feel free to ask questions about our team and tech stack
+
+If you need to reschedule, please let us know as soon as possible.
+
+Looking forward to speaking with you!
+
+Best regards,
+Hiring Team
+```
+</Accordion>
+
+<Accordion title="Interviewer Prep Email">
+**Subject**: Interview Prep - Sarah Johnson
+
+**Body**:
+```
+Hi Team,
+
+You have an upcoming interview scheduled:
+
+Candidate: Sarah Johnson
+Position: Senior Software Engineer
+Interview Type: Technical
+Date: Tuesday, February 10, 2026 at 2:00 PM EST
+Duration: 60 minutes
+Meeting Link: https://meet.google.com/abc-defg-hij
+
+Interview Format:
+- First 10 minutes: Introductions and company overview
+- Next 35 minutes: Technical assessment (live coding + system design)
+- Final 15 minutes: Candidate questions
+
+Evaluation Focus:
+- Problem-solving approach and code quality
+- System design thinking
+- Communication and collaboration style
+- Cultural fit and team dynamics
+
+Please review the candidate's background before the interview and come prepared with your assessment criteria.
+
+If you need to reschedule, please notify the team immediately.
+
+Thanks,
+Recruiting Team
+```
+</Accordion>
+
+<Accordion title="24-Hour Reminder Email">
+**Subject**: Reminder: Interview Tomorrow - Sarah Johnson
+
+**Body**:
+```
+Hi Sarah,
+
+This is a friendly reminder about your interview tomorrow:
+
+Interview: Senior Software Engineer
+Date: Tomorrow, Tuesday, February 10, 2026
+Time: 2:00 PM - 3:00 PM EST
+Meeting Link: https://meet.google.com/abc-defg-hij
+
+Pre-Interview Checklist:
+✓ Test your audio and video
+✓ Have your development environment ready
+✓ Review your recent projects
+✓ Prepare questions for the team
+
+We're looking forward to meeting you!
+
+Best regards,
+Hiring Team
+```
+</Accordion>
+
+## Step 4: Test the Coordinator
+
+Let's test the coordinator with a realistic scenario:
+
+<CodeGroup>
+```typescript TypeScript
+// Test scenario: Schedule technical interview
+await scheduleInterview({
+  candidateName: "Alex Rivera",
+  candidateEmail: "alex.rivera@example.com",
+  role: "Staff Frontend Engineer",
+  interviewers: [
+    "engineering.director@company.com",
+    "senior.engineer@company.com",
+    "product.manager@company.com",
+  ],
+  durationMinutes: 90,  // Panel interview
+  preferredDates: [
+    "2026-02-15T13:00:00Z",
+    "2026-02-16T14:00:00Z",
+    "2026-02-17T10:00:00Z",
+  ],
+  interviewType: "panel",
+});
+```
+
+```python Python
+# Test scenario: Schedule technical interview
+asyncio.run(schedule_interview(
+    candidate_name="Alex Rivera",
+    candidate_email="alex.rivera@example.com",
+    role="Staff Frontend Engineer",
+    interviewers=[
+        "engineering.director@company.com",
+        "senior.engineer@company.com",
+        "product.manager@company.com",
+    ],
+    duration_minutes=90,  # Panel interview
+    preferred_dates=[
+        "2026-02-15T13:00:00Z",
+        "2026-02-16T14:00:00Z",
+        "2026-02-17T10:00:00Z",
+    ],
+    interview_type="panel"
+))
+```
+</CodeGroup>
+
+**Expected Output**:
+```
+Scheduling panel interview for Alex Rivera...
+AI using 3 tool(s)...
+AI using 2 tool(s)...
+AI using 2 tool(s)...
+Interview coordination complete: Successfully scheduled panel interview for Alex Rivera on February 15, 2026 at 1:00 PM EST. Calendar event created with Google Meet link. Confirmation email sent to candidate and prep email sent to all 3 interviewers (Engineering Director, Senior Engineer, Product Manager).
+```
+
+The coordinator will:
+1. Check availability for all 3 interviewers across the preferred dates
+2. Find the first available slot (Feb 15 at 1:00 PM)
+3. Create a 90-minute calendar event with video link
+4. Send confirmation email to Alex with interview details
+5. Send prep email to all interviewers with candidate info
+
+## Troubleshooting
+
+<Accordion title="Calendar event not created">
+**Possible causes**:
+- OAuth session expired or invalid
+- Calendar API not enabled in Google Workspace
+- Insufficient permissions (need `calendar.events` scope)
+- No availability found in provided date range
+
+**Solutions**:
+- Re-run OAuth setup to refresh credentials
+- Verify Calendar API is enabled at [Google Cloud Console](https://console.cloud.google.com)
+- Check OAuth session has correct scopes in Metorial dashboard
+- Expand preferred date range or reduce number of required attendees
+</Accordion>
+
+<Accordion title="Emails not being sent">
+**Possible causes**:
+- OAuth session expired for Gmail
+- Gmail API not enabled
+- Insufficient permissions (need `gmail.send` scope)
+- Daily sending limit reached (500 emails/day for standard accounts)
+
+**Solutions**:
+- Re-run OAuth setup for Gmail specifically
+- Enable Gmail API in Google Cloud Console
+- Verify OAuth session includes `gmail.send` scope
+- Check your Gmail sending quota at Google Workspace Admin
+</Accordion>
+
+<Accordion title="Emails going to spam folder">
+**Possible causes**:
+- Sending from unverified domain
+- Email content triggers spam filters
+- High volume of emails in short period
+
+**Solutions**:
+- Set up SPF and DKIM records for your sending domain
+- Use professional, well-formatted email templates
+- Add delays between bulk sends
+- Test email content with spam checking tools
+- Whitelist your sending address with recipients
+</Accordion>
+
+<Accordion title="AI creates event without checking availability">
+**Issue**: Calendar event created despite conflicts
+
+**Solution**: This is likely a prompt issue. Ensure your prompt includes:
+```
+CRITICAL: Only use actual calendar data. If no slots available, inform user.
+DO NOT create events without checking availability first.
+```
+
+The anti-hallucination instruction forces the AI to actually check calendars before proceeding.
+</Accordion>
+
+<Accordion title="Wrong people added to calendar event">
+**Issue**: Extra or missing attendees
+
+**Solution**: Be explicit in your prompt about who should attend:
+```
+Add ALL these interviewers as attendees: {interviewers.join(", ")}
+Do not add anyone else as an attendee.
+```
+
+Also verify the email addresses are correct in your request object.
+</Accordion>
+
+## Advanced Customization
+
+<CardGroup cols={2}>
+  <Card title="Email Personalization" icon="envelope">
+    Customize email templates based on role, interview type, or company culture:
+
+    ```typescript
+    const emailTemplates = {
+      technical: "Include coding prep tips",
+      behavioral: "Focus on company values",
+      panel: "List all interviewers with bios"
+    };
+    ```
+
+    Pass templates to your prompt for context-aware emails.
+  </Card>
+
+  <Card title="Multi-Stage Interviews" icon="sitemap">
+    Coordinate complex interview pipelines:
+
+    ```typescript
+    async function scheduleInterviewPipeline(
+      candidate: Candidate,
+      stages: InterviewStage[]
+    ) {
+      for (const stage of stages) {
+        await scheduleInterview({
+          ...candidate,
+          ...stage
+        });
+      }
+    }
+    ```
+
+    Schedule phone screen, technical, and panel interviews in sequence.
+  </Card>
+
+  <Card title="Automated Reminders" icon="clock">
+    Send reminder emails at specific intervals:
+
+    ```typescript
+    async function sendReminder(
+      eventId: string,
+      hoursBeforeInterview: number
+    ) {
+      // Schedule cron job or use setTimeout
+      // Trigger reminder email via Gmail tools
+    }
+    ```
+
+    Set up 24h and 1h reminders automatically.
+  </Card>
+
+  <Card title="Feedback Collection" icon="clipboard">
+    Request and aggregate interviewer feedback:
+
+    ```typescript
+    async function collectFeedback(
+      interviewId: string,
+      interviewers: string[]
+    ) {
+      // Send feedback forms after interview
+      // AI analyzes responses for hiring decision
+    }
+    ```
+
+    Automate post-interview feedback workflow.
+  </Card>
+
+  <Card title="Calendar Preferences" icon="calendar">
+    Respect interviewer working hours and preferences:
+
+    ```typescript
+    const preferences = {
+      "eng.dir@co.com": {
+        hours: "9-17",
+        timezone: "America/New_York"
+      }
+    };
+    ```
+
+    Include preferences in AI prompt for smarter scheduling.
+  </Card>
+
+  <Card title="Multi-Language Support" icon="language">
+    Send emails in candidate's preferred language:
+
+    ```typescript
+    const request = {
+      ...interviewDetails,
+      candidateLanguage: "es" // Spanish
+    };
+    ```
+
+    AI automatically generates emails in requested language.
+  </Card>
+</CardGroup>
+
+## Production Considerations
+
+Before deploying to production:
+
+### Error Handling
+Add comprehensive error handling for common failures:
+```typescript
+try {
+  await scheduleInterview(request);
+} catch (error) {
+  if (error.message.includes("OAuth")) {
+    // Refresh OAuth tokens
+  } else if (error.message.includes("quota")) {
+    // Handle rate limits
+  } else {
+    // Log and alert on-call team
+  }
+}
+```
+
+### Monitoring and Logging
+Track key metrics for reliability:
+- Interview scheduling success rate
+- Email delivery rate
+- Calendar availability check duration
+- AI tool call patterns
+
+Use Metorial's built-in monitoring to track these metrics.
+
+### Testing Strategy
+Test edge cases before production:
+- All interviewers unavailable on all dates
+- Invalid email addresses
+- Time zone edge cases (DST transitions)
+- Calendar quota limits
+- Gmail sending limits
+
+### Privacy and Compliance
+Ensure GDPR/CCPA compliance:
+- Get consent before sending emails
+- Allow candidates to opt out of reminders
+- Don't store candidate data longer than necessary
+- Encrypt sensitive information in transit and at rest
+
+### Scalability
+For high-volume hiring:
+- Implement request queuing to avoid rate limits
+- Cache calendar availability queries
+- Batch similar operations
+- Use Metorial's webhook support for async processing
+
+## What's Next
+
+Now that you have a working interview coordinator, explore more capabilities:
+
+<CardGroup cols={2}>
+  <Card title="SDK Documentation" icon="code" href="/sdk-quickstart">
+    Learn advanced SDK patterns and best practices
+  </Card>
+
+  <Card title="OAuth Guide" icon="key" href="/sdk-oauth">
+    Deep dive into OAuth authentication flows
+  </Card>
+
+  <Card title="Monitoring Guide" icon="chart-line" href="/concepts-monitoring">
+    Set up alerts and dashboards for your coordinator
+  </Card>
+
+  <Card title="Server Catalog" icon="server" href="/integrations-browsing-catalog">
+    Explore more MCP servers to add capabilities
+  </Card>
+</CardGroup>
+
+## Related Sample Projects
+
+<CardGroup cols={2}>
+  <Card title="Code Review Bot" icon="code-branch" href="/sample-projects-code-review-bot">
+    Build an AI code reviewer that posts comments on pull requests
+  </Card>
+
+  <Card title="Slack Standup Bot" icon="users" href="/sample-projects-slack-standup-bot">
+    Create a bot that collects and summarizes team standup updates
+  </Card>
+</CardGroup>
