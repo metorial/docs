@@ -37,7 +37,8 @@
           {
             "group": "Sample Projects",
             "pages": [
-              "sample-projects-code-review-bot"
+              "sample-projects-code-review-bot",
+              "sample-projects-slack-standup-bot"
             ]
           },
           {
