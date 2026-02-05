@@ -182,7 +182,7 @@ console.log('Authorize Slack:', slackOAuth.url);
 console.log('Authorize Calendar:', calendarOAuth.url);
 
 // 3. Wait for user to complete OAuth
-await metorial.oauth.waitForCompletion([slackOAuth.id, calendarOAuth.id]);
+await metorial.oauth.waitForCompletion([slackOAuth, calendarOAuth]);
 
 // 4. Use authenticated sessions
 await metorial.withProviderSession(
@@ -227,7 +227,7 @@ async def main():
     print(f"Authorize Slack: {slack_oauth.url}")
 
     # 3. Wait for completion
-    await metorial.oauth.wait_for_completion([slack_oauth.id])
+    await metorial.oauth.wait_for_completion([slack_oauth])
 
     # 4. Use authenticated session
     async def handler(session):
