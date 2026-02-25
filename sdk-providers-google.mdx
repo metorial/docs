@@ -3,7 +3,7 @@ title: "Using with Google"
 description: "Use Metorial with Google Gemini models"
 ---
 
-The Google provider integration lets you use Metorial's MCP tools with Google's Gemini models. The integration converts Metorial tools into Google's function calling format, allowing Gemini to use tools from your MCP servers.
+The Google provider integration lets you use Metorial's MCP tools with Google's Gemini models. The integration converts Metorial tools into Google's function calling format, allowing Gemini to use tools from your providers.
 
 Gemini models offer competitive performance and pricing, with strong multimodal capabilities. You'll need both a Metorial API key and a Google AI API key to use this integration.
 
@@ -28,14 +28,12 @@ let genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 await metorial.withProviderSession(
     metorialGoogle,
-    { serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }] },
-    async ({ tools, closeSession }) => {
+    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
+    async session => {
         let model = genAI.getGenerativeModel({
-            model: 'gemini-pro',
-            tools: tools
+            model: 'gemini-1.5-pro',
+            tools: session.tools
         });
-
-        await closeSession();
     }
 );
 ```
@@ -53,7 +51,7 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 async def main():
     async with metorial.provider_session(
         provider="google",
-        server_deployments=["your-deployment-id"],
+        providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
     ) as session:
         model = genai.GenerativeModel("gemini-1.5-pro", tools=session.tools)
         chat = model.start_chat()

@@ -38,15 +38,13 @@ let deepseek = new OpenAI({
 
 await metorial.withProviderSession(
     metorialDeepSeek.chatCompletions,
-    { serverDeployments: [{ serverDeploymentId: 'your-deployment-id' }] },
-    async ({ tools, closeSession }) => {
+    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
+    async session => {
         let response = await deepseek.chat.completions.create({
             model: 'deepseek-chat',
             messages: [{ role: 'user', content: 'Help me' }],
-            tools: tools
+            tools: session.tools
         });
-
-        await closeSession();
     }
 );
 ```
@@ -67,7 +65,7 @@ deepseek = AsyncOpenAI(
 async def main():
     async with metorial.provider_session(
         provider="openai",
-        server_deployments=["your-deployment-id"],
+        providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
     ) as session:
         response = await deepseek.chat.completions.create(
             model="deepseek-chat",

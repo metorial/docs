@@ -1,11 +1,11 @@
 ---
 title: 'Enterprise BYO'
-description: 'Bring Your Own credentials for enterprise deployments with dynamic server deployments'
+description: 'Bring Your Own credentials for enterprise deployments with dynamic provider deployments'
 ---
 
 <Note>
 **What you'll learn:**
-- Dynamic server deployment creation via API
+- Dynamic provider deployment creation via API
 - BYO OAuth app configuration
 - Enterprise compliance patterns
 
@@ -14,7 +14,7 @@ description: 'Bring Your Own credentials for enterprise deployments with dynamic
 - [OAuth Integrations](/integrations-oauth)
 </Note>
 
-Need full control over OAuth apps and API keys for compliance, branding, or security? Metorial lets you create server deployments dynamically via the API using your own credentials—no dashboard required.
+Need full control over OAuth apps and API keys for compliance, branding, or security? Metorial lets you create provider deployments dynamically via the API using your own credentials—no dashboard required.
 
 ## Why BYO?
 
@@ -36,23 +36,52 @@ Using your own credentials gives you full control over how your users authentica
 
 <Info>
 **Multi-tenancy:**
-- Create isolated deployments per customer
+- Create isolated provider deployments per customer
 - Different credentials for different organizations
 - Scale deployment creation programmatically
 </Info>
 
-## Dynamic Server Deployments
+## Dynamic Provider Deployments
 
-Create server deployments programmatically via the Metorial API instead of using the dashboard.
+Create provider deployments programmatically via the Metorial API instead of using the dashboard.
 
 **The flow:**
-1. Call the API with your credentials to create a deployment
-2. Receive a deployment ID
-3. Use the deployment ID in your SDK like any other integration
+1. Create a **Provider Deployment** via the API
+2. Create a **Provider Auth Config** with your credentials, linked to the deployment
+3. Use the provider deployment ID in sessions like any other integration
 
 Ideal for multi-tenant applications where each customer needs isolated credentials, or enterprises managing multiple OAuth apps across teams.
 
-See the [Metorial API documentation](/api-getting-started) for endpoint details, authentication, and request/response schemas.
+### Creating a Provider Deployment
+
+```bash
+curl -X POST https://api.metorial.com/provider-deployments \
+  -H "Authorization: Bearer metorial_sk_abc123" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme Corp Slack",
+    "provider_id": "prv_slack"
+  }'
+```
+
+### Creating a Provider Auth Config
+
+```bash
+curl -X POST https://api.metorial.com/provider-auth-configs \
+  -H "Authorization: Bearer metorial_sk_abc123" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme Corp Slack Credentials",
+    "provider_auth_method_id": "pam_slack_oauth",
+    "provider_deployment_id": "pdp_abc123",
+    "value": {
+      "client_id": "your-oauth-client-id",
+      "client_secret": "your-oauth-client-secret"
+    }
+  }'
+```
+
+Once created, use the provider deployment ID when creating sessions or setup sessions for your users.
 
 ## BYO OAuth Apps
 
@@ -65,12 +94,16 @@ Use your own OAuth app credentials instead of Metorial's default OAuth apps.
     Register your OAuth app with the service (GitHub, Slack, Google, etc.). Save your client ID and client secret.
   </Step>
 
-  <Step title="Create Deployment via API">
-    Call the Metorial API or use the Dashboard to create a server deployment, passing your OAuth app credentials in the request body.
+  <Step title="Create Provider Deployment via API">
+    Call `POST /provider-deployments` to create a deployment for the provider.
+  </Step>
+
+  <Step title="Create Provider Auth Config">
+    Call `POST /provider-auth-configs` with your OAuth app credentials linked to the deployment.
   </Step>
 
   <Step title="Use the Deployment">
-    Use the returned deployment ID in your SDK code like any other deployment. Users will see your OAuth app name when authorizing.
+    Use the provider deployment ID in your session creation and provider setup sessions. Your users will see your OAuth app name when authorizing.
   </Step>
 </Steps>
 
@@ -93,7 +126,7 @@ Use your own API keys for integrations like Exa, Brave, or Tavily.
 - Rotate keys without affecting other deployments
 </Info>
 
-Create deployments via the API with your keys—Metorial uses them when tools are called.
+Create a provider deployment and a provider auth config (type `manual`) with your API key—Metorial uses it when tools are called within sessions that reference that deployment.
 
 ## What's Next?
 

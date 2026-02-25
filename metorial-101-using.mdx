@@ -1,23 +1,23 @@
 ---
-title: "Using your first MCP server"
-description: "Learn how to connect your MCP server to an LLM provider and build a chat-enabled app"
+title: "Using your first provider"
+description: "Learn how to connect your provider to an LLM and build a chat-enabled app"
 ---
 
-Now that you've deployed your first MCP server and confirmed it's working, you can connect it to an LLM provider like OpenAI.
+Now that you've deployed your first provider and confirmed it's working, you can connect it to an LLM provider like OpenAI.
 
-In this guide, you'll learn how to build a chat-enabled app that automatically handles tool calls from your Metorial-powered MCP server.
+In this guide, you'll learn how to build a chat-enabled app that automatically handles tool calls from your Metorial provider.
 
 <Note>
   **What you'll learn:**
 
-  - How to use a Metorial MCP server
+  - How to use a Metorial provider
   - How to use the Metorial SDKs
 
   **Before you start:**
 
   - Complete the [Introduction](/metorial-101-introduction) guide
-  - Complete the [Deploying your first MCP server](/metorial-101-deploying) guide
-  - Complete the [Testing your first MCP server](/metorial-101-testing) guide
+  - Complete the [Deploying your first provider](/metorial-101-deploying) guide
+  - Complete the [Testing your first provider](/metorial-101-testing) guide
 </Note>
 
 <Steps>
@@ -38,12 +38,12 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     </CodeGroup>
   </Step>
   <Step title="2. Configure Clients">
-    Instantiate both clients with your API keys and your MCP server ID.
+    Instantiate both clients with your API keys and your provider deployment ID.
 
     <CodeGroup>
 
     ```typescript TypeScript
-    import Metorial from 'metorial';
+    import { Metorial } from 'metorial';
     import OpenAI from 'openai';
     
     const metorial = new Metorial({
@@ -65,25 +65,26 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
 
     </CodeGroup>
   </Step>
-  <Step title="3. Fetch Your Server Tools">
-    Retrieve the session object that exposes your deployed MCP tools.
+  <Step title="3. Fetch Your Provider Tools">
+    Create a session that exposes your deployed provider tools. Steps 4–6 happen inside the session callback (TypeScript) or context manager (Python).
 
     <CodeGroup>
 
     ```typescript TypeScript
-    const session = await metorial.withProviderSession(
+    await metorial.withProviderSession(
       metorialOpenAI.chatCompletions,
-      { serverDeployments: ['...server-deployment-id...'] }
+      { providers: [{ providerDeploymentId: '...your-provider-deployment-id...' }] },
+      async session => {
+          // Steps 4–6 take place here, using session.tools and session.callTools()
+      }
     );
     ```
 
-    
+
     ```python Python
     async with metorial.provider_session(
         provider="openai",
-        server_deployments=[
-    		{ server_deployment_id: "...server_deployment_id..." }
-        ],
+        providers=[{"provider_deployment_id": "...your-provider-deployment-id..."}],
     ) as session:
         tools = session.tools
     ```
@@ -136,7 +137,7 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     )
     choice = response.choices[0]
     tool_calls = choice.message.tool_calls
-    tool_results = session.call_tools(tool_calls)
+    tool_results = await session.call_tools(tool_calls)
     ```
 
     </CodeGroup>
@@ -164,8 +165,8 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
 
 ## What's Next?
 
-You are all set on having a production-ready MCP server to use in your AI apps. Next, you will learn about all the dev tooling available.
+You are all set on having a production-ready provider to use in your AI apps. Next, you will learn about all the observability tooling available.
 
-<Card title="Next Up: How to monitor your server and tool calls" icon="chart-line" href="/metorial-101-monitoring">
+<Card title="Next Up: How to monitor your provider and tool calls" icon="chart-line" href="/metorial-101-monitoring">
   Learn how to use the observability & logging features.
 </Card>

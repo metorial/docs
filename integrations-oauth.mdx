@@ -1,6 +1,6 @@
 ---
 title: "Setting Up OAuth Integrations"
-description: "Deploy and configure OAuth-based integrations that require user authorization"
+description: "Use Provider Setup Sessions to authorize users with OAuth-based providers like Slack, GitHub, and Google."
 ---
 
 OAuth integrations let users authorize access to their personal accounts—like Slack workspaces, GitHub repos, or Google Calendars—so your AI can perform actions on their behalf.
@@ -8,182 +8,201 @@ OAuth integrations let users authorize access to their personal accounts—like 
 <Note>
   **What you'll learn:**
 
-  - Setting up OAuth for your users
-  - Managing OAuth sessions
-  - Advanced patterns (BYO OAuth, export/import)
+  - How to create a Provider Setup Session to authorize a user
+  - How to store and reuse Provider Auth Configs
+  - Advanced patterns (BYO OAuth)
 
   **Related resources:**
 
-  - [SDK OAuth Guide](sdk-oauth)
+  - [Providers Guide](/concepts-providers)
+  - [SDK OAuth Guide](/sdk-oauth)
   - [Enterprise BYO](/integrations-enterprise-byo)
 </Note>
 
-## Basic OAuth Setup
+## The OAuth Flow
 
-Each user authorizes once, you store their OAuth session ID in your database, then reuse it for future requests.
+Each user authorizes once. You store their **Provider Auth Config ID** in your database and reuse it for future sessions.
 
 **The flow:**
 
-1. User clicks "Connect Slack" (or GitHub, Google, etc.) in your app
-2. They authorize access via the OAuth screen
-3. You receive an `oauthSessionId` and store it for that user
-4. Pass that session ID whenever creating MCP sessions for that user
+1. Create a **Provider Setup Session** for the provider
+2. Redirect your user to the session URL to complete OAuth
+3. Poll or webhook until the session status is `completed`
+4. Store the resulting **Provider Auth Config ID** for that user
+5. Pass the auth config ID when creating sessions for that user
+
+## Creating a Provider Setup Session
+
+Create a setup session specifying the provider, auth method, and optionally a redirect URL to send the user back to after they authorize.
 
 <CodeGroup>
 
 ```typescript TypeScript
-// Create OAuth session (once per user)
-let oauthSession = await metorial.oauth.sessions.create({
-    serverDeploymentId: 'your-slack-deployment-id'
+let setupSession = await metorial.providers.setupSessions.create({
+    providerId: 'your-slack-provider-id',
+    providerAuthMethodId: 'oauth',
+    redirectUrl: 'https://yourapp.com/oauth/callback'
 });
 
-// Show user the authorization URL
-console.log('Authorize here:', oauthSession.url);
-
-// Wait for completion
-await metorial.oauth.waitForCompletion([oauthSession]);
-
-// Store oauthSession.id for this user in your database
-await db.users.update(userId, { slackOAuthSessionId: oauthSession.id });
+// Redirect your user to this URL
+console.log('Authorize here:', setupSession.url);
 ```
 
-
 ```python Python
-# Create OAuth session (once per user)
-oauth_session = metorial.oauth.sessions.create(
-    server_deployment_id="your-slack-deployment-id"
+setup_session = await metorial.providers.setup_sessions.create(
+    provider_id="your-slack-provider-id",
+    provider_auth_method_id="oauth",
+    redirect_url="https://yourapp.com/oauth/callback"
 )
 
-# Show user the authorization URL
-print(f"Authorize here: {oauth_session.url}")
+# Redirect your user to this URL
+print(f"Authorize here: {setup_session.url}")
+```
 
-# Wait for completion
-await metorial.oauth.wait_for_completion([oauth_session])
-
-# Store oauth_session.id for this user in your database
-await db.users.update(user_id, slack_oauth_session_id=oauth_session.id)
+```bash REST
+curl -X POST https://api.metorial.com/provider-setup-sessions \
+  -H "Authorization: Bearer metorial_sk_abc123" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "provider_id": "prv_slack",
+    "provider_auth_method_id": "pam_slack_oauth",
+    "redirect_url": "https://yourapp.com/oauth/callback"
+  }'
 ```
 
 </CodeGroup>
 
-## Using OAuth Sessions
+The response includes a `url` field—redirect your user to this URL.
 
-After a user authorizes, retrieve their stored OAuth session ID from your database and pass it when creating MCP sessions. This connects the session to their authorized account, giving your AI access to their data.
+## Waiting for Completion
+
+<CodeGroup>
+
+```typescript TypeScript
+// Waits until the user completes OAuth — returns the completed setup session
+let completedSetup = await metorial.waitForSetupSession([setupSession]);
+
+// Store the auth config ID in your database
+await db.users.update(userId, { slackAuthConfigId: completedSetup.authConfig.id });
+```
+
+```python Python
+# Waits until the user completes OAuth — returns the completed setup session
+completed = await metorial.wait_for_setup_session(setup_session)
+
+# Store the auth config ID in your database
+await db.users.update(user_id, slack_auth_config_id=completed.auth_config.id)
+```
+
+```bash REST
+curl https://api.metorial.com/provider-setup-sessions/pss_abc123 \
+  -H "Authorization: Bearer metorial_sk_abc123"
+```
+
+</CodeGroup>
+
+| Status | Meaning |
+|---|---|
+| `pending` | User hasn't completed the flow yet |
+| `completed` | User authorized successfully—auth config is ready |
+| `expired` | Session expired before the user completed it |
+| `failed` | An error occurred during the flow |
+| `archived` | Session was manually deleted |
+
+## Using an Auth Config in Sessions
+
+Pass the stored Provider Auth Config ID when creating a session. Metorial uses it to authenticate tool calls on behalf of the user.
 
 <CodeGroup>
 
 ```typescript TypeScript
 await metorial.withProviderSession(
-    provider,
+    metorialAnthropic,
     {
-        serverDeployments: [
+        providers: [
             {
-                serverDeploymentId: 'slack-deployment-id',
-                oauthSessionId: storedOAuthSessionId // From your database
+                providerDeploymentId: 'slack-deployment-id',
+                providerAuthConfigId: storedAuthConfigId
             }
         ]
     },
-    async ({ tools, closeSession }) => {
+    async session => {
         // Tools now have access to user's Slack
-        await closeSession();
     }
 );
 ```
 
-
 ```python Python
 async with metorial.provider_session(
-    provider="openai",
-    server_deployments=[
+    provider="anthropic",
+    providers=[
         {
-            "serverDeploymentId": "slack-deployment-id",
-            "oauthSessionId": oauth_session.id
+            "provider_deployment_id": "slack-deployment-id",
+            "provider_auth_config_id": stored_auth_config_id
         }
     ]
 ) as session:
-    # Tools from all services available
     tools = session.tools
 ```
 
+```bash REST
+curl -X POST https://api.metorial.com/sessions \
+  -H "Authorization: Bearer metorial_sk_abc123" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "providers": [
+      {
+        "provider_deployment_id": "pdp_slack",
+        "provider_auth_config_id": "pac_xyz789"
+      }
+    ]
+  }'
+```
+
 </CodeGroup>
+
+## Multiple OAuth Providers
+
+You can attach multiple providers—each with their own auth config—to a single session:
+
+```json
+{
+  "providers": [
+    {
+      "provider_deployment_id": "pdp_github",
+      "provider_auth_config_id": "pac_github_user123"
+    },
+    {
+      "provider_deployment_id": "pdp_slack",
+      "provider_auth_config_id": "pac_slack_user123"
+    },
+    {
+      "provider_deployment_id": "pdp_exa"
+    }
+  ]
+}
+```
+
+API key-based providers (like Exa) don't need an auth config—their credentials are stored at the deployment level.
 
 ## Advanced Features
 
 ### Enterprise BYO (Bring Your Own) OAuth
 
-Need to use your own OAuth apps instead of Metorial's? Create server deployments via the API with your own credentials.
+Need OAuth consent screens to show your company name? You can register your own OAuth app with the provider (GitHub, Slack, Google, etc.) and create a provider deployment that uses your credentials instead of Metorial's defaults.
 
-<Info>
-  **Why use BYO OAuth:**
-
-  - OAuth consent screens show your company name
-  - Use existing OAuth apps from your organization
-  - Meet enterprise security and compliance requirements
-  - Full control over OAuth scopes and permissions
-</Info>
-
-**How it works:** Call the Server Deployment API with your OAuth app credentials (client ID, client secret) to create a custom deployment. Users authorize via your OAuth app, and you use the deployment like any other.
-
-See [Enterprise BYO](integrations-enterprise-byo) for detailed setup instructions.
-
-### OAuth Export/Import
-
-Manage OAuth tokens outside of Metorial or migrate from existing systems.
-
-**Exporting tokens:**
-
-Extract OAuth credentials from Metorial sessions for use in your own infrastructure, migration to another system, or backup purposes.
-
-<CodeGroup>
-
-```typescript TypeScript
-// Export OAuth session credentials
-let credentials = await metorial.oauth.sessions.export(oauthSessionId);
-```
-
-
-```python Python
-# Export OAuth session credentials
-credentials = await metorial.oauth.sessions.export(oauth_session_id)
-```
-
-</CodeGroup>
-
-**Importing tokens:**
-
-Import existing OAuth tokens into Metorial instead of asking users to re-authorize. Useful when migrating from another system or if users already have OAuth tokens from your app.
-
-<CodeGroup>
-
-```typescript TypeScript
-// Import existing OAuth credentials
-let oauthSession = await metorial.oauth.sessions.import({
-    serverDeploymentId: 'your-deployment-id',
-    credentials: existingOAuthCredentials
-});
-```
-
-
-```python Python
-# Import existing OAuth credentials
-oauth_session = await metorial.oauth.sessions.import_(
-    server_deployment_id="your-deployment-id",
-    credentials=existing_oauth_credentials
-)
-```
-
-</CodeGroup>
+See [Enterprise BYO](/integrations-enterprise-byo) for the setup steps.
 
 ## What's Next?
 
 <CardGroup cols={3}>
-  <Card title="SDK OAuth Guide" icon="book" href="sdk-oauth">
-    Detailed SDK documentation for OAuth.
+  <Card title="SDK OAuth Guide" icon="book" href="/sdk-oauth">
+    SDK documentation for handling OAuth flows.
   </Card>
-  <Card title="API Guide" icon="code" href="api-getting-started">
+  <Card title="API Guide" icon="code" href="/api-getting-started">
     Learn about the Metorial API.
   </Card>
-  <Card title="API Key Integrations" icon="key" href="integrations-api-key">
+  <Card title="API Key Integrations" icon="key" href="/integrations-api-key">
     Simpler integrations without OAuth.
   </Card>
 </CardGroup>

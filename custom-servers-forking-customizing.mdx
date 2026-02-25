@@ -1,6 +1,6 @@
 ---
-title: "Customizing Forked Servers"
-description: "Modify forked servers to meet your needs."
+title: "Customizing Forked Providers"
+description: "Modify forked providers to meet your needs."
 ---
 
 <Note>
@@ -10,13 +10,13 @@ description: "Modify forked servers to meet your needs."
 - Testing changes
 </Note>
 
-Edit your forked server's code to customize tools, add new functionality, or integrate with your systems. Changes are deployed as a managed server.
+Edit your forked provider's code to customize tools, add new functionality, or integrate with your systems. Changes are deployed as a managed provider.
 
 ## Editing Forked Code
 
 <Steps>
   <Step title="Open Editor">
-    Open the code editor from your forked server's dashboard or simply make the changes in your repository and push them.
+    Open the code editor from your forked provider's dashboard or simply make the changes in your repository and push them.
   </Step>
   <Step title="Edit Files">
     Modify any file with syntax highlighting and autocomplete.
@@ -37,7 +37,7 @@ Define new tools by adding tool definitions and handler functions to your forked
 **Tool Structure:**
 - Schema: Defines tool inputs and outputs
 - Handler: Implements the tool logic
-- Registration: Adds tool to your server
+- Registration: Adds tool to your provider
 </Info>
 
 Modify existing tools by editing their handler functions or input schemas.
@@ -50,7 +50,7 @@ Modify existing tools by editing their handler functions or input schemas.
         ![Upload code](/images/custom-servers/upload-code.png)
   </Step>
   <Step title="Click Deploy">
-    Deploy your customized server.
+    Deploy your customized provider.
   </Step>
   <Step title="Build Process">
     Metorial packages your changes and runs tests.
