@@ -87,13 +87,6 @@
               "custom-servers-external-connecting",
               "custom-servers-external-authentication"
             ]
-          },
-          {
-            "group": "Forked Providers",
-            "pages": [
-              "custom-servers-forking-overview",
-              "custom-servers-forking-customizing"
-            ]
           }
         ]
       },
