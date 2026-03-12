@@ -78,7 +78,6 @@
             "group": "Custom Providers",
             "pages": [
               "custom-servers-managed-getting-started",
-              "custom-servers-managed-configuration",
               "custom-servers-managed-deployment"
             ]
           },
