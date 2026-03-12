@@ -6,12 +6,14 @@ description: "Learn how to test your provider using the Explorer tool"
 Now that you've deployed your first provider, it's time to test its functionality. This guide will walk you through the steps to interact with your provider and debug its responses.
 
 <Note>
-**What you'll learn:**
-- How to test a provider
+  **What you'll learn:**
 
-**Before you start:**
-- Complete the [Introduction](/metorial-101-introduction) guide
-- Complete the [Deploying your first provider](/metorial-101-deploying) guide
+  - How to test a provider
+
+  **Before you start:**
+
+  - Complete the [Introduction](/metorial-101-introduction) guide
+  - Complete the [Deploying your first provider](/metorial-101-deploying) guide
 </Note>
 
 ## Testing a provider
@@ -20,33 +22,29 @@ Providers in Metorial provide tools, resources, and capabilities to AI assistant
 
 <Steps>
   <Step title="Open the Provider Page">
-    We start at the end of the last guide. Navigate to the overview page for your deployed GitHub provider.
+    We start at the end of the last guide. Navigate to the overview page for your deployed **Metorial Search** provider.
 
-    ![Provider Overview](/images/metorial-101/testing-mcp-servers/step-1.png)
+    ![Provider Overview](/images/metorial-101/testing-mcp-servers/step1.png)
   </Step>
-
   <Step title="Open the Explorer">
     Click the **Open Explorer** button to open an interactive tool that lists all the provider's capabilities.
 
-    ![Test Session Interface](/images/metorial-101/testing-mcp-servers/step-2.png)
+    ![Test Session Interface](/images/metorial-101/testing-mcp-servers/step2.png)
   </Step>
+   <Step title="Select Configuration">
+    Proceed by selecting Default Config from the dropdown.
 
+    ![Test Session Interface](/images/metorial-101/testing-mcp-servers/step3.png)
+  </Step>
   <Step title="Test Server Capabilities">
-    Select the `repository-file` resource template from the available options. Enter the repository owner, repository name, and the file path you want to target. These settings define the list and method information that your AI integrations will invoke automatically.
+    Select the `Web Search` Tool from the available options. Add any sample query you want to search for. Feel free to play around with other Tools as well
 
-    ![Session Viewer Interface](/images/metorial-101/testing-mcp-servers/step-3.png)
+    ![Session Viewer Interface](/images/metorial-101/testing-mcp-servers/step4.png)
   </Step>
-
   <Step title="View Result">
     View the resulting response from the provider to see the data your AI integrations will consume.
 
-    ![MCP Message Stream](/images/metorial-101/testing-mcp-servers/step-4.png)
-  </Step>
-
-  <Step title="Explore Available Tool Calls">
-    Navigate to the **Tools** section to browse available tool calls. Select the tool call you want to try out—here, it's the `fork_repository` call. With the GitHub provider and a properly scoped Personal Access Token, your AI integrations can invoke any of these calls.
-
-    ![MCP Message Stream](/images/metorial-101/testing-mcp-servers/step-5.png)
+    ![MCP Message Stream](/images/metorial-101/testing-mcp-servers/step5.png)
   </Step>
 </Steps>
 
@@ -54,6 +52,6 @@ Providers in Metorial provide tools, resources, and capabilities to AI assistant
 
 🚀 You've successfully deployed and tested your first provider. Next, you'll learn how to connect your provider to an LLM and use it in your AI application.
 
-<Card title="Next Up: How to use a provider" icon="code" href="/metorial-101-using">
+<Card icon="code" href="/metorial-101-using" title="Next Up: How to use a provider">
   Learn how to use a deployed provider using the Metorial SDKs.
 </Card>
