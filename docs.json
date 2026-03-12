@@ -75,7 +75,7 @@
             ]
           },
           {
-            "group": "Managed Providers",
+            "group": "Custom Providers",
             "pages": [
               "custom-servers-managed-getting-started",
               "custom-servers-managed-configuration",
