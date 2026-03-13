@@ -22,7 +22,7 @@ By the end of this tutorial, you'll have a working interview coordinator that ca
 
 <Info>
 **What You'll Learn**:
-- Deploying Google Calendar and Gmail MCP servers
+- Deploying Google Calendar and Gmail providers
 - Setting up OAuth for multiple Google services
 - Creating an AI agent that coordinates between multiple tools
 - Sending professional, AI-generated emails
@@ -43,55 +43,55 @@ Before starting, make sure you have:
 Here's how the interview coordinator works:
 
 1. **User provides interview details** (candidate, role, date preferences, interviewers)
-2. **AI checks calendar availability** using Google Calendar MCP server (checks the authenticated user's calendar)
+2. **AI checks calendar availability** using the Google Calendar provider (checks the authenticated user's calendar)
 3. **AI creates calendar event** and adds interviewers as attendees
 4. **AI sends confirmation email** to candidate via Gmail
 5. **AI sends prep email** to interview panel via Gmail
 
-**Tools used**: Google Calendar MCP Server (scheduling) + Gmail MCP Server (communications) + AI Model (coordination)
+**Tools used**: Google Calendar provider (scheduling) + Gmail provider (communications) + AI Model (coordination)
 
 The AI autonomously decides which tools to use and in what order, handling complex multi-step workflows without explicit programming.
 
-## Step 1: Deploy Google Calendar MCP Server
+## Step 1: Deploy Google Calendar Provider
 
-First, deploy the Google Calendar server from the Metorial catalog:
+First, deploy the Google Calendar provider from the Metorial catalog:
 
 <Steps>
-  <Step title="Navigate to Server Catalog">
-    Go to [app.metorial.com/servers/catalog](https://app.metorial.com/servers/catalog)
+  <Step title="Navigate to Provider Catalog">
+    Go to [app.metorial.com](https://app.metorial.com) and click **Providers**
   </Step>
 
-  <Step title="Find Google Calendar Server">
+  <Step title="Find Google Calendar">
     Search for "Google Calendar" in the catalog
   </Step>
 
-  <Step title="Deploy the Server">
-    Click **Deploy** and note your deployment ID (starts with `svd_`)
+  <Step title="Deploy">
+    Click **Deploy** and note your deployment ID (starts with `pdp_`)
   </Step>
 </Steps>
 
 <Note>
-Save your Calendar deployment ID - you'll need it in Step 3. It looks like: `svd_abc123def456`
+Save your Calendar deployment ID - you'll need it in Step 3. It looks like: `pdp_abc123def456`
 
-**Note on Multiple Interviewers**: This deployment accesses **one** Google Calendar (the authenticated user's calendar). To check availability across multiple interviewers' calendars, each interviewer would need their own Calendar MCP deployment and OAuth session. For simplicity, this tutorial uses a single calendar instance.
+**Note on Multiple Interviewers**: This deployment accesses **one** Google Calendar (the authenticated user's calendar). To check availability across multiple interviewers' calendars, each interviewer would need their own Calendar provider deployment and auth config. For simplicity, this tutorial uses a single calendar instance.
 </Note>
 
-## Step 1b: Deploy Gmail MCP Server
+## Step 1b: Deploy Gmail Provider
 
-Next, deploy the Gmail server for email communications:
+Next, deploy the Gmail provider for email communications:
 
 <Steps>
-  <Step title="Search for Gmail Server">
+  <Step title="Search for Gmail">
     In the same catalog, search for "Gmail"
   </Step>
 
-  <Step title="Deploy the Server">
+  <Step title="Deploy">
     Click **Deploy** and note your Gmail deployment ID
   </Step>
 </Steps>
 
 <Note>
-You now have two MCP servers deployed. Both will run in the same session, allowing the AI to coordinate between scheduling and email tools seamlessly.
+You now have two providers deployed. Both will run in the same session, allowing the AI to coordinate between scheduling and email tools seamlessly.
 </Note>
 
 ## Step 2: Set Up OAuth Authentication
@@ -122,32 +122,32 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
 
       async function setupOAuth() {
         // Calendar OAuth
-        const calendarOAuth = await metorial.oauth.sessions.create({
-          serverDeploymentId: "YOUR_CALENDAR_DEPLOYMENT_ID",
+        const calendarSetup = await metorial.providers.setupSessions.create({
+          providerId: "YOUR_CALENDAR_PROVIDER_ID",
+          providerAuthMethodId: "oauth",
         });
 
-        console.log("Authorize Calendar here:", calendarOAuth.url);
-        console.log("Calendar OAuth Session ID:", calendarOAuth.id);
+        console.log("Authorize Calendar here:", calendarSetup.url);
 
         // Wait for authorization
-        await metorial.oauth.waitForCompletion([calendarOAuth]);
+        const calendarCompleted = await metorial.waitForSetupSession([calendarSetup]);
         console.log("✓ Calendar authorized!");
 
         // Gmail OAuth
-        const gmailOAuth = await metorial.oauth.sessions.create({
-          serverDeploymentId: "YOUR_GMAIL_DEPLOYMENT_ID",
+        const gmailSetup = await metorial.providers.setupSessions.create({
+          providerId: "YOUR_GMAIL_PROVIDER_ID",
+          providerAuthMethodId: "oauth",
         });
 
-        console.log("\nAuthorize Gmail here:", gmailOAuth.url);
-        console.log("Gmail OAuth Session ID:", gmailOAuth.id);
+        console.log("\nAuthorize Gmail here:", gmailSetup.url);
 
         // Wait for authorization
-        await metorial.oauth.waitForCompletion([gmailOAuth]);
+        const gmailCompleted = await metorial.waitForSetupSession([gmailSetup]);
         console.log("✓ Gmail authorized!");
 
-        console.log("\nSave these OAuth Session IDs for your bot:");
-        console.log("Calendar:", calendarOAuth.id);
-        console.log("Gmail:", gmailOAuth.id);
+        console.log("\nSave these auth config IDs for your bot:");
+        console.log("Calendar:", calendarCompleted.authConfig.id);
+        console.log("Gmail:", gmailCompleted.authConfig.id);
       }
 
       setupOAuth();
@@ -159,32 +159,32 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
       metorial = Metorial(api_key="YOUR_METORIAL_API_KEY")
 
       # Calendar OAuth
-      calendar_oauth = metorial.oauth.sessions.create(
-          server_deployment_id="YOUR_CALENDAR_DEPLOYMENT_ID"
+      calendar_setup = await metorial.providers.setup_sessions.create(
+          provider_id="YOUR_CALENDAR_PROVIDER_ID",
+          provider_auth_method_id="oauth",
       )
 
-      print("Authorize Calendar here:", calendar_oauth.url)
-      print("Calendar OAuth Session ID:", calendar_oauth.id)
+      print("Authorize Calendar here:", calendar_setup.url)
 
       # Wait for authorization
-      metorial.oauth.wait_for_completion([calendar_oauth])
+      calendar_completed = await metorial.wait_for_setup_session(calendar_setup)
       print("✓ Calendar authorized!")
 
       # Gmail OAuth
-      gmail_oauth = metorial.oauth.sessions.create(
-          server_deployment_id="YOUR_GMAIL_DEPLOYMENT_ID"
+      gmail_setup = await metorial.providers.setup_sessions.create(
+          provider_id="YOUR_GMAIL_PROVIDER_ID",
+          provider_auth_method_id="oauth",
       )
 
-      print("\nAuthorize Gmail here:", gmail_oauth.url)
-      print("Gmail OAuth Session ID:", gmail_oauth.id)
+      print("\nAuthorize Gmail here:", gmail_setup.url)
 
       # Wait for authorization
-      metorial.oauth.wait_for_completion([gmail_oauth])
+      gmail_completed = await metorial.wait_for_setup_session(gmail_setup)
       print("✓ Gmail authorized!")
 
-      print("\nSave these OAuth Session IDs for your bot:")
-      print("Calendar:", calendar_oauth.id)
-      print("Gmail:", gmail_oauth.id)
+      print("\nSave these auth config IDs for your bot:")
+      print("Calendar:", calendar_completed.auth_config.id)
+      print("Gmail:", gmail_completed.auth_config.id)
       ```
     </CodeGroup>
   </Step>
@@ -193,8 +193,8 @@ Both Calendar and Gmail require OAuth authentication to access your Google Works
     Visit both URLs in your browser and complete the Google OAuth flow for Calendar and Gmail access. The script will wait for you to authorize before continuing.
   </Step>
 
-  <Step title="Save OAuth Session IDs">
-    The script outputs your OAuth session IDs (starting with `soas_`). Save these for use in Step 3.
+  <Step title="Save Auth Config IDs">
+    The script outputs your auth config IDs (starting with `pac_`). Save these for use in Step 3.
   </Step>
 </Steps>
 
@@ -223,9 +223,9 @@ const anthropic = new Anthropic({
 
 // Server deployment credentials
 const CALENDAR_DEPLOYMENT_ID = "CALENDAR_DEPLOYMENT_ID";
-const CALENDAR_OAUTH_SESSION_ID = "CALENDAR_OAUTH_SESSION_ID";
+const CALENDAR_AUTH_CONFIG_ID = "CALENDAR_AUTH_CONFIG_ID";
 const GMAIL_DEPLOYMENT_ID = "GMAIL_DEPLOYMENT_ID";
-const GMAIL_OAUTH_SESSION_ID = "GMAIL_OAUTH_SESSION_ID";
+const GMAIL_AUTH_CONFIG_ID = "GMAIL_AUTH_CONFIG_ID";
 
 interface InterviewRequest {
   candidateName: string;
@@ -243,19 +243,18 @@ async function scheduleInterview(request: InterviewRequest) {
   await metorial.withProviderSession(
     metorialAnthropic,
     {
-      serverDeployments: [
+      providers: [
         {
-          serverDeploymentId: CALENDAR_DEPLOYMENT_ID,
-          oauthSessionId: CALENDAR_OAUTH_SESSION_ID,
+          providerDeploymentId: CALENDAR_DEPLOYMENT_ID,
+          providerAuthConfigId: CALENDAR_AUTH_CONFIG_ID,
         },
         {
-          serverDeploymentId: GMAIL_DEPLOYMENT_ID,
-          oauthSessionId: GMAIL_OAUTH_SESSION_ID,
+          providerDeploymentId: GMAIL_DEPLOYMENT_ID,
+          providerAuthConfigId: GMAIL_AUTH_CONFIG_ID,
         },
       ],
-      streaming: false,
     },
-    async ({ tools, callTools }) => {
+    async session => {
       const messages: Anthropic.MessageParam[] = [
         {
           role: "user",
@@ -285,9 +284,9 @@ CRITICAL: Only use actual calendar data. If no slots available, inform user. DO 
       ];
 
       let response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-5",
         max_tokens: 8192,
-        tools: tools,
+        tools: session.tools,
         messages: messages,
       });
 
@@ -299,15 +298,15 @@ CRITICAL: Only use actual calendar data. If no slots available, inform user. DO 
 
         console.log(`AI using ${toolUseBlocks.length} tool(s)...`);
 
-        const toolResults = await callTools(toolUseBlocks);
+        const toolResults = await session.callTools(toolUseBlocks);
 
         messages.push({ role: "assistant", content: response.content });
         messages.push(toolResults);
 
         response = await anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-5",
           max_tokens: 8192,
-          tools: tools,
+          tools: session.tools,
           messages: messages,
         });
       }
@@ -353,9 +352,9 @@ anthropic = AsyncAnthropic(api_key="YOUR_ANTHROPIC_API_KEY")
 
 # Server deployment credentials
 CALENDAR_DEPLOYMENT_ID = "YOUR_CALENDAR_DEPLOYMENT_ID"
-CALENDAR_OAUTH_SESSION_ID = "YOUR_CALENDAR_OAUTH_SESSION_ID"
+CALENDAR_AUTH_CONFIG_ID = "YOUR_CALENDAR_AUTH_CONFIG_ID"
 GMAIL_DEPLOYMENT_ID = "YOUR_GMAIL_DEPLOYMENT_ID"
-GMAIL_OAUTH_SESSION_ID = "YOUR_GMAIL_OAUTH_SESSION_ID"
+GMAIL_AUTH_CONFIG_ID = "YOUR_GMAIL_AUTH_CONFIG_ID"
 
 async def schedule_interview(
     candidate_name: str,
@@ -370,14 +369,14 @@ async def schedule_interview(
 
     async with metorial.provider_session(
         provider="anthropic",
-        server_deployments=[
+        providers=[
             {
-                "serverDeploymentId": CALENDAR_DEPLOYMENT_ID,
-                "oauthSessionId": CALENDAR_OAUTH_SESSION_ID
+                "provider_deployment_id": CALENDAR_DEPLOYMENT_ID,
+                "provider_auth_config_id": CALENDAR_AUTH_CONFIG_ID
             },
             {
-                "serverDeploymentId": GMAIL_DEPLOYMENT_ID,
-                "oauthSessionId": GMAIL_OAUTH_SESSION_ID
+                "provider_deployment_id": GMAIL_DEPLOYMENT_ID,
+                "provider_auth_config_id": GMAIL_AUTH_CONFIG_ID
             }
         ],
     ) as session:
@@ -410,7 +409,7 @@ CRITICAL: Only use actual calendar data. If no slots available, inform user. DO 
         ]
 
         response = await anthropic.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-5",
             max_tokens=8192,
             tools=session.tools,
             messages=messages,
@@ -430,7 +429,7 @@ CRITICAL: Only use actual calendar data. If no slots available, inform user. DO 
             messages.append(tool_results)
 
             response = await anthropic.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5",
                 max_tokens=8192,
                 tools=session.tools,
                 messages=messages,
@@ -471,10 +470,10 @@ asyncio.run(schedule_interview(
 </Note>
 
 <Warning>
-**Multiple Interviewer Calendars**: The current implementation uses a single Google Calendar MCP server instance, which only accesses **one** Google Calendar (the calendar of the authenticated user). To check availability across **multiple interviewers' calendars**, you would need to:
-- Deploy a separate Calendar MCP server instance for each interviewer
+**Multiple Interviewer Calendars**: The current implementation uses a single Google Calendar provider instance, which only accesses **one** Google Calendar (the calendar of the authenticated user). To check availability across **multiple interviewers' calendars**, you would need to:
+- Deploy a separate Calendar provider instance for each interviewer
 - Set up OAuth for each interviewer's calendar
-- Pass multiple calendar server deployments to the session
+- Pass multiple calendar provider deployments to the session
 
 For now, this tutorial demonstrates scheduling with a single calendar owner who can view their own availability. The `interviewers` array is used for adding attendees to the calendar event and sending prep emails, but **not** for checking their individual calendar availability.
 </Warning>
@@ -690,20 +689,20 @@ Also verify the email addresses are correct in your request object.
 <Accordion title="Cannot check multiple interviewers' calendars">
 **Issue**: Need to verify availability across multiple interviewers' calendars
 
-**Current Limitation**: A single Google Calendar MCP server instance can only access one calendar (the authenticated user's calendar).
+**Current Limitation**: A single Google Calendar provider instance can only access one calendar (the authenticated user's calendar).
 
 **Solution**: To check availability across multiple interviewers:
-1. Deploy a separate Calendar MCP server instance for each interviewer
+1. Deploy a separate Calendar provider instance for each interviewer
 2. Set up individual OAuth sessions for each interviewer's calendar
-3. Pass all calendar deployments to `serverDeployments` array in your session
+3. Pass all calendar deployments to `providers` array in your session
 4. Update your prompt to check all calendar instances before scheduling
 
 Example with multiple calendars:
 ```typescript
-serverDeployments: [
-  { serverDeploymentId: CALENDAR_1_ID, oauthSessionId: OAUTH_1_ID },
-  { serverDeploymentId: CALENDAR_2_ID, oauthSessionId: OAUTH_2_ID },
-  { serverDeploymentId: GMAIL_DEPLOYMENT_ID, oauthSessionId: GMAIL_OAUTH_ID }
+providers: [
+  { providerDeploymentId: CALENDAR_1_ID, providerAuthConfigId: AUTH_CONFIG_1_ID },
+  { providerDeploymentId: CALENDAR_2_ID, providerAuthConfigId: AUTH_CONFIG_2_ID },
+  { providerDeploymentId: GMAIL_DEPLOYMENT_ID, providerAuthConfigId: GMAIL_AUTH_CONFIG_ID }
 ]
 ```
 
@@ -797,8 +796,8 @@ For this tutorial, we use a single calendar and add interviewers as attendees wi
     ```typescript
     // Deploy separate Calendar MCP for each interviewer
     const INTERVIEWER_CALENDARS = [
-      { deploymentId: "svd_eng_dir", oauthId: "soas_eng_dir" },
-      { deploymentId: "svd_senior_eng", oauthId: "soas_senior" }
+      { providerDeploymentId: "pdp_eng_dir", providerAuthConfigId: "pac_eng_dir" },
+      { providerDeploymentId: "pdp_senior_eng", providerAuthConfigId: "pac_senior" }
     ];
     ```
 
@@ -873,8 +872,8 @@ Now that you have a working interview coordinator, explore more capabilities:
     Set up alerts and dashboards for your coordinator
   </Card>
 
-  <Card title="Server Catalog" icon="server" href="/integrations-browsing-catalog">
-    Explore more MCP servers to add capabilities
+  <Card title="Provider Catalog" icon="server" href="/integrations-browsing-catalog">
+    Explore more providers to add capabilities
   </Card>
 </CardGroup>
 

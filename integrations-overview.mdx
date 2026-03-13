@@ -1,6 +1,6 @@
 ---
 title: 'Integrations Overview'
-description: 'Pre-built MCP server integrations that you can deploy without writing any code'
+description: 'Pre-built provider integrations that you can deploy without writing any code'
 ---
 
 <Note>
@@ -11,12 +11,12 @@ description: 'Pre-built MCP server integrations that you can deploy without writ
 
 **Related resources:**
 - [Browsing the Catalog](integrations-browsing-catalog)
-- [Deploy Your First Server](metorial-101-deploying)
+- [Deploy Your First Provider](metorial-101-deploying)
 </Note>
 
 ## What Are Integrations?
 
-Integrations are pre-built MCP servers that provide ready-to-use tools for popular services. Instead of building API clients from scratch, you can deploy integrations for services like GitHub, Slack, Google Calendar, Exa, and more.
+Integrations are pre-built providers that offer ready-to-use tools for popular services. Instead of building API clients from scratch, you can deploy integrations for services like GitHub, Slack, Google Calendar, Exa, and more.
 
 Each integration exposes tools that your AI models can call directly. For example, the GitHub integration provides tools for creating issues, reviewing pull requests, and managing repositories—all without writing any integration code yourself.
 
@@ -76,21 +76,21 @@ Required when each user needs to authorize access to their own account. The inte
 
 **When to use**: Multi-tenant applications where users connect their personal accounts.
 
-**How it works**: Users authorize via OAuth, you store their session ID, and pass it when creating MCP sessions. Each user's data stays isolated.
+**How it works**: Users authorize via OAuth, you store their **Provider Auth Config ID**, and pass it when creating sessions. Each user's data stays isolated.
 </Info>
 
 See [OAuth Integrations](integrations-oauth) for implementation patterns.
 
 ## Choosing Integrations
 
-You can mix both authentication types in the same application. For example, use an API key integration for search (Exa) while using OAuth integrations for user-specific services (Slack, GitHub). When creating MCP sessions, pass multiple deployments together—Metorial combines all their tools into a single tool list for your AI model.
+You can mix both authentication types in the same application. For example, use an API key integration for search (Exa) while using OAuth integrations for user-specific services (Slack, GitHub). When creating sessions, pass multiple deployments together—Metorial combines all their tools into a single tool list for your AI model.
 
 <Info>
 **Single-user applications**: API key integrations work well.
 
 **Multi-user applications**: Use OAuth integrations for user-specific access.
 
-**Enterprise**: Consider BYO OAuth apps with dynamic server deployments.
+**Enterprise**: Consider BYO OAuth apps with dynamic provider deployments.
 </Info>
 
 ## Getting Started

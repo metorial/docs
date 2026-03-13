@@ -1,18 +1,18 @@
 ---
-title: "Connecting External Servers"
+title: "Connecting External Providers"
 description: "Connect your self-hosted MCP server to Metorial."
 ---
 
 <Note>
 **What you'll learn:**
-- How external servers work
+- How external providers work
 - Connection requirements
 - Security
 </Note>
 
-External servers run on your own infrastructure and connect to Metorial via HTTP/HTTPS. You maintain complete control over hosting, deployment, and security while using Metorial for tool distribution.
+External providers run on your own infrastructure and connect to Metorial via HTTP/HTTPS. You maintain complete control over hosting, deployment, and security while using Metorial for tool distribution.
 
-## External Server Requirements
+## External Provider Requirements
 
 Your server must meet these requirements to connect to Metorial:
 
@@ -24,12 +24,12 @@ Your server must meet these requirements to connect to Metorial:
 - HTTPS required for production
 </Info>
 
-## Registering External Server
+## Registering an External Provider
 
 <Steps>
-  <Step title="Add Server URL">
+  <Step title="Add Provider URL">
     Enter your server's URL in the Metorial dashboard.
-    ![External server registration](/images/custom-servers/external-server-registration.png)
+    ![External provider registration](/images/custom-servers/external-provider.png)
   </Step>
   <Step title="Receive Token">
     Metorial generates a unique authentication token.
@@ -38,7 +38,7 @@ Your server must meet these requirements to connect to Metorial:
     Add token validation to your server's request handler.
   </Step>
   <Step title="Create Deployment">
-    Create a deployment that connects to your external server.
+    Create a provider deployment that connects to your external server.
   </Step>
 </Steps>
 
@@ -46,6 +46,6 @@ Your server must meet these requirements to connect to Metorial:
 
 <CardGroup cols={1}>
   <Card title="Authentication" icon="shield" href="/custom-servers-external-authentication">
-    Learn how to secure your external server connections.
+    Learn how to secure your external provider connections.
   </Card>
 </CardGroup>

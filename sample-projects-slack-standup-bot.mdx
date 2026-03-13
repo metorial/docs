@@ -17,7 +17,7 @@ This tutorial demonstrates practical AI-driven team communication using Metorial
 
 <Note>
 **What you'll learn:**
-- Deploying the Slack MCP server
+- Deploying the Slack provider
 - Setting up OAuth for Slack workspace access
 - Creating an AI agent that processes team updates
 - Posting and reading Slack messages programmatically
@@ -66,15 +66,15 @@ The standup bot workflow:
 4. **Summary**: Bot generates and posts executive summary to leadership channel
 5. **Storage**: Optionally stores historical data for trend analysis
 
-**Tools used**: Slack MCP Server (post messages, read threads) + AI Model (analysis and summarization)
+**Tools used**: Slack provider (post messages, read threads) + AI Model (analysis and summarization)
 
-## Step 1: Deploy Slack MCP Server
+## Step 1: Deploy Slack Provider
 
-Deploy the Slack MCP server from Metorial's catalog to enable your bot to interact with Slack.
+Deploy the Slack provider from Metorial's catalog to enable your bot to interact with Slack.
 
 <Steps>
-  <Step title="Navigate to Server Catalog">
-    In the Metorial Dashboard, go to **Servers** and search for "Slack".
+  <Step title="Navigate to Provider Catalog">
+    In the Metorial Dashboard, go to **Providers** and search for "Slack".
   </Step>
 
   <Step title="Deploy Slack Server">
@@ -123,19 +123,19 @@ Your standup bot needs permission to post messages and read thread replies in yo
     });
 
     async function setupSlackOAuth() {
-      const slackOAuth = await metorial.oauth.sessions.create({
-        serverDeploymentId: 'YOUR-SLACK-DEPLOYMENT-ID'
+      const slackSetup = await metorial.providers.setupSessions.create({
+        providerId: 'YOUR-SLACK-PROVIDER-ID',
+        providerAuthMethodId: 'oauth'
       });
 
-      console.log('Authorize Slack here:', slackOAuth.url);
-      console.log('OAuth Session ID:', slackOAuth.id);
+      console.log('Authorize Slack here:', slackSetup.url);
 
       // Wait for authorization
-      await metorial.oauth.waitForCompletion([slackOAuth]);
+      const completed = await metorial.waitForSetupSession([slackSetup]);
       console.log('✓ Slack authorized!');
 
-      // Save slackOAuth.id for future use
-      return slackOAuth.id;
+      // Save the auth config ID for future use
+      return completed.authConfig.id;
     }
 
     setupSlackOAuth();
@@ -148,19 +148,19 @@ Your standup bot needs permission to post messages and read thread replies in yo
     async def setup_slack_oauth():
         metorial = Metorial(api_key="YOUR-METORIAL-API-KEY")
 
-        slack_oauth = metorial.oauth.sessions.create(
-            server_deployment_id="YOUR-SLACK-DEPLOYMENT-ID"
+        slack_setup = await metorial.providers.setup_sessions.create(
+            provider_id="YOUR-SLACK-PROVIDER-ID",
+            provider_auth_method_id="oauth"
         )
 
-        print(f"Authorize Slack here: {slack_oauth.url}")
-        print(f"OAuth Session ID: {slack_oauth.id}")
+        print(f"Authorize Slack here: {slack_setup.url}")
 
         # Wait for authorization
-        await metorial.oauth.wait_for_completion([slack_oauth])
+        completed = await metorial.wait_for_setup_session(slack_setup)
         print("✓ Slack authorized!")
 
-        # Save slack_oauth.id for future use
-        return slack_oauth.id
+        # Save the auth config ID for future use
+        return completed.auth_config.id
 
     asyncio.run(setup_slack_oauth())
     ```
@@ -174,17 +174,17 @@ Your standup bot needs permission to post messages and read thread replies in yo
     4. You'll be redirected to your callback URL (or see a confirmation page)
   </Step>
 
-  <Step title="Store OAuth Session ID">
-    Save the OAuth session ID securely. You'll reuse it for all future bot operations without re-authorizing.
+  <Step title="Store Auth Config ID">
+    Save the auth config ID securely. You'll reuse it for all future bot operations without re-authorizing.
 
-    For production apps, store OAuth session IDs in your database or environment variables.
+    For production apps, store auth config IDs in your database or environment variables.
   </Step>
 </Steps>
 
 <Note>
 **Required OAuth Scopes:**
 
-The Slack MCP server requires these scopes:
+The Slack provider requires these scopes:
 - `chat:write` - Post messages to channels
 - `channels:read` - Read public channel information
 - `channels:history` - Read message history to collect thread replies
@@ -213,7 +213,7 @@ const anthropic = new Anthropic({
 
 // Slack integration credentials
 const SLACK_DEPLOYMENT_ID = "YOUR_SLACK_DEPLOYMENT_ID";
-const SLACK_OAUTH_SESSION_ID = "YOUR_SLACK_OAUTH_SESSION_ID";
+const SLACK_AUTH_CONFIG_ID = "YOUR_SLACK_AUTH_CONFIG_ID";
 
 async function runStandup(
   channelId: string,
@@ -234,15 +234,14 @@ You have ${collectionTimeMinutes} minutes to respond.`;
   await metorial.withProviderSession(
     metorialAnthropic,
     {
-      serverDeployments: [
+      providers: [
         {
-          serverDeploymentId: SLACK_DEPLOYMENT_ID,
-          oauthSessionId: SLACK_OAUTH_SESSION_ID
+          providerDeploymentId: SLACK_DEPLOYMENT_ID,
+          providerAuthConfigId: SLACK_AUTH_CONFIG_ID
         }
-      ],
-      streaming: false
+      ]
     },
-    async ({ tools, callTools }) => {
+    async session => {
       // Post the standup prompt
       const messages: Anthropic.MessageParam[] = [
         {
@@ -259,7 +258,7 @@ Use the chat_postMessage tool.`
       let response = await anthropic.messages.create({
         model: 'claude-sonnet-4-5',
         max_tokens: 4096,
-        tools,
+        tools: session.tools,
         messages
       });
 
@@ -269,7 +268,7 @@ Use the chat_postMessage tool.`
           (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use'
         );
 
-        const toolResults = await callTools(toolUseBlocks);
+        const toolResults = await session.callTools(toolUseBlocks);
 
         messages.push({ role: 'assistant', content: response.content });
         messages.push(toolResults);
@@ -278,7 +277,7 @@ Use the chat_postMessage tool.`
           model: 'claude-sonnet-4-5',
           max_tokens: 4096,
           messages,
-          tools
+          tools: session.tools
         });
       }
 
@@ -311,7 +310,7 @@ CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses
       response = await anthropic.messages.create({
         model: 'claude-sonnet-4-5',
         max_tokens: 8192,
-        tools,
+        tools: session.tools,
         messages
       });
 
@@ -323,7 +322,7 @@ CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses
 
         console.log(`Executing ${toolUseBlocks.length} tool(s)...`);
 
-        const toolResults = await callTools(toolUseBlocks);
+        const toolResults = await session.callTools(toolUseBlocks);
 
         messages.push({ role: 'assistant', content: response.content });
         messages.push(toolResults);
@@ -332,7 +331,7 @@ CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses
           model: 'claude-sonnet-4-5',
           max_tokens: 8192,
           messages,
-          tools
+          tools: session.tools
         });
       }
 
@@ -366,7 +365,7 @@ anthropic = AsyncAnthropic(api_key="YOUR-ANTHROPIC-API-KEY")
 
 # Slack integration credentials
 SLACK_DEPLOYMENT_ID = "SLACK_DEPLOYMENT_ID"
-SLACK_OAUTH_SESSION_ID = "SLACK_OAUTH_SESSION_ID"
+SLACK_AUTH_CONFIG_ID = "SLACK_AUTH_CONFIG_ID"
 
 async def run_standup(
     channel_id: str,
@@ -386,10 +385,10 @@ You have {collection_time_minutes} minutes to respond."""
 
     async with metorial.provider_session(
         provider="anthropic",
-        server_deployments=[
+        providers=[
             {
-                "serverDeploymentId": SLACK_DEPLOYMENT_ID,
-                "oauthSessionId": SLACK_OAUTH_SESSION_ID
+                "provider_deployment_id": SLACK_DEPLOYMENT_ID,
+                "provider_auth_config_id": SLACK_AUTH_CONFIG_ID
             }
         ],
     ) as session:
@@ -407,7 +406,7 @@ Use the chat_postMessage tool."""
 
         print("Posting standup prompt...")
         response = await anthropic.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-5",
             max_tokens=4096,
             tools=session.tools,
             messages=messages,
@@ -425,7 +424,7 @@ Use the chat_postMessage tool."""
             messages.append(tool_results)
 
             response = await anthropic.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5",
                 max_tokens=4096,
                 tools=session.tools,
                 messages=messages,
@@ -458,7 +457,7 @@ CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses
         })
 
         response = await anthropic.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-5",
             max_tokens=8192,
             tools=session.tools,
             messages=messages,
@@ -478,7 +477,7 @@ CRITICAL: Base summary ONLY on real messages. If no responses, say "No responses
             messages.append(tool_results)
 
             response = await anthropic.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5",
                 max_tokens=8192,
                 tools=session.tools,
                 messages=messages,
@@ -504,7 +503,7 @@ asyncio.run(run_standup(
 
 1. **Posts standup prompt** to the team channel with clear instructions
 2. **Waits for responses** (configurable time)
-3. **Collects all thread replies** using the Slack MCP server
+3. **Collects all thread replies** using the Slack provider
 4. **AI analyzes responses** for progress, blockers, and dependencies
 5. **Generates executive summary** with key insights
 6. **Posts summary** to leadership channel

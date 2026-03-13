@@ -30,7 +30,7 @@ Each provider integration handles the specifics of formatting tools and response
 
 **For TypeScript projects**, we recommend using the **Vercel AI SDK** provider (`@metorial/ai-sdk`). It offers the best developer experience with built-in streaming support, unified tool handling, and compatibility with multiple model providers.
 
-**For Python projects**, use the provider-specific packages like `MetorialAnthropic` or `MetorialOpenAI`. These work directly with the official Python SDKs from each provider.
+**For Python projects**, pass `provider="anthropic"` or `provider="openai"` when creating a session. The Python SDK formats tools automatically for the provider you specify, and you use the official Python SDK from each provider to make model calls.
 
 **For production applications**, consider factors like model capabilities, pricing, rate limits, and latency when choosing your provider. Metorial makes it easy to switch providers later if your needs change.
 

@@ -1,19 +1,19 @@
 ---
-title: "Custom MCP Servers"
-description: "Deploy your own custom MCP servers beyond the pre-built integrations."
+title: "Custom Providers"
+description: "Deploy your own custom providers beyond the pre-built integrations."
 ---
 
 <Note>
 **What you'll learn:**
-- The types of custom servers available
+- The types of custom providers available
 - When to use each type
 </Note>
 
-Beyond the pre-built integrations in the Metorial catalog, you can deploy your own custom MCP servers. Choose from three deployment options based on your requirements.
+Beyond the pre-built integrations in the Metorial catalog, you can deploy your own custom providers. Choose from two deployment options based on your requirements.
 
-## Types of Custom Servers
+## Types of Custom Providers
 
-### Managed Servers
+### Custom Providers
 
 Upload your MCP server code and Metorial hosts it for you. Your code runs in Metorial's infrastructure with automatic scaling and monitoring. Supported languages include TypeScript/JavaScript (Node.js) and Python.
 
@@ -24,7 +24,7 @@ Upload your MCP server code and Metorial hosts it for you. Your code runs in Met
 - Rapid prototyping and deployment
 </Info>
 
-### External Servers
+### External Providers
 
 Connect your self-hosted MCP server to Metorial. Your server runs on your own infrastructure and Metorial connects to it via HTTP/HTTPS. You maintain full control over hosting, security, and deployment.
 
@@ -35,27 +35,14 @@ Connect your self-hosted MCP server to Metorial. Your server runs on your own in
 - Sensitive data that must stay in your environment
 </Info>
 
-### Forking
-
-Clone and modify an existing integration from the catalog. Start with a working integration and customize it to your needs. The forked server becomes a managed server that you can deploy and update.
-
-<Info>
-**Best for:**
-- Customizing existing integrations
-- Adding features to catalog servers
-- Learning from existing implementations
-</Info>
 
 ## Getting Started
 
-<CardGroup cols={3}>
-  <Card title="Managed Servers" icon="cloud-upload" href="/custom-servers-managed-getting-started">
+<CardGroup cols={2}>
+  <Card title="Custom Providers" icon="cloud-upload" href="/custom-servers-managed-getting-started">
     Deploy code hosted by Metorial.
   </Card>
-  <Card title="External Servers" icon="link" href="/custom-servers-external-connecting">
-    Connect your self-hosted server.
-  </Card>
-  <Card title="Fork a Server" icon="code-branch" href="/custom-servers-forking-overview">
-    Customize an existing integration.
+  <Card title="External Providers" icon="link" href="/custom-servers-external-connecting">
+    Connect your self-hosted provider.
   </Card>
 </CardGroup>

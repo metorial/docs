@@ -57,7 +57,7 @@
             "group": "Core Concepts",
             "pages": [
               "concepts-projects-organizations",
-              "concepts-server-deployments",
+              "concepts-providers",
               "concepts-sessions",
               "concepts-environments",
               "concepts-monitoring"
@@ -66,7 +66,7 @@
         ]
       },
       {
-        "tab": "Custom Servers",
+        "tab": "Custom Providers",
         "groups": [
           {
             "group": "Overview",
@@ -75,25 +75,17 @@
             ]
           },
           {
-            "group": "Managed Servers",
+            "group": "Custom Providers",
             "pages": [
               "custom-servers-managed-getting-started",
-              "custom-servers-managed-configuration",
               "custom-servers-managed-deployment"
             ]
           },
           {
-            "group": "External Servers",
+            "group": "External Providers",
             "pages": [
               "custom-servers-external-connecting",
               "custom-servers-external-authentication"
-            ]
-          },
-          {
-            "group": "Forked Servers",
-            "pages": [
-              "custom-servers-forking-overview",
-              "custom-servers-forking-customizing"
             ]
           }
         ]

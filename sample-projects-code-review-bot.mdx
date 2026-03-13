@@ -15,7 +15,7 @@ This tutorial demonstrates practical AI-driven code analysis using Metorial's Gi
 
 <Note>
 **What you'll learn:**
-- Deploying the GitHub MCP server
+- Deploying the GitHub provider
 - Setting up OAuth for GitHub repositories
 - Creating an AI agent that reviews code
 - Posting GitHub review comments programmatically
@@ -62,24 +62,24 @@ The code review bot workflow:
    - Code smells (duplication, long functions, complexity)
    - Style violations (naming, formatting, consistency)
    - Best practices (error handling, documentation, testing)
-4. **Post Review**: Bot posts the review to GitHub via the GitHub MCP server:
+4. **Post Review**: Bot posts the review to GitHub via the GitHub provider:
    - Overall summary comment
    - Line-specific feedback on issues
    - Review decision (approve or request changes)
 
-**Tools used**: Local git (read code changes) + AI Model (code analysis) + GitHub MCP Server (post reviews)
+**Tools used**: Local git (read code changes) + AI Model (code analysis) + GitHub provider (post reviews)
 
-## Step 1: Deploy GitHub MCP Server
+## Step 1: Deploy GitHub Provider
 
-Deploy the GitHub MCP server from Metorial's catalog to enable your bot to interact with GitHub.
+Deploy the GitHub provider from Metorial's catalog to enable your bot to interact with GitHub.
 
 <Steps>
-  <Step title="Navigate to Server Catalog">
-    In the Metorial Dashboard, go to **Servers** and search for "GitHub".
+  <Step title="Navigate to Provider Catalog">
+    In the Metorial Dashboard, go to **Providers** and search for "GitHub".
   </Step>
 
-  <Step title="Deploy GitHub Server">
-    Click the **GitHub** server, then click **Deploy Server** → **Server Deployment**.
+  <Step title="Deploy GitHub Provider">
+    Click the **GitHub** provider, then click **Deploy** → **Provider Deployment**.
 
     Give your deployment a descriptive name like "Code Review Bot GitHub".
   </Step>
@@ -124,19 +124,19 @@ Your code review bot needs permission to access your GitHub repositories.
     });
 
     async function setupGitHubOAuth() {
-      const githubOAuth = await metorial.oauth.sessions.create({
-        serverDeploymentId: 'YOUR-GITHUB-DEPLOYMENT-ID'
+      const githubSetup = await metorial.providers.setupSessions.create({
+        providerId: 'YOUR-GITHUB-PROVIDER-ID',
+        providerAuthMethodId: 'oauth'
       });
 
-      console.log('Authorize GitHub here:', githubOAuth.url);
-      console.log('OAuth Session ID:', githubOAuth.id);
+      console.log('Authorize GitHub here:', githubSetup.url);
 
       // Wait for authorization
-      await metorial.oauth.waitForCompletion([githubOAuth]);
+      const completed = await metorial.waitForSetupSession([githubSetup]);
       console.log('✓ GitHub authorized!');
 
-      // Save githubOAuth.id for future use
-      return githubOAuth.id;
+      // Save the auth config ID for future use
+      return completed.authConfig.id;
     }
 
     setupGitHubOAuth();
@@ -149,19 +149,19 @@ Your code review bot needs permission to access your GitHub repositories.
     async def setup_github_oauth():
         metorial = Metorial(api_key="YOUR-METORIAL-API-KEY")
 
-        github_oauth = metorial.oauth.sessions.create(
-            server_deployment_id="YOUR-GITHUB-DEPLOYMENT-ID"
+        github_setup = await metorial.providers.setup_sessions.create(
+            provider_id="YOUR-GITHUB-PROVIDER-ID",
+            provider_auth_method_id="oauth"
         )
 
-        print(f"Authorize GitHub here: {github_oauth.url}")
-        print(f"OAuth Session ID: {github_oauth.id}")
+        print(f"Authorize GitHub here: {github_setup.url}")
 
         # Wait for authorization
-        await metorial.oauth.wait_for_completion([github_oauth])
+        completed = await metorial.wait_for_setup_session(github_setup)
         print("✓ GitHub authorized!")
 
-        # Save github_oauth.id for future use
-        return github_oauth.id
+        # Save the auth config ID for future use
+        return completed.auth_config.id
 
     asyncio.run(setup_github_oauth())
     ```
@@ -175,17 +175,17 @@ Your code review bot needs permission to access your GitHub repositories.
     4. You'll be redirected to your callback URL (or see a confirmation page)
   </Step>
 
-  <Step title="Store OAuth Session ID">
-    Save the OAuth session ID securely. You'll reuse it for all future bot operations without re-authorizing.
+  <Step title="Store Auth Config ID">
+    Save the auth config ID securely. You'll reuse it for all future bot operations without re-authorizing.
 
-    For production apps, store OAuth session IDs in your database per user/repository.
+    For production apps, store auth config IDs in your database per user/repository.
   </Step>
 </Steps>
 
 <Note>
 **Required OAuth Scopes:**
 
-The GitHub MCP server requires the `repo` scope for posting reviews, which provides:
+The GitHub provider requires the `repo` scope for posting reviews, which provides:
 - Write access to post review comments and line-specific feedback
 - Permission to approve PRs or request changes on your repositories
 
@@ -217,7 +217,7 @@ const anthropic = new Anthropic({
 
 // GitHub integration credentials
 const GITHUB_DEPLOYMENT_ID = "GITHUB_DEPLOYMENT_ID";
-const GITHUB_OAUTH_SESSION_ID = "GITHUB_OAUTH_SESSION_ID";
+const GITHUB_AUTH_CONFIG_ID = "GITHUB_AUTH_CONFIG_ID";
 
 async function reviewPullRequest(
   repoPath: string,
@@ -261,15 +261,14 @@ async function reviewPullRequest(
   await metorial.withProviderSession(
     metorialAnthropic,
     {
-      serverDeployments: [
+      providers: [
         {
-          serverDeploymentId: GITHUB_DEPLOYMENT_ID,
-          oauthSessionId: GITHUB_OAUTH_SESSION_ID
+          providerDeploymentId: GITHUB_DEPLOYMENT_ID,
+          providerAuthConfigId: GITHUB_AUTH_CONFIG_ID
         }
-      ],
-      streaming: false
+      ]
     },
-    async ({ tools, callTools }) => {
+    async session => {
       // Prepare review prompt with diff content
       const messages: Anthropic.MessageParam[] = [
         {
@@ -310,7 +309,7 @@ You MUST use the tool to post the review. START NOW.`
       let response = await anthropic.messages.create({
         model: 'claude-sonnet-4-5',
         max_tokens: 8192,
-        tools,
+        tools: session.tools,
         messages
       });
 
@@ -323,7 +322,7 @@ You MUST use the tool to post the review. START NOW.`
         console.log(`Executing ${toolUseBlocks.length} tool(s)...`);
 
         // Execute tools via Metorial
-        const toolResults = await callTools(toolUseBlocks);
+        const toolResults = await session.callTools(toolUseBlocks);
 
         // Add assistant response and tool results to conversation
         messages.push({ role: 'assistant', content: response.content });
@@ -334,7 +333,7 @@ You MUST use the tool to post the review. START NOW.`
           model: 'claude-sonnet-4-5',
           max_tokens: 8192,
           messages,
-          tools
+          tools: session.tools
         });
       }
 
@@ -363,7 +362,7 @@ anthropic = AsyncAnthropic(api_key="YOUR_ANTHROPIC_API_KEY")
 
 # GitHub integration credentials
 GITHUB_DEPLOYMENT_ID = "GITHUB_DEPLOYMENT_ID"
-GITHUB_OAUTH_SESSION_ID = "GITHUB_OAUTH_SESSION_ID"
+GITHUB_AUTH_CONFIG_ID = "GITHUB_AUTH_CONFIG_ID"
 
 async def review_pull_request(
     repo_path: str,
@@ -413,10 +412,10 @@ async def review_pull_request(
     # Create Metorial session with GitHub integration
     async with metorial.provider_session(
         provider="anthropic",
-        server_deployments=[
+        providers=[
             {
-                "serverDeploymentId": GITHUB_DEPLOYMENT_ID,
-                "oauthSessionId": GITHUB_OAUTH_SESSION_ID
+                "provider_deployment_id": GITHUB_DEPLOYMENT_ID,
+                "provider_auth_config_id": GITHUB_AUTH_CONFIG_ID
             }
         ],
     ) as session:
@@ -456,7 +455,7 @@ You MUST use the tool to post the review. START NOW."""
 
         # Send initial request to Claude
         response = await anthropic.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-4-5",
             max_tokens=8192,
             tools=session.tools,
             messages=messages,
@@ -498,7 +497,7 @@ You MUST use the tool to post the review. START NOW."""
 
             # Continue conversation
             response = await anthropic.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5",
                 max_tokens=8192,
                 tools=session.tools,
                 messages=messages,
@@ -516,7 +515,7 @@ You MUST use the tool to post the review. START NOW."""
 **What this code does:**
 
 1. **Reads git diff locally** from your repository between the base and feature branches
-2. **Creates a provider session** with GitHub MCP server for posting reviews
+2. **Creates a provider session** with GitHub provider for posting reviews
 3. **Sends the diff to Claude** with analysis instructions
 4. **AI analyzes the code** and identifies issues
 5. **AI posts review to GitHub** using `create_pull_request_review` tool with findings
@@ -664,7 +663,7 @@ Common issues and solutions when building your code review bot:
   <Accordion title="Error: Tool not found or tool call failed">
     **Possible causes**:
     - Incorrect tool name in code
-    - GitHub MCP server deployment not active
+    - GitHub provider deployment not active
     - OAuth permissions insufficient
 
     **Solutions**:

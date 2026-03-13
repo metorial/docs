@@ -1,6 +1,6 @@
 ---
-title: "Deploying Managed Servers"
-description: "Learn how to deploy and manage versions of your custom MCP servers."
+title: "Deploying Custom Providers"
+description: "Learn how to deploy and manage versions of your custom providers."
 ---
 
 <Note>
@@ -10,22 +10,23 @@ description: "Learn how to deploy and manage versions of your custom MCP servers
 - Rollback strategies
 </Note>
 
-Deploy your managed server code and manage different versions over time. Metorial automatically builds and deploys your code when you upload it.
+Deploy your custom provider code and manage different versions over time. Metorial automatically builds and deploys your code when you upload it.
 
 ## Creating Deployments
 
 <Steps>
   <Step title="Upload Code">
-    Upload your server code through the dashboard.
+    Upload your provider code through the dashboard.
+    ![Editing custom provider code](/images/custom-servers/custom-provider-code.png)
   </Step>
-  <Step title="Click Deploy">
-    Metorial builds your server and installs dependencies automatically.
+  <Step title="Click Publish New Version">
+    Metorial builds your provider and installs dependencies automatically.
   </Step>
   <Step title="Validation">
     The build process validates your code and reports any errors.
   </Step>
   <Step title="Go Live">
-    Your server deploys and becomes available for use.
+    Your provider deploys and becomes available for use.
   </Step>
 </Steps>
 
@@ -46,6 +47,6 @@ Revert to any previous version if you encounter issues with a new deployment. Se
 
 ## What's Next?
 
-<Card title="Configuration" icon="gear" href="/custom-servers-managed-configuration">
-  Configure your server settings.
+<Card title="Getting Started" icon="rocket" href="/custom-servers-managed-getting-started">
+  Create your first custom provider.
 </Card>

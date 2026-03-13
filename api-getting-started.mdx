@@ -39,7 +39,7 @@ To use the Metorial API, you'll need an API key. You can generate these in two t
 You can generate both publishable and secret API keys in your Metorial dashboard by navigating to **Developer** → **API Keys**.
 </Note>
 
-![Create API Key dialog in Metorial dashboard](/images/api-getting-started/create-api-key.png)
+![Create API Key dialog in Metorial dashboard](/images/api-getting-started/step1.png)
 
 ## Making Your First API Request
 
@@ -52,15 +52,35 @@ https://api.metorial.com
 To authenticate, include your API key in the request header:
 
 ```http
-Authorization: Bearer metorial_pk_abc123
+Authorization: Bearer metorial_sk_abc123
 ```
 
-To get started, let's make a simple request to fetch a list of threads:
+Here's a simple request to list your provider deployments:
 
 ```bash
-curl -X GET https://api.metorial.com/secrets \
-  -H "Authorization: Bearer metorial_pk_abc123"
+curl -X GET https://api.metorial.com/provider-deployments \
+  -H "Authorization: Bearer metorial_sk_abc123"
 ```
+
+## API Resources
+
+The Metorial API covers these resource groups:
+
+**Providers**
+- `GET/POST /provider-deployments` — Create and manage provider deployments
+- `GET/POST /provider-configs` — Manage provider configurations
+- `GET/POST /provider-auth-configs` — Manage stored credentials (OAuth tokens, API keys)
+- `GET/POST /provider-setup-sessions` — Create OAuth/config authorization flows for users
+- `GET /provider-versions` — Browse available provider versions
+- `GET /provider-specifications` — View tools and auth methods for a provider version
+
+**Sessions**
+- `POST /sessions` — Create a session connected to one or more providers
+- `GET /session-connections` — View connections within a session
+- `GET /session-messages` — View tool calls and messages
+- `GET /session-events` — View session events
+- `GET /session-participants` — View session participants
+- `GET/POST /session-templates` — Save and reuse session configurations
 
 ## Client Libraries
 
@@ -98,7 +118,7 @@ Our API uses standard HTTP response codes:
 
 ### Pagination
 
-When fetching lists of items, we support pagination. Each response includes cursors to help you fetch more items easily.
+When fetching lists of items, we support cursor-based pagination. Each response includes `has_more_before`, `has_more_after`, and pagination cursors to help you fetch more items easily.
 
 ## Need More Help?
 
