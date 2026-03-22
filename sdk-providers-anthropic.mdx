@@ -26,20 +26,20 @@ import Anthropic from '@anthropic-ai/sdk';
 let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
 let anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-await metorial.withProviderSession(
-    metorialAnthropic,
-    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
-    async session => {
-        let response = await anthropic.messages.create({
-            model: 'claude-sonnet-4-5',
-            max_tokens: 1024,
-            messages: [{ role: 'user', content: 'Help me' }],
-            tools: session.tools
-        });
-    }
-);
-```
+let session = await metorial.connect({
+  adapter: metorialAnthropic(),
+  providers: [
+    { providerDeploymentId: 'your-provider-deployment-id' }
+  ]
+});
 
+let response = await anthropic.messages.create({
+  model: "claude-sonnet-4-5",
+  max_tokens: 1024,
+  messages: [{ role: "user", content: "Help me" }],
+  tools: session.tools()
+});
+```
 
 ```python Python
 from metorial import Metorial

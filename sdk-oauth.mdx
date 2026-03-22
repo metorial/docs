@@ -47,7 +47,6 @@ let setupSession = await metorial.providers.setupSessions.create({
 console.log('Authorize here:', setupSession.url);
 ```
 
-
 ```python Python
 setup_session = await metorial.providers.setup_sessions.create(
     provider_id="your-provider-id",
@@ -80,7 +79,6 @@ await db.users.update(userId, {
 });
 ```
 
-
 ```python Python
 # Waits until the user completes OAuth — returns the completed setup session
 completed = await metorial.wait_for_setup_session(setup_session)
@@ -98,22 +96,16 @@ Retrieve the stored auth config ID from your database and pass it when creating 
 <CodeGroup>
 
 ```typescript TypeScript
-await metorial.withProviderSession(
-    metorialAnthropic,
+let session = await metorial.connect({
+  adapter: metorialAnthropic(),
+  providers: [
     {
-        providers: [
-            {
-                providerDeploymentId: 'slack-deployment-id',
-                providerAuthConfigId: storedAuthConfigId  // From your database
-            }
-        ]
-    },
-    async session => {
-        // Tools now have access to user's Slack account
-    }
-);
+		providerDeploymentId: 'your-provider-deployment-id',
+		providerAuthConfigId: storedAuthConfig
+	}
+  ]
+});
 ```
-
 
 ```python Python
 async with metorial.provider_session(
@@ -137,29 +129,20 @@ You can combine multiple OAuth-enabled providers in a single session:
 <CodeGroup>
 
 ```typescript TypeScript
-await metorial.withProviderSession(
-    metorialAnthropic,
-    {
-        providers: [
-            {
-                providerDeploymentId: 'github-deployment-id',
-                providerAuthConfigId: githubAuthConfigId
-            },
-            {
-                providerDeploymentId: 'slack-deployment-id',
-                providerAuthConfigId: slackAuthConfigId
-            },
-            {
-                providerDeploymentId: 'exa-deployment-id'  // No OAuth needed
-            }
-        ]
-    },
-    async session => {
-        // AI can now use GitHub, Slack, and Exa tools
-    }
-);
+providers: [
+  {
+    providerDeploymentId: "github-deployment-id",
+    providerAuthConfigId: githubAuthConfigId,
+  },
+  {
+    providerDeploymentId: "slack-deployment-id",
+    providerAuthConfigId: slackAuthConfigId,
+  },
+  {
+    providerDeploymentId: "exa-deployment-id", // No OAuth needed
+  },
+]
 ```
-
 
 ```python Python
 async with metorial.provider_session(
@@ -210,22 +193,16 @@ let completedSetup = await metorial.waitForSetupSession([setupSession]);
 // database.save(userId, completedSetup.authConfig.id)
 
 // 5. Use in a session
-await metorial.withProviderSession(
-    metorialAnthropic,
+let session = await metorial.connect({
+  adapter: metorialAnthropic(),
+  providers: [
     {
-        providers: [
-            {
-                providerDeploymentId: 'your-slack-deployment-id',
-                providerAuthConfigId: completedSetup.authConfig.id
-            }
-        ]
-    },
-    async session => {
-        // Your AI now has access to user's Slack
-    }
-);
+		providerDeploymentId: 'your-slack-provider-id',
+		providerAuthConfigId: storedAuthConfig
+	}
+  ]
+});
 ```
-
 
 ```python Python
 import asyncio
@@ -273,6 +250,7 @@ asyncio.run(main())
   <Card title="Provider Examples" href="/sdk-providers-overview">
     See how to use OAuth with different AI providers.
   </Card>
+
   <Card title="OAuth Integrations" href="/integrations-oauth">
     Learn about OAuth-enabled integrations in the catalog.
   </Card>

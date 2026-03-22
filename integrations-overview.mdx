@@ -1,17 +1,19 @@
 ---
-title: 'Integrations Overview'
-description: 'Pre-built provider integrations that you can deploy without writing any code'
+title: "Integrations Overview"
+description: "Pre-built provider integrations that you can deploy without writing any code"
 ---
 
 <Note>
-**What you'll learn:**
-- What integrations are available
-- Authentication types (OAuth vs API key)
-- Licensing and deployment options
+  **What you'll learn:**
 
-**Related resources:**
-- [Browsing the Catalog](integrations-browsing-catalog)
-- [Deploy Your First Provider](metorial-101-deploying)
+  - What integrations are available
+  - Authentication types (OAuth vs API key)
+  - Licensing and deployment options
+
+  **Related resources:**
+
+  - [Browsing the Catalog](integrations-browsing-catalog)
+  - [Deploy Your First Provider](metorial-101-deploying)
 </Note>
 
 ## What Are Integrations?
@@ -25,6 +27,7 @@ Each integration exposes tools that your AI models can call directly. For exampl
 Metorial uses the **FSL (Functional Source License)** - source-available with commercial licensing for production.
 
 **What this means for developers:**
+
 - **Free during development**: Build and test without restrictions
 - **Source available**: Audit the code for security and compliance
 - **Production requires a license**: Contact us when you're ready to deploy
@@ -33,18 +36,18 @@ Metorial uses the **FSL (Functional Source License)** - source-available with co
 
 ### Cloud SaaS (Recommended)
 
-Start building immediately with Metorial's hosted cloud at [app.metorial.com](https://app.metorial.com). No infrastructure setup required—just create an account and deploy integrations.
+Start building immediately with Metorial's hosted cloud at [platform.metorial.com](https://platform.metorial.com). No infrastructure setup required—just create an account and deploy integrations.
 
 <Info>
-**Ideal for**: Teams who want to focus on building AI features rather than managing infrastructure.
+  **Ideal for**: Teams who want to focus on building AI features rather than managing infrastructure.
 </Info>
 
 ### Enterprise On-Premises
 
-Self-host Metorial in your own cloud environment when you need full control over data and infrastructure. Metorial runs on **HashiStack** (Nomad, Vault, Consul) and deploys to AWS, GCP, Azure, or your private cloud.
+Self-host Metorial in your own cloud environment when you need full control over data and infrastructure. Metorial uses **HashiStack** (Nomad, Vault, Consul) and deploys to AWS, GCP, Azure, or your private cloud.
 
 <Info>
-**Ideal for**: Enterprises with strict data residency requirements or compliance needs.
+  **Ideal for**: Enterprises with strict data residency requirements or compliance needs.
 </Info>
 
 Contact us for enterprise licensing and deployment support:
@@ -60,11 +63,11 @@ Integrations use two authentication patterns depending on whether they access sh
 Best for services where one API key serves your entire application. The integration uses your credentials to make requests on behalf of your app.
 
 <Info>
-**Examples**: Exa (search), Tavily (search), Brave (search)
+  **Examples**: Exa (search), Tavily (search), Brave (search)
 
-**When to use**: Single-tenant applications, internal tools, or services that don't have user-specific data.
+  **When to use**: Single-tenant applications, internal tools, or services that don't have user-specific data.
 
-**Setup**: Get an API key from the service, create a deployment in Metorial, and paste your key. Done.
+  **Setup**: Get an API key from the service, create a deployment in Metorial, and paste your key. Done.
 </Info>
 
 ### OAuth Integrations
@@ -72,11 +75,11 @@ Best for services where one API key serves your entire application. The integrat
 Required when each user needs to authorize access to their own account. The integration acts on behalf of individual users with their explicit permission.
 
 <Info>
-**Examples**: Slack, GitHub, Google Calendar, Gmail
+  **Examples**: Slack, GitHub, Google Calendar, Gmail
 
-**When to use**: Multi-tenant applications where users connect their personal accounts.
+  **When to use**: Multi-tenant applications where users connect their personal accounts.
 
-**How it works**: Users authorize via OAuth, you store their **Provider Auth Config ID**, and pass it when creating sessions. Each user's data stays isolated.
+  **How it works**: Users authorize via OAuth, you store their **Provider Auth Config ID**, and pass it when creating sessions. Each user's data stays isolated.
 </Info>
 
 See [OAuth Integrations](integrations-oauth) for implementation patterns.
@@ -86,11 +89,11 @@ See [OAuth Integrations](integrations-oauth) for implementation patterns.
 You can mix both authentication types in the same application. For example, use an API key integration for search (Exa) while using OAuth integrations for user-specific services (Slack, GitHub). When creating sessions, pass multiple deployments together—Metorial combines all their tools into a single tool list for your AI model.
 
 <Info>
-**Single-user applications**: API key integrations work well.
+  **Single-user applications**: API key integrations work well.
 
-**Multi-user applications**: Use OAuth integrations for user-specific access.
+  **Multi-user applications**: Use OAuth integrations for user-specific access.
 
-**Enterprise**: Consider BYO OAuth apps with dynamic provider deployments.
+  **Enterprise**: Consider BYO OAuth apps with dynamic provider deployments.
 </Info>
 
 ## Getting Started
@@ -99,9 +102,11 @@ You can mix both authentication types in the same application. For example, use 
   <Card title="Browse the Catalog" icon="grid" href="integrations-browsing-catalog">
     Explore available integrations.
   </Card>
+
   <Card title="API Key Setup" icon="key" href="integrations-api-key">
     Deploy an API key-based integration.
   </Card>
+
   <Card title="OAuth Setup" icon="shield" href="integrations-oauth">
     Deploy an OAuth-based integration.
   </Card>

@@ -46,22 +46,18 @@ import { metorialAiSdk } from '@metorial/ai-sdk';
 import { anthropic } from '@ai-sdk/anthropic';
 import { generateText } from 'ai';
 
-let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+let metorial = new Metorial({ 
+	apiKey: process.env.METORIAL_API_KEY 
+});
 
-await metorial.withProviderSession(
-    metorialAiSdk,
-    {
-        providers: [{ providerDeploymentId: 'your-exa-deployment-id' }]
-    },
-    async session => {
-        let { text } = await generateText({
-            model: anthropic('claude-sonnet-4-5'),
-            prompt: 'Search for the latest AI news',
-            tools: session.tools
-        });
-        console.log(text);
-    }
-);
+let session = await metorial.connect({
+  adapter: metorialAiSdk(),
+  providers: [
+	{ providerDeploymentId: 'your-exa-deployment-id' }
+  ]
+});
+
+let tools = session.tools();
 ```
 
 ```python Python
@@ -110,6 +106,7 @@ curl -X POST https://api.metorial.com/sessions \
   <Card title="OAuth Integrations" icon="shield" href="/integrations-oauth">
     Set up user-authorized integrations.
   </Card>
+
   <Card title="SDK Quickstart" icon="code" href="/sdk-quickstart">
     Build your first AI agent.
   </Card>

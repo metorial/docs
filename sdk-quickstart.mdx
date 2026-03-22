@@ -46,7 +46,6 @@ npm install @metorial/mistral     # Mistral
 npm install @metorial/deepseek    # DeepSeek
 ```
 
-
 ```bash Python
 # Install the SDK
 pip install metorial
@@ -83,25 +82,26 @@ let metorial = new Metorial({
     apiKey: process.env.METORIAL_API_KEY
 });
 
-await metorial.withProviderSession(
-    metorialAiSdk,
-    {
-        providers: [{ providerDeploymentId: 'your-provider-deployment-id' }]
-    },
-    async session => {
-        let result = streamText({
-            model: anthropic('claude-sonnet-4-5'),
-            prompt: 'Search for the latest AI research',
-            tools: session.tools
-        });
+let session = await metorial.connect({
+  adapter: metorialAnthropic(),
+  providers: [
+    { providerDeploymentId: 'your-provider-deployment-id' }
+  ]
+});
 
-        for await (let textPart of result.textStream) {
-            process.stdout.write(textPart);
-        }
-    }
-);
+let tools = session.tools()
+
+
+let result = streamText({
+	model: anthropic('claude-sonnet-4-5'),
+	prompt: 'Search for the latest AI research',
+	tools
+});
+
+for await (let textPart of result.textStream) {
+	process.stdout.write(textPart);
+}
 ```
-
 
 ```python Python
 from metorial import Metorial
@@ -165,31 +165,24 @@ let setupSession = await metorial.providers.setupSessions.create({
 // 2. Send the URL to your user
 console.log('Authorize Slack:', setupSession.url);
 
-// 3. Wait for completion — returns the completed setup session
+// 3. (For development) wait for completion — returns the completed setup session
 let completedSetup = await metorial.waitForSetupSession([setupSession]);
 
 // Store completedSetup.authConfig.id for this user in your database
 
 // 4. Use the auth config in a session
-await metorial.withProviderSession(
-    metorialAnthropic,
+let session = await metorial.connect({
+  adapter: metorialAnthropic(),
+  providers: [
     {
-        providers: [
-            {
-                providerDeploymentId: 'your-slack-provider-deployment-id',
-                providerAuthConfigId: completedSetup.authConfig.id
-            },
-            {
-                providerDeploymentId: 'your-exa-deployment-id' // No OAuth needed
-            }
-        ]
-    },
-    async session => {
-        // Use tools from Slack and Exa
-    }
-);
-```
+		providerDeploymentId: 'your-provider-deployment-id',
+		providerAuthConfigId: completedSetup.authConfig.id
+	}
+  ]
+});
 
+let tools = session.tools();
+```
 
 ```python Python
 import asyncio
@@ -243,7 +236,7 @@ The Metorial SDK provides specific error types to help you handle different fail
 import { MetorialAPIError } from 'metorial';
 
 try {
-    await metorial.withProviderSession(/* ... */);
+    /* ... */
 } catch (error) {
     if (error instanceof MetorialAPIError) {
         console.error(`API Error: ${error.message} (Status: ${error.status})`);
@@ -252,7 +245,6 @@ try {
     }
 }
 ```
-
 
 ```python Python
 from metorial import MetorialAPIError
@@ -274,6 +266,7 @@ except Exception as e:
   <Card title="OAuth Integration" href="/sdk-oauth">
     Handle user authorization for services like Slack and GitHub.
   </Card>
+
   <Card title="Provider Examples" href="/sdk-providers-overview">
     Use with OpenAI, Anthropic, Google, and more.
   </Card>

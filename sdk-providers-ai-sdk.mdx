@@ -23,25 +23,26 @@ import { metorialAiSdk } from '@metorial/ai-sdk';
 import { anthropic } from '@ai-sdk/anthropic';
 import { streamText } from 'ai';
 
-let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
+let metorial = new Metorial({
+	apiKey: process.env.METORIAL_API_KEY
+});
 
-await metorial.withProviderSession(
-    metorialAiSdk,
-    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
-    async session => {
-        let result = streamText({
-            model: anthropic('claude-sonnet-4-5'),
-            prompt: 'Help me',
-            tools: session.tools
-        });
+let session = await metorial.connect({
+  adapter: metorialAiSdk(),
+  providers: [{ providerDeploymentId: 'your-provider-deployment-id' }]
+});
 
-        for await (let text of result.textStream) {
-            process.stdout.write(text);
-        }
-    }
-);
+
+let result = streamText({
+  model: anthropic("claude-sonnet-4-5"),
+  prompt: "Help me",
+  tools: session.tools(),
+});
+
+for await (let text of result.textStream) {
+  process.stdout.write(text);
+}
 ```
-
 
 ```python Python
 # AI SDK is TypeScript-only

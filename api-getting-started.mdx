@@ -1,23 +1,21 @@
 ---
 title: "Getting Started with the API"
-description: "Learn how to use the Metorial API, get your API key, and make your first request"
+description: "Learn how to use the Metorial API, get your API keys, and make your first request"
 ---
 
 Welcome to the Metorial API! This guide will help you quickly understand how to start using our API and make your first requests.
 
 <Note>
-**What you'll learn:**
-- How to use the Metorial API
-- How to get your API key
-- How to make your first API request
+  **What you'll learn:**
 
-**Recommended reading:**
-- [Deploying Your First MCP Server](/metorial-101-deploying)
+  - How to use the Metorial API
+  - How to get your API key
+  - How to make your first API request
+
+  **Recommended reading:**
+
+  - [Deploying Your First MCP Server](/metorial-101-deploying)
 </Note>
-
-## What is the Metorial API?
-
-The Metorial API is a simple, user-friendly way to interact with Metorial's services. It uses standard web communication (REST) and always returns data in JSON format, making it easy to work with across different programming languages.
 
 ## Before You Begin: Getting Your API Key
 
@@ -36,7 +34,7 @@ To use the Metorial API, you'll need an API key. You can generate these in two t
 - Starts with `metorial_sk_`
 
 <Note>
-You can generate both publishable and secret API keys in your Metorial dashboard by navigating to **Developer** → **API Keys**.
+  You can generate both publishable and secret API keys in your Metorial dashboard by navigating to **Developer** → **API Keys**.
 </Note>
 
 ![Create API Key dialog in Metorial dashboard](/images/api-getting-started/step1.png)
@@ -45,7 +43,7 @@ You can generate both publishable and secret API keys in your Metorial dashboard
 
 When making a request, you'll always use this base URL:
 
-```
+```text
 https://api.metorial.com
 ```
 
@@ -62,25 +60,9 @@ curl -X GET https://api.metorial.com/provider-deployments \
   -H "Authorization: Bearer metorial_sk_abc123"
 ```
 
-## API Resources
+## Full API Reference
 
-The Metorial API covers these resource groups:
-
-**Providers**
-- `GET/POST /provider-deployments` — Create and manage provider deployments
-- `GET/POST /provider-configs` — Manage provider configurations
-- `GET/POST /provider-auth-configs` — Manage stored credentials (OAuth tokens, API keys)
-- `GET/POST /provider-setup-sessions` — Create OAuth/config authorization flows for users
-- `GET /provider-versions` — Browse available provider versions
-- `GET /provider-specifications` — View tools and auth methods for a provider version
-
-**Sessions**
-- `POST /sessions` — Create a session connected to one or more providers
-- `GET /session-connections` — View connections within a session
-- `GET /session-messages` — View tool calls and messages
-- `GET /session-events` — View session events
-- `GET /session-participants` — View session participants
-- `GET/POST /session-templates` — Save and reuse session configurations
+You can view the detailed API reference [here](https://metorial.com/api).
 
 ## Client Libraries
 
@@ -90,6 +72,7 @@ We make integration super easy with official SDKs for:
   <Card title="JavaScript" icon="js" href="/sdk-javascript">
     Use Metorial with JavaScript or TypeScript.
   </Card>
+
   <Card title="Python" icon="python" href="/sdk-python">
     Use Metorial with Python.
   </Card>

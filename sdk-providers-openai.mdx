@@ -26,21 +26,19 @@ import OpenAI from 'openai';
 let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
 let openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-await metorial.withProviderSession(
-    metorialOpenAI.chatCompletions,
-    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
-    async session => {
-        let response = await openai.chat.completions.create({
-            model: 'gpt-4o',
-            messages: [{ role: 'user', content: 'Help me' }],
-            tools: session.tools
-        });
+let session = await metorial.connect({
+  adapter: metorialOpenAI.chatCompletions(),
+  providers: [
+    { providerDeploymentId: 'your-provider-deployment-id' }
+  ]
+});
 
-        // Handle tool calls
-    }
-);
+let response = await openai.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Help me" }],
+  tools: session.tools()
+});
 ```
-
 
 ```python Python
 from metorial import Metorial

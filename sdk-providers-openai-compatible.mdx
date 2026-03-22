@@ -27,7 +27,7 @@ The integration uses the OpenAI SDK with a custom base URL, making it easy to sw
 
 ```typescript TypeScript
 import { Metorial } from 'metorial';
-import { metorialDeepSeek } from '@metorial/deepseek';
+import { createOpenAICompatibleMcpSdk } from "@metorial/openai-compatible";
 import OpenAI from 'openai';
 
 let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
@@ -36,19 +36,19 @@ let deepseek = new OpenAI({
     baseURL: 'https://api.deepseek.com'
 });
 
-await metorial.withProviderSession(
-    metorialDeepSeek.chatCompletions,
-    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
-    async session => {
-        let response = await deepseek.chat.completions.create({
-            model: 'deepseek-chat',
-            messages: [{ role: 'user', content: 'Help me' }],
-            tools: session.tools
-        });
-    }
-);
-```
+let session = await metorial.connect({
+  adapter: createOpenAICompatibleMcpSdk()(),
+  providers: [
+    { providerDeploymentId: 'your-provider-deployment-id' },
+  ],
+});
 
+let response = await deepseek.chat.completions.create({
+  model: "deepseek-chat",
+  messages: [{ role: "user", content: "Help me" }],
+  tools: session.tools()
+});
+```
 
 ```python Python
 from metorial import Metorial
