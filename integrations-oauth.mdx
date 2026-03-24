@@ -102,7 +102,7 @@ curl https://api.metorial.com/provider-setup-sessions/pss_abc123 \
 </CodeGroup>
 
 | Status | Meaning |
-|---|---|
+| --- | --- |
 | `pending` | User hasn't completed the flow yet |
 | `completed` | User authorized successfully—auth config is ready |
 | `expired` | Session expired before the user completed it |
@@ -116,20 +116,17 @@ Pass the stored Provider Auth Config ID when creating a session. Metorial uses i
 <CodeGroup>
 
 ```typescript TypeScript
-await metorial.withProviderSession(
-    metorialAnthropic,
-    {
-        providers: [
-            {
-                providerDeploymentId: 'slack-deployment-id',
-                providerAuthConfigId: storedAuthConfigId
-            }
-        ]
-    },
-    async session => {
-        // Tools now have access to user's Slack
+let session = await metorial.connect({
+  adapter: metorialAnthropic(),
+  providers: [
+  	{
+		providerDeploymentId: 'slack-deployment-id',
+        providerAuthConfigId: storedAuthConfigId
     }
-);
+  ]
+});
+
+let tools = session.tools();
 ```
 
 ```python Python
@@ -199,9 +196,11 @@ See [Enterprise BYO](/integrations-enterprise-byo) for the setup steps.
   <Card title="SDK OAuth Guide" icon="book" href="/sdk-oauth">
     SDK documentation for handling OAuth flows.
   </Card>
+
   <Card title="API Guide" icon="code" href="/api-getting-started">
     Learn about the Metorial API.
   </Card>
+
   <Card title="API Key Integrations" icon="key" href="/integrations-api-key">
     Simpler integrations without OAuth.
   </Card>

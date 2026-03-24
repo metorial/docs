@@ -26,18 +26,18 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
 let genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-await metorial.withProviderSession(
-    metorialGoogle,
-    { providers: [{ providerDeploymentId: 'your-provider-deployment-id' }] },
-    async session => {
-        let model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-pro',
-            tools: session.tools
-        });
-    }
-);
-```
+let session = await metorial.connect({
+  adapter: metorialGoogle(),
+  providers: [
+    { providerDeploymentId: 'your-provider-deployment-id' },
+  ],
+});
 
+let model = genAI.getGenerativeModel({
+  model: "gemini-1.5-pro",
+  tools: session.tools()
+});
+```
 
 ```python Python
 from metorial import Metorial

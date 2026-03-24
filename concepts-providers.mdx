@@ -4,15 +4,17 @@ description: "Providers are the integrations you connect to Metorial. Understand
 ---
 
 <Note>
-**What you'll learn:**
-- What providers, provider deployments, configs, and auth configs are
-- How these entities relate to each other
-- How to mix and match them when creating sessions
+  **What you'll learn:**
 
-**References:**
-- [Sessions Guide](/concepts-sessions)
-- [OAuth Integrations](/integrations-oauth)
-- [API Key Integrations](/integrations-api-key)
+  - What providers, provider deployments, configs, and auth configs are
+  - How these entities relate to each other
+  - How to mix and match them when creating sessions
+
+  **References:**
+
+  - [Sessions Guide](/concepts-sessions)
+  - [OAuth Integrations](/integrations-oauth)
+  - [API Key Integrations](/integrations-api-key)
 </Note>
 
 ## Providers
@@ -27,17 +29,17 @@ You browse and discover providers through the Metorial dashboard catalog.
 
 ## Provider Deployments
 
-A **provider deployment** is a running instance of a provider. When you deploy a provider from the catalog, Metorial creates a provider deployment for it.
+A **provider deployment** is a running instance of a provider.
 
 By default, a provider deployment always uses the **latest version** of the provider. You can optionally **pin** a deployment to a specific version to prevent automatic updates—useful when you need stability across a production environment.
 
-```
+```text
 Provider (e.g. "Slack")
 └── Provider Deployment (your running instance, optionally pinned to a version)
 ```
 
 <Info>
-Every deployment has a unique ID (`pdp_...`). You use this ID when creating sessions.
+  Every deployment has a unique ID (`pdp_...`). You use this ID when creating sessions.
 </Info>
 
 ## Provider Configs
@@ -49,7 +51,7 @@ Provider configs are linked to a provider and can optionally be locked to a spec
 You can also link a provider config to a **Provider Config Vault** entry, which stores a reusable config template you can apply across multiple deployments.
 
 <Info>
-Not all providers require configuration. If a provider has no required config fields, Metorial auto-creates a default config when you create a session.
+  Not all providers require configuration. If a provider has no required config fields, Metorial auto-creates a default config when you create a session.
 </Info>
 
 ## Provider Auth Configs
@@ -59,21 +61,21 @@ A **provider auth config** stores the authentication credentials for a specific 
 There are three types:
 
 | Type | Description |
-|---|---|
+| --- | --- |
 | `manual` | Credentials entered directly (e.g. an API key for Exa or Tavily) |
 | `oauth_automated` | OAuth tokens obtained via a [Provider Setup Session](/integrations-oauth) |
 | `oauth_manual` | OAuth tokens imported manually |
 
-Auth configs are stored per user—if 100 users connect their Slack accounts, you have 100 auth configs. This keeps credentials isolated and auditable.
+Auth configs are stored per user. If 100 users connect their Slack accounts, you have 100 auth configs. This keeps credentials isolated and auditable.
 
 ## Provider Setup Sessions
 
-A **provider setup session** is the flow you use to get a user authenticated with a provider. You create a setup session and redirect your user to its URL—they complete the auth flow (OAuth or manual config entry), and when they finish, Metorial creates a provider auth config automatically.
+A **provider setup session** is the flow you use to get a user authenticated with a provider. You create a setup session and redirect your user to its URL. They complete the auth flow (OAuth or manual config entry), and when they finish, Metorial creates a provider auth config automatically.
 
 Setup sessions support three modes:
 
 | Mode | Use when |
-|---|---|
+| --- | --- |
 | `auth_only` | The provider needs authentication but no config |
 | `config_only` | The provider needs configuration but no auth |
 | `auth_and_config` | The provider needs both |
@@ -91,7 +93,7 @@ When creating a session, you attach one or more **provider deployments** to it. 
 - You always need at least a **provider deployment** (or enough information to find one) for each provider in the session.
 
 <Info>
-Metorial auto-creates missing pieces where possible. For example, if a provider has no required config fields, you don't need to create a config manually—Metorial creates a default one for the session.
+  Metorial auto-creates missing pieces where possible. For example, if a provider has no required config fields, you don't need to create a config manually since Metorial creates a default one for the session.
 </Info>
 
 A single session can attach to **multiple provider combinations** at once, mixing different providers and different users' auth configs.
@@ -106,12 +108,15 @@ Beyond the catalog, you can build and deploy your own providers. See the [Custom
   <Card title="Sessions Guide" icon="circle-dot" href="/concepts-sessions">
     Learn how sessions connect to provider deployments.
   </Card>
+
   <Card title="OAuth Integrations" icon="shield" href="/integrations-oauth">
     Set up OAuth-based provider auth configs.
   </Card>
+
   <Card title="API Key Integrations" icon="key" href="/integrations-api-key">
     Set up API key-based provider auth configs.
   </Card>
+
   <Card title="Custom Providers" icon="code" href="/custom-servers-overview">
     Build and deploy your own providers.
   </Card>

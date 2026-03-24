@@ -4,16 +4,18 @@ description: "Sessions are the runtime layer that connects your application to o
 ---
 
 <Note>
-**What you'll learn:**
-- What sessions are and how they work
-- Attaching multiple providers to a session
-- Tool filters
-- Connections, messages, and events
-- Session templates
+  **What you'll learn:**
 
-**References:**
-- [Providers Guide](/concepts-providers)
-- [OAuth Integrations](/integrations-oauth)
+  - What sessions are and how they work
+  - Attaching multiple providers to a session
+  - Tool filters
+  - Connections, messages, and events
+  - Session templates
+
+  **References:**
+
+  - [Providers Guide](/concepts-providers)
+  - [OAuth Integrations](/integrations-oauth)
 </Note>
 
 ## What is a Session?
@@ -24,7 +26,7 @@ A **session** is a runtime context that connects your AI application to one or m
 2. Returns a `connection_url` you can connect an MCP client to
 3. Exposes the combined tools from all attached providers
 
-Sessions are designed to be created per-request or per-user interaction—they're lightweight and fast to start.
+Sessions are designed to be created per-request or per-user interaction. They're lightweight and fast to start.
 
 ## Attaching Providers
 
@@ -51,7 +53,7 @@ POST /sessions
 You can attach **multiple providers**—from the same provider or different ones—in a single session. The tools from all of them are merged and exposed to your AI.
 
 <Info>
-Auth configs and provider configs are resolved automatically from your project. If a provider deployment requires auth and you have an auth config for it, Metorial uses it. You can also specify which auth config to use explicitly.
+  Auth configs and provider configs are resolved automatically from your project. If a provider deployment requires auth and you have an auth config for it, Metorial uses it. You can also specify which auth config to use explicitly.
 </Info>
 
 ## Tool Filters
@@ -73,7 +75,7 @@ A single session can have multiple connections (e.g. multiple MCP clients, or a 
 Connections support four transport types:
 
 | Transport | Description |
-|---|---|
+| --- | --- |
 | `mcp` | Standard MCP protocol client connection |
 | `tool_call` | Direct tool call via the Metorial API |
 | `metorial_protocol` | Internal Metorial protocol |
@@ -110,12 +112,15 @@ POST /session-templates
   <Card title="Providers Guide" icon="server" href="/concepts-providers">
     Understand provider deployments, configs, and auth configs.
   </Card>
+
   <Card title="OAuth Integrations" icon="shield" href="/integrations-oauth">
     Set up OAuth so your users can authorize providers.
   </Card>
+
   <Card title="Monitoring" icon="chart-line" href="/concepts-monitoring">
     View session logs, messages, and events.
   </Card>
+
   <Card title="Provider Examples" icon="code" href="/sdk-providers-overview">
     Use sessions with OpenAI, Anthropic, Google, and more.
   </Card>

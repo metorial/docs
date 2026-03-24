@@ -14,7 +14,7 @@ description: "Organizations and projects help you structure your work in Metoria
 
 Metorial uses a hierarchy to organize your work:
 
-```
+```text
 Organization
 └── Project(s)
     └── Instance(s)
@@ -40,6 +40,8 @@ An **instance** represents an environment within a project (e.g., Development, P
 <Steps>
   <Step title="First-Time Setup">
     When you sign up, you'll create your first organization and project.
+
+    You can also select your data region (EU & US).
   </Step>
   <Step title="Add Projects">
     Create additional projects for different applications.
@@ -66,7 +68,6 @@ let metorialB = new Metorial({
 });
 ```
 
-
 ```python Python
 import os
 from metorial import Metorial
@@ -86,6 +87,7 @@ metorial_b = Metorial(api_key=os.getenv("METORIAL_PROJECT_B_KEY"))
   <Card title="Environments Guide" icon="layers" href="/concepts-environments">
     Learn about development vs production instances.
   </Card>
+
   <Card title="Providers" icon="server" href="/concepts-providers">
     Manage provider deployments within your projects.
   </Card>

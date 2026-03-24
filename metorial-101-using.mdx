@@ -3,9 +3,9 @@ title: "Using your first provider"
 description: "Learn how to connect your provider to an LLM and build a chat-enabled app"
 ---
 
-Now that you've deployed your first provider and confirmed it's working, you can connect it to an LLM provider like OpenAI.
+Now that you've deployed your first provider and confirmed it's working, you can connect it to an LLM like ChatGPT.
 
-In this guide, you'll learn how to build a chat-enabled app that automatically handles tool calls from your Metorial provider.
+In this guide, you'll learn how to build a chat-enabled app that automatically handles tool calls from your Metorial providers.
 
 <Note>
   **What you'll learn:**
@@ -30,7 +30,6 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     npm install metorial @metorial/openai openai
     ```
 
-    
     ```bash Python
     pip install metorial openai
     ```
@@ -44,17 +43,18 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
 
     ```typescript TypeScript
     import { Metorial } from 'metorial';
+    import { metorialOpenAI } from '@metorial/openai';
     import OpenAI from 'openai';
     
-    const metorial = new Metorial({
+    let metorial = new Metorial({
       apiKey: '$$SECRET_TOKEN$$'
     });
-    const openai = new OpenAI({
+    
+    let openai = new OpenAI({
       apiKey: '...your-openai-api-key...'
     });
     ```
 
-    
     ```python Python
     from metorial import Metorial
     from openai import OpenAI
@@ -66,20 +66,20 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     </CodeGroup>
   </Step>
   <Step title="3. Fetch Your Provider Tools">
-    Create a session that exposes your deployed provider tools. Steps 4–6 happen inside the session callback (TypeScript) or context manager (Python).
+    Create a session that exposes your deployed provider tools. 
 
     <CodeGroup>
 
     ```typescript TypeScript
-    await metorial.withProviderSession(
-      metorialOpenAI.chatCompletions,
-      { providers: [{ providerDeploymentId: '...your-provider-deployment-id...' }] },
-      async session => {
-          // Steps 4–6 take place here, using session.tools and session.callTools()
-      }
-    );
+    let session = await metorial.connect({
+    	adapter: metorialOpenAI.chatCompletions(),
+    	providers: [
+    		{ providerDeploymentId: '...your-provider-deployment-id...' }
+    	]
+    });
+    
+    let tools = session.tools();
     ```
-
 
     ```python Python
     async with metorial.provider_session(
@@ -102,7 +102,6 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     ];
     ```
 
-    
     ```python Python
     messages = [
       {"role": "user", "content": "Summarize the README.md file of the metorial/websocket-explorer repository on GitHub."}
@@ -112,23 +111,22 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     </CodeGroup>
   </Step>
   <Step title="5. Loop & Handle Tool Calls">
-    1. Send `messages` to OpenAI, passing `tools: session.tools` (TS) or `tools=session.tools` (Py).
+    1. Send `messages` to OpenAI, passing the tools.
     2. If the assistant response contains `tool_calls`, invoke it:
 
     <CodeGroup>
 
     ```typescript TypeScript
-    const response = await openai.chat.completions.create({
+    let response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages,
-      tools: session.tools
+      tools
     });
-    const choice = response.choices[0]!;
-    const toolCalls = choice.message.tool_calls;
-    const toolResults = await session.callTools(toolCalls);
+    let choice = response.choices[0]!;
+    let toolCalls = choice.message.tool_calls;
+    let toolResults = await session.callTools(toolCalls);
     ```
 
-    
     ```python Python
     response = openai_client.chat.completions.create(
       model="gpt-4o",
@@ -154,7 +152,6 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     console.log(choice.message.content);
     ```
 
-    
     ```python Python
     print(choice.message.content)
     ```
