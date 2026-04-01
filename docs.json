@@ -62,6 +62,12 @@
               "concepts-environments",
               "concepts-monitoring"
             ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "glossary"
+            ]
           }
         ]
       },

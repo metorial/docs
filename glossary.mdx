@@ -1,0 +1,158 @@
+---
+title: Glossary
+description: Definitions for Metorial organizations, providers, sessions, identities, consumers, and related concepts.
+---
+
+export const GlossaryMarker = ({ children }) => (
+  <div
+    id={`glossary-${String(children).toLowerCase()}`}
+    className="scroll-mt-24"
+    aria-hidden="true"
+  />
+);
+
+# Glossary
+
+This glossary summarizes core Metorial concepts. For deeper guides, see [Projects and Organizations](/concepts-projects-organizations), [Providers](/concepts-providers), and [Sessions](/concepts-sessions).
+
+<GlossaryMarker>A</GlossaryMarker>
+
+## Actor
+
+An actor is any entity that can perform actions in Metorial—a person or an automated agent. Actors own one or more [identities](#identity). Examples include a developer using the [Metorial CLI](#metorial-cli), a support agent using a [portal](#portal), or a background workflow.
+
+<GlossaryMarker>C</GlossaryMarker>
+
+## Callback
+
+A callback is a webhook that receives event notifications when a [trigger](#trigger) fires, so your system can react to changes in an external system.
+
+## Consumer
+
+A consumer is a user who interacts with a Metorial [instance](#instance) through an interface such as a [portal](#portal), the [Metorial CLI](#metorial-cli), or a custom surface. Consumers only see resources they are allowed to access—including [providers](#provider) and [magic MCP servers](#magic-mcp-server) assigned to them.
+
+## Consumer Profile
+
+A consumer profile is how the same person is represented in a specific interface (for example a portal versus the CLI). One person can have multiple profiles; access rules remain consistent across them.
+
+## Credential
+
+A credential is concrete access to a specific external provider for an [identity](#identity). It combines provider authentication configuration, [provider config](#provider-config), and [provider deployments](#provider-deployment) into a fully configured connection ready to use.
+
+## Custom Provider
+
+A custom provider is a user-defined integration that connects Metorial to your own services using MCP-compatible interfaces—for example a Docker-based MCP server, a remote MCP server, or a Metorial-hosted server. Once deployed, it behaves like any other [provider](#provider) in [sessions](#session) and configurations.
+
+## Custom Provider Deployment
+
+A custom provider deployment is created when you introduce a new [custom provider version](#custom-provider-version). It runs build and discovery, moves through states until successful, and enables a standard [provider version](#provider-version) you can use across Metorial.
+
+## Custom Provider Version
+
+A custom provider version is a versioned snapshot of your custom integration. New versions do not affect existing ones. Remote MCP servers are typically not version controlled by Metorial.
+
+<GlossaryMarker>I</GlossaryMarker>
+
+## Identity
+
+An identity is a collection of external access tied to an [actor](#actor): which accounts or systems that actor can use. An identity is owned by exactly one actor and contains one or more [credentials](#credential). Identities can be shared through [identity delegation](#identity-delegation).
+
+## Identity Delegation
+
+Identity delegation lets one [actor](#actor) temporarily use another actor’s [credentials](#credential) to act on their behalf. Delegation is controlled, scoped, and can be time-bound.
+
+## Instance
+
+An [organization](#organization) contains [projects](#project); a project contains instances. An instance is an isolated environment (for example development or production) with its own resources such as custom [providers](#provider), [sessions](#session), and logs. Changes in one instance do not affect others.
+
+<GlossaryMarker>M</GlossaryMarker>
+
+## Magic MCP Server
+
+A magic MCP server is a resource type that can be assigned to [consumers](#consumer) alongside [providers](#provider), depending on your setup.
+
+## Member
+
+A member is a person with access to your [organization](#organization). You assign [roles](#role), [policies](#policy), or [teams](#team) to control what they can see and do.
+
+## Metorial CLI
+
+The Metorial CLI is the command-line interface for [consumers](#consumer) to interact with Metorial: connect to [providers](#provider) and magic MCP servers, fetch logs, and automate workflows.
+
+<GlossaryMarker>O</GlossaryMarker>
+
+## Organization
+
+An organization is the top-level workspace in Metorial. It typically represents your company or a major team. All [projects](#project) and their [instances](#instance) live inside an organization, and it is the central place to manage [members](#member) and global access boundaries.
+
+<GlossaryMarker>P</GlossaryMarker>
+
+## Participant
+
+A participant is any entity involved in a [session](#session)—for example a connected client or a [session provider](#session-provider). A session can have multiple participants at the same time.
+
+## Policy
+
+A policy defines who can access what by assigning [roles](#role) to [members](#member) or [teams](#team) at the [organization](#organization), [project](#project), or [instance](#instance) level.
+
+## Portal
+
+A portal is a custom user interface on top of a Metorial [instance](#instance). It exposes selected [providers](#provider) and resources without granting the full dashboard, and supports authentication such as SAML SSO or email login.
+
+## Project
+
+A project groups related work inside an [organization](#organization)—for example a product, feature, or team. You can set access separately per project so teams only see what they are assigned.
+
+## Provider
+
+A provider is an integration with an external system. It defines what is possible—typically [tools](#tool) callable via MCP or the Metorial API, and optionally [triggers](#trigger) for external events. Providers are [versioned](#provider-version), can be built-in or [custom](#custom-provider), and appear in the catalog.
+
+## Provider Auth Config
+
+A provider auth config stores authentication material such as API keys or OAuth tokens for a [provider](#provider). It is required for authenticated providers and optional when authentication is not needed. You can maintain multiple auth configs.
+
+## Provider Config
+
+A provider config stores non-sensitive settings for a [provider](#provider)—for example regions, endpoints, or feature flags. Metorial can create defaults when none are required. Multiple configs per provider are supported.
+
+## Provider Deployment
+
+A provider deployment is the runtime instance that combines a [provider](#provider) with a [provider config](#provider-config) and [provider auth config](#provider-auth-config) and executes requests. Multiple deployments can share the same configs and scale independently.
+
+## Provider Version
+
+A provider version is a specific release of a [provider](#provider). New versions can add or change [tools](#tool) and [triggers](#trigger) while older versions keep existing setups stable.
+
+<GlossaryMarker>R</GlossaryMarker>
+
+## Role
+
+A role is a named set of permissions (scopes) that describes what actions someone can perform—for example read-only versus full management. [Policies](#policy) attach roles to [members](#member) or [teams](#team).
+
+<GlossaryMarker>S</GlossaryMarker>
+
+## Session
+
+A session is a connectable environment that exposes [tools](#tool) from one or more [providers](#provider) through a single interface. [Session providers](#session-provider) attach each provider; clients connect via [session connections](#session-connection). Activity is recorded in logs.
+
+## Session Connection
+
+A session connection represents one client connected to a [session](#session). Multiple connections can exist at once and do not interfere with each other.
+
+## Session Provider
+
+A session provider attaches a [provider](#provider) to a [session](#session) using a [provider config](#provider-config), [provider auth config](#provider-auth-config), and [provider deployment](#provider-deployment). Each session provider contributes [tools](#tool) to the session.
+
+<GlossaryMarker>T</GlossaryMarker>
+
+## Team
+
+A team is a group of [members](#member) who share the same access rules. You assign [policies](#policy) to the team once instead of managing each person individually.
+
+## Tool
+
+Tools are the callable actions exposed by a [provider](#provider). They are invoked through MCP or the Metorial API and may return data or perform operations in external systems.
+
+## Trigger
+
+A trigger lets a [provider](#provider) react to events in an external system. When a trigger fires, a [callback](#callback) can notify your application so you can run event-driven workflows.
