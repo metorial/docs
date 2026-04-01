@@ -19,7 +19,7 @@ This glossary summarizes core Metorial concepts. For deeper guides, see [Project
 
 ## Actor
 
-An actor is any entity that can perform actions in Metorial—a person or an automated agent. Actors own one or more [identities](#identity). Examples include a developer using the [Metorial CLI](#metorial-cli), a support agent using a [portal](#portal), or a background workflow.
+An actor is any entity that can perform actions in Metorial: a person or an automated agent. Actors own one or more [identities](#identity). Examples include a developer using the [Metorial CLI](#metorial-cli), a support agent using a [portal](#portal), or a background workflow.
 
 <GlossaryMarker>C</GlossaryMarker>
 
@@ -29,7 +29,7 @@ A callback is a webhook that receives event notifications when a [trigger](#trig
 
 ## Consumer
 
-A consumer is a user who interacts with a Metorial [instance](#instance) through an interface such as a [portal](#portal), the [Metorial CLI](#metorial-cli), or a custom surface. Consumers only see resources they are allowed to access—including [providers](#provider) and [magic MCP servers](#magic-mcp-server) assigned to them.
+A consumer is a user who interacts with a Metorial [instance](#instance) through an interface such as a [portal](#portal), the [Metorial CLI](#metorial-cli), or a custom surface. Consumers only see resources they are allowed to access, including [providers](#provider) and [magic MCP servers](#magic-mcp-server) assigned to them.
 
 ## Consumer Profile
 
@@ -41,7 +41,7 @@ A credential is concrete access to a specific external provider for an [identity
 
 ## Custom Provider
 
-A custom provider is a user-defined integration that connects Metorial to your own services using MCP-compatible interfaces—for example a Docker-based MCP server, a remote MCP server, or a Metorial-hosted server. Once deployed, it behaves like any other [provider](#provider) in [sessions](#session) and configurations.
+A custom provider is a user-defined integration that connects Metorial to your own services using MCP-compatible interfaces, for example a Docker-based MCP server, a remote MCP server, or a Metorial-hosted server. Once deployed, it behaves like any other [provider](#provider) in [sessions](#session) and configurations.
 
 ## Custom Provider Deployment
 
@@ -50,6 +50,12 @@ A custom provider deployment is created when you introduce a new [custom provide
 ## Custom Provider Version
 
 A custom provider version is a versioned snapshot of your custom integration. New versions do not affect existing ones. Remote MCP servers are typically not version controlled by Metorial.
+
+<GlossaryMarker>D</GlossaryMarker>
+
+## Deployment
+
+In Metorial, a **deployment** is a running integration that can execute tool calls and scale to handle load. You usually work with one of two kinds: a [provider deployment](#provider-deployment), which runs a catalog or custom [provider](#provider) with its [provider config](#provider-config) and [provider auth config](#provider-auth-config), or a [custom provider deployment](#custom-provider-deployment), which is the build-and-discovery pipeline that turns a new [custom provider version](#custom-provider-version) into a usable [provider version](#provider-version). [Sessions](#session) reference deployments (for example by provider deployment ID) so your AI clients know which running integration to use.
 
 <GlossaryMarker>I</GlossaryMarker>
 
@@ -69,7 +75,7 @@ An [organization](#organization) contains [projects](#project); a project contai
 
 ## Magic MCP Server
 
-A magic MCP server is a resource type that can be assigned to [consumers](#consumer) alongside [providers](#provider), depending on your setup.
+A **magic MCP server** is a Metorial resource that exposes a Model Context Protocol (MCP) endpoint for your [consumers](#consumer), alongside catalog [providers](#provider). You assign it per [instance](#instance) and access rules; users connect through the same surfaces as other integrations (for example a [portal](#portal) or the [Metorial CLI](#metorial-cli)).
 
 ## Member
 
@@ -89,7 +95,7 @@ An organization is the top-level workspace in Metorial. It typically represents 
 
 ## Participant
 
-A participant is any entity involved in a [session](#session)—for example a connected client or a [session provider](#session-provider). A session can have multiple participants at the same time.
+A participant is any entity involved in a [session](#session), for example a connected client or a [session provider](#session-provider). A session can have multiple participants at the same time.
 
 ## Policy
 
@@ -101,11 +107,11 @@ A portal is a custom user interface on top of a Metorial [instance](#instance). 
 
 ## Project
 
-A project groups related work inside an [organization](#organization)—for example a product, feature, or team. You can set access separately per project so teams only see what they are assigned.
+A project groups related work inside an [organization](#organization), for example a product, feature, or team. You can set access separately per project so teams only see what they are assigned.
 
 ## Provider
 
-A provider is an integration with an external system. It defines what is possible—typically [tools](#tool) callable via MCP or the Metorial API, and optionally [triggers](#trigger) for external events. Providers are [versioned](#provider-version), can be built-in or [custom](#custom-provider), and appear in the catalog.
+A provider is an integration with an external system. It defines what is possible, typically [tools](#tool) callable via MCP or the Metorial API, and optionally [triggers](#trigger) for external events. Providers are [versioned](#provider-version), can be built-in or [custom](#custom-provider), and appear in the catalog.
 
 ## Provider Auth Config
 
@@ -113,11 +119,11 @@ A provider auth config stores authentication material such as API keys or OAuth 
 
 ## Provider Config
 
-A provider config stores non-sensitive settings for a [provider](#provider)—for example regions, endpoints, or feature flags. Metorial can create defaults when none are required. Multiple configs per provider are supported.
+A provider config stores non-sensitive settings for a [provider](#provider), for example regions, endpoints, or feature flags. Metorial can create defaults when none are required. Multiple configs per provider are supported.
 
 ## Provider Deployment
 
-A provider deployment is the runtime instance that combines a [provider](#provider) with a [provider config](#provider-config) and [provider auth config](#provider-auth-config) and executes requests. Multiple deployments can share the same configs and scale independently.
+A provider deployment is the runtime instance that combines a [provider](#provider) with a [provider config](#provider-config) and [provider auth config](#provider-auth-config) and executes requests. Multiple deployments can share the same configs and scale independently. For how deployments fit into the overall model, see [Deployment](#deployment).
 
 ## Provider Version
 
@@ -127,7 +133,7 @@ A provider version is a specific release of a [provider](#provider). New version
 
 ## Role
 
-A role is a named set of permissions (scopes) that describes what actions someone can perform—for example read-only versus full management. [Policies](#policy) attach roles to [members](#member) or [teams](#team).
+A role is a named set of permissions (scopes) that describes what actions someone can perform, for example read-only versus full management. [Policies](#policy) attach roles to [members](#member) or [teams](#team).
 
 <GlossaryMarker>S</GlossaryMarker>
 
