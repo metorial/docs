@@ -147,7 +147,7 @@
       "anchors": [
         {
           "anchor": "Dashboard",
-          "href": "https://app.metorial.com",
+          "href": "https://platform.metorial.com",
           "icon": "square-terminal"
         },
         {
@@ -173,7 +173,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://app.metorial.com",
+      "href": "https://platform.metorial.com",
       "color": "#0099ff"
     }
   },
