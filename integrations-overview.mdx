@@ -82,6 +82,10 @@ Required when each user needs to authorize access to their own account. The inte
   **How it works**: Users authorize via OAuth, you store their **Provider Auth Config ID**, and pass it when creating sessions. Each user's data stays isolated.
 </Info>
 
+<Warning>
+  **Managed OAuth credentials cover a subset of integrations.** Metorial provides default OAuth apps for popular providers (Slack, GitHub, Google, etc.) so you can get started without registering your own. Less common providers in the catalog may require you to bring your own OAuth app via [Enterprise BYO](integrations-enterprise-byo). Check the provider in the [catalog](integrations-browsing-catalog) to confirm.
+</Warning>
+
 See [OAuth Integrations](integrations-oauth) for implementation patterns.
 
 ## Choosing Integrations
