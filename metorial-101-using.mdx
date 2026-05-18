@@ -56,17 +56,17 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     ```
 
     ```python Python
-    from metorial import Metorial
-    from openai import OpenAI
+    from metorial import Metorial, metorial_openai
+    from openai import AsyncOpenAI
     
     metorial = Metorial(api_key="$$SECRET_TOKEN$$")
-    openai = OpenAI(api_key="...your-openai-api-key...")
+    openai = AsyncOpenAI(api_key="...your-openai-api-key...")
     ```
 
     </CodeGroup>
   </Step>
   <Step title="3. Fetch Your Provider Tools">
-    Create a session that exposes your deployed provider tools. 
+    Create a session that exposes your deployed provider tools.
 
     <CodeGroup>
 
@@ -82,11 +82,11 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     ```
 
     ```python Python
-    async with metorial.provider_session(
-        provider="openai",
+    session = await metorial.connect(
+        adapter=metorial_openai(),
         providers=[{"provider_deployment_id": "...your-provider-deployment-id..."}],
-    ) as session:
-        tools = session.tools
+    )
+    tools = session.tools()
     ```
 
     </CodeGroup>
@@ -128,10 +128,10 @@ In this guide, you'll learn how to build a chat-enabled app that automatically h
     ```
 
     ```python Python
-    response = openai_client.chat.completions.create(
+    response = await openai.chat.completions.create(
       model="gpt-4o",
       messages=messages,
-      tools=session.tools
+      tools=session.tools(),
     )
     choice = response.choices[0]
     tool_calls = choice.message.tool_calls

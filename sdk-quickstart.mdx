@@ -76,26 +76,24 @@ This example shows how to create an AI agent that can use tools from your deploy
 import { Metorial } from 'metorial';
 import { metorialAiSdk } from '@metorial/ai-sdk';
 import { anthropic } from '@ai-sdk/anthropic';
-import { streamText } from 'ai';
+import { stepCountIs, streamText } from 'ai';
 
 let metorial = new Metorial({
     apiKey: process.env.METORIAL_API_KEY
 });
 
 let session = await metorial.connect({
-  adapter: metorialAnthropic(),
+  adapter: metorialAiSdk(),
   providers: [
     { providerDeploymentId: 'your-provider-deployment-id' }
   ]
 });
 
-let tools = session.tools()
-
-
 let result = streamText({
-	model: anthropic('claude-sonnet-4-5'),
+	model: anthropic('claude-sonnet-4-20250514'),
 	prompt: 'Search for the latest AI research',
-	tools
+	stopWhen: stepCountIs(10),
+	tools: session.tools()
 });
 
 for await (let textPart of result.textStream) {
@@ -104,7 +102,7 @@ for await (let textPart of result.textStream) {
 ```
 
 ```python Python
-from metorial import Metorial
+from metorial import Metorial, metorial_anthropic
 from anthropic import AsyncAnthropic
 import asyncio
 import os
@@ -113,21 +111,22 @@ metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
 anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 async def main():
-    async with metorial.provider_session(
-        provider="anthropic",
+    session = await metorial.connect(
+        adapter=metorial_anthropic(),
         providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
-    ) as session:
-        response = await anthropic.messages.create(
-            model="claude-sonnet-4-5",
-            max_tokens=1024,
-            tools=session.tools,
-            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
-        )
+    )
 
-        if response.stop_reason == "tool_use":
-            tool_calls = [b for b in response.content if b.type == "tool_use"]
-            results = await session.call_tools(tool_calls)
-            # Add results to messages and continue conversation...
+    response = await anthropic.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        tools=session.tools(),
+        messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
+    )
+
+    if response.stop_reason == "tool_use":
+        tool_calls = [b for b in response.content if b.type == "tool_use"]
+        results = await session.call_tools(tool_calls)
+        # Add results to messages and continue conversation...
 
 asyncio.run(main())
 ```
@@ -156,19 +155,19 @@ let metorial = new Metorial({
 });
 
 // 1. Create a setup session for the provider
-let setupSession = await metorial.providers.setupSessions.create({
+let setupSession = await metorial.providerDeployments.setupSessions.create({
     providerId: 'your-slack-provider-id',
     providerAuthMethodId: 'oauth'
-    // redirectUrl: 'https://yourapp.com/oauth/callback'
+    // callbackUri: 'https://yourapp.com/oauth/callback'
 });
 
 // 2. Send the URL to your user
 console.log('Authorize Slack:', setupSession.url);
 
-// 3. (For development) wait for completion — returns the completed setup session
-let completedSetup = await metorial.waitForSetupSession([setupSession]);
+// 3. Wait for completion — returns the completed setup session
+let completed = await metorial.providerDeployments.setupSessions.waitForCompletion([setupSession]);
 
-// Store completedSetup.authConfig.id for this user in your database
+// Store completed[0].authConfig.id for this user in your database
 
 // 4. Use the auth config in a session
 let session = await metorial.connect({
@@ -176,7 +175,7 @@ let session = await metorial.connect({
   providers: [
     {
 		providerDeploymentId: 'your-provider-deployment-id',
-		providerAuthConfigId: completedSetup.authConfig.id
+		providerAuthConfigId: completed[0]!.authConfig!.id
 	}
   ]
 });
@@ -186,7 +185,7 @@ let tools = session.tools();
 
 ```python Python
 import asyncio
-from metorial import Metorial
+from metorial import Metorial, metorial_anthropic
 
 async def main():
     metorial = Metorial(api_key="your-metorial-api-key")
@@ -202,24 +201,24 @@ async def main():
     print(f"Authorize Slack: {setup_session.url}")
 
     # 3. Wait for completion — returns the completed setup session
-    completed = await metorial.wait_for_setup_session(setup_session)
+    completed = await metorial.wait_for_setup_session([setup_session])
 
     # Store completed.auth_config.id for this user in your database
 
     # 4. Use the auth config in a session
-    async with metorial.provider_session(
-        provider="anthropic",
+    session = await metorial.connect(
+        adapter=metorial_anthropic(),
         providers=[
             {
                 "provider_deployment_id": "your-slack-provider-deployment-id",
-                "provider_auth_config_id": completed.auth_config.id
+                "provider_auth_config_id": completed[0].auth_config.id
             },
             {
                 "provider_deployment_id": "your-exa-deployment-id"  # No OAuth needed
             }
         ],
-    ) as session:
-        pass  # Use session.tools
+    )
+    tools = session.tools()  # Use tools...
 
 asyncio.run(main())
 ```
@@ -247,13 +246,20 @@ try {
 ```
 
 ```python Python
-from metorial import MetorialAPIError
+from metorial import AuthenticationError, NotFoundError, RateLimitError
 
 try:
-    async with metorial.provider_session(...) as session:
-        pass
-except MetorialAPIError as e:
-    print(f"API Error: {e.message} (Status: {e.status})")
+    session = await metorial.connect(
+        adapter=metorial_openai(),
+        providers=[{"provider_deployment_id": "your-deployment-id"}],
+    )
+    tools = session.tools()
+except AuthenticationError:
+    print("Check your METORIAL_API_KEY")
+except NotFoundError:
+    print("Deployment not found - verify your deployment ID")
+except RateLimitError:
+    print("Rate limited - try again later")
 except Exception as e:
     print(f"Unexpected error: {e}")
 ```

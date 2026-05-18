@@ -51,7 +51,7 @@ let response = await deepseek.chat.completions.create({
 ```
 
 ```python Python
-from metorial import Metorial
+from metorial import Metorial, metorial_openai_compatible
 from openai import AsyncOpenAI
 import asyncio
 import os
@@ -63,19 +63,20 @@ deepseek = AsyncOpenAI(
 )
 
 async def main():
-    async with metorial.provider_session(
-        provider="openai",
+    session = await metorial.connect(
+        adapter=metorial_openai_compatible(),
         providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
-    ) as session:
-        response = await deepseek.chat.completions.create(
-            model="deepseek-chat",
-            tools=session.tools,
-            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
-        )
+    )
 
-        if response.choices[0].message.tool_calls:
-            results = await session.call_tools(response.choices[0].message.tool_calls)
-            # Add results to messages and continue conversation...
+    response = await deepseek.chat.completions.create(
+        model="deepseek-chat",
+        tools=session.tools(),
+        messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
+    )
+
+    if response.choices[0].message.tool_calls:
+        results = await session.call_tools(response.choices[0].message.tool_calls)
+        # Add results to messages and continue conversation...
 
 asyncio.run(main())
 ```

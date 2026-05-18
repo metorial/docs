@@ -34,7 +34,7 @@ let session = await metorial.connect({
 
 
 let result = streamText({
-  model: anthropic("claude-sonnet-4-5"),
+  model: anthropic("claude-sonnet-4-20250514"),
   prompt: "Help me",
   tools: session.tools(),
 });
