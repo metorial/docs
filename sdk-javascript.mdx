@@ -4,16 +4,19 @@ description: "Learn how to use the Metorial JavaScript SDK for TypeScript and Ja
 ---
 
 <Note>
-**What you'll learn:**
-- How to install the Metorial JavaScript SDK
-- How to use the SDK in the browser, Node.js, and Deno environments
-- How to make requests to the Metorial API using the SDK
+  **What you'll learn:**
 
-**Before you start:**
-- [Create your API Keys](/api-getting-started)
+  - How to install the Metorial JavaScript SDK
+  - How to use the SDK in the browser, Node.js, and Deno environments
+  - How to make requests to the Metorial API using the SDK
 
-**External resources:**
-- [JavaScript SDK on GitHub](https://github.com/metorial/metorial-node)
+  **Before you start:**
+
+  - [Create your API Keys](/api-getting-started)
+
+  **External resources:**
+
+  - [JavaScript SDK on GitHub](https://github.com/metorial/metorial-node)
 </Note>
 
 The Metorial JavaScript SDK provides a type-safe interface for interacting with the Metorial API. Use it to manage provider deployments, create sessions, handle OAuth flows, and integrate MCP tools into your applications.
@@ -21,8 +24,7 @@ The Metorial JavaScript SDK provides a type-safe interface for interacting with 
 The SDK works across all JavaScript environments including Node.js, browser applications, and Deno.
 
 <Info>
-**Explore Node.js Examples:**
-Check out practical examples and sample code in the [metorial-node examples directory](https://github.com/metorial/metorial-node/tree/main/examples) on GitHub.
+  **Explore Node.js Examples:** Check out practical examples and sample code in the [metorial-node examples directory](https://github.com/metorial/metorial-node/tree/main/examples) on GitHub.
 </Info>
 
 <Steps>
@@ -30,6 +32,7 @@ Check out practical examples and sample code in the [metorial-node examples dire
     Install the SDK using your preferred package manager:
 
     <CodeGroup>
+
     ```bash npm
     npm install metorial
     ```
@@ -37,15 +40,15 @@ Check out practical examples and sample code in the [metorial-node examples dire
     ```bash yarn
     yarn add metorial
     ```
+
     </CodeGroup>
   </Step>
-
   <Step title="Using the SDK">
     To use the SDK, import the `Metorial` class and create an instance with your API key:
 
     ```javascript
     import { Metorial } from 'metorial';
-
+    
     let metorial = new Metorial({
       apiKey: '$$SECRET_TOKEN$$'
     });
@@ -53,16 +56,15 @@ Check out practical examples and sample code in the [metorial-node examples dire
 
     You can now use the `metorial` instance to make requests to the Metorial API.
   </Step>
-
   <Step title="Making Requests">
     The SDK organizes API resources into logical namespaces. Each resource provides methods for common operations like `get()`, `list()`, `create()`, `update()`, and `delete()`.
 
     ```javascript
     // List provider deployments
     let deployments = await metorial.providerDeployments.list();
-
+    
     // Create a provider setup session (OAuth flow)
-    let setupSession = await metorial.providers.setupSessions.create({
+    let setupSession = await metorial.providerDeployments.setupSessions.create({
       providerId: 'your-provider-id',
       providerAuthMethodId: 'oauth'
     });
@@ -70,20 +72,18 @@ Check out practical examples and sample code in the [metorial-node examples dire
 
     Each method returns a Promise that resolves with the response data. Use `async/await` or `.then()` to handle the results.
   </Step>
-
   <Step title="Using TypeScript">
-    The SDK is written in TypeScript and includes type definitions for all API resources.
-    You can use TypeScript to benefit from type checking and IntelliSense support:
+    The SDK is written in TypeScript and includes type definitions for all API resources. You can use TypeScript to benefit from type checking and IntelliSense support:
 
     ```typescript
     import { Metorial } from 'metorial';
-
+    
     let metorial = new Metorial({
       apiKey: '$$SECRET_TOKEN$$'
     });
-
+    
     let deployment = await metorial.providerDeployments.get('pdp_Rm4Mnheq2bfEPhBhP7SY');
-
+    
     ```
   </Step>
 </Steps>

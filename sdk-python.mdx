@@ -47,22 +47,25 @@ The SDK is fully typed with type hints for all methods and resources, making it 
     You can now use the `metorial` instance to make requests to the Metorial API.
   </Step>
   <Step title="Making Requests">
-    Create a provider session to interact with your deployed providers. The session automatically formats tools for your chosen provider and handles the connection lifecycle:
+    Connect to your deployed providers using `metorial.connect()`. Pass an adapter for your chosen AI provider and a list of provider deployments:
 
     ```python
+    from metorial import Metorial, metorial_openai
+    
     async def main():
-        async with metorial.provider_session(
-            provider="openai",  # Tool format: "openai", "anthropic", "google", etc.
+        session = await metorial.connect(
+            adapter=metorial_openai(),
             providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
-        ) as session:
-            # See your available tools
-            for tool in session.tools:
-                print(f"- {tool['function']['name']}")
-
-            # Call a tool directly
-            result = await session.call_tool("search", {"query": "python news"})
-            print(result)
-
+        )
+    
+        # See your available tools
+        for tool in session.tools():
+            print(f"- {tool['function']['name']}")
+    
+        # Call a tool directly
+        result = await session.call_tool("search", {"query": "python news"})
+        print(result)
+    
     asyncio.run(main())
     ```
   </Step>

@@ -4,10 +4,11 @@ description: "Metorial works with all major AI providers"
 ---
 
 <Note>
-**What you'll learn:**
-- Available providers
-- Provider comparison
-- Choosing a provider
+  **What you'll learn:**
+
+  - Available providers
+  - Provider comparison
+  - Choosing a provider
 </Note>
 
 Metorial is provider-agnostic, meaning you can use it with any AI model from any provider. The SDK provides integration packages for major AI providers, making it easy to connect Metorial's MCP tools with your chosen model.
@@ -30,7 +31,7 @@ Each provider integration handles the specifics of formatting tools and response
 
 **For TypeScript projects**, we recommend using the **Vercel AI SDK** provider (`@metorial/ai-sdk`). It offers the best developer experience with built-in streaming support, unified tool handling, and compatibility with multiple model providers.
 
-**For Python projects**, pass `provider="anthropic"` or `provider="openai"` when creating a session. The Python SDK formats tools automatically for the provider you specify, and you use the official Python SDK from each provider to make model calls.
+**For Python projects**, use `metorial.connect(adapter=metorial_anthropic())` or `metorial.connect(adapter=metorial_openai())` to create a session. The adapter formats tools automatically for the provider you specify, and you use the official Python SDK from each provider to make model calls.
 
 **For production applications**, consider factors like model capabilities, pricing, rate limits, and latency when choosing your provider. Metorial makes it easy to switch providers later if your needs change.
 
@@ -40,12 +41,15 @@ Each provider integration handles the specifics of formatting tools and response
   <Card title="OpenAI" href="/sdk-providers-openai">
     Use with OpenAI GPT models
   </Card>
+
   <Card title="Anthropic" href="/sdk-providers-anthropic">
     Use with Claude models
   </Card>
+
   <Card title="Google" href="/sdk-providers-google">
     Use with Google Gemini models
   </Card>
+
   <Card title="AI SDK (Vercel)" href="/sdk-providers-ai-sdk">
     Use with Vercel AI SDK (recommended for TypeScript)
   </Card>

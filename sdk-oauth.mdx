@@ -32,7 +32,7 @@ The OAuth flow uses **Provider Setup Sessions**:
 <CodeGroup>
 
 ```typescript TypeScript
-let setupSession = await metorial.providers.setupSessions.create({
+let setupSession = await metorial.providerDeployments.setupSessions.create({
     providerId: 'your-provider-id',
     providerAuthMethodId: 'oauth',
 
@@ -40,7 +40,7 @@ let setupSession = await metorial.providers.setupSessions.create({
     // providerDeploymentId: 'your-deployment-id',
 
     // Optional: redirect user here after authorizing
-    // redirectUrl: 'https://yourapp.com/oauth/callback'
+    // callbackUri: 'https://yourapp.com/oauth/callback'
 });
 
 // Redirect your user to this URL
@@ -70,21 +70,21 @@ print(f"Authorize here: {setup_session.url}")
 <CodeGroup>
 
 ```typescript TypeScript
-// Waits until the user completes OAuth — returns the completed setup session
-let completedSetup = await metorial.waitForSetupSession([setupSession]);
+// Waits until the user completes OAuth — returns the completed setup sessions
+let completed = await metorial.providerDeployments.setupSessions.waitForCompletion([setupSession]);
 
 // Store the auth config ID for this user
 await db.users.update(userId, {
-    slackAuthConfigId: completedSetup.authConfig.id
+    slackAuthConfigId: completed[0]!.authConfig!.id
 });
 ```
 
 ```python Python
 # Waits until the user completes OAuth — returns the completed setup session
-completed = await metorial.wait_for_setup_session(setup_session)
+completed = await metorial.wait_for_setup_session([setup_session])
 
 # Store the auth config ID for this user
-await db.users.update(user_id, slack_auth_config_id=completed.auth_config.id)
+await db.users.update(user_id, slack_auth_config_id=completed[0].auth_config.id)
 ```
 
 </CodeGroup>
@@ -108,16 +108,16 @@ let session = await metorial.connect({
 ```
 
 ```python Python
-async with metorial.provider_session(
-    provider="anthropic",
+session = await metorial.connect(
+    adapter=metorial_anthropic(),
     providers=[
         {
             "provider_deployment_id": "slack-deployment-id",
             "provider_auth_config_id": stored_auth_config_id  # From your database
         }
-    ]
-) as session:
-    tools = session.tools
+    ],
+)
+tools = session.tools()
 ```
 
 </CodeGroup>
@@ -145,8 +145,8 @@ providers: [
 ```
 
 ```python Python
-async with metorial.provider_session(
-    provider="openai",
+session = await metorial.connect(
+    adapter=metorial_openai(),
     providers=[
         {
             "provider_deployment_id": "github-deployment-id",
@@ -159,9 +159,9 @@ async with metorial.provider_session(
         {
             "provider_deployment_id": "exa-deployment-id"  # No OAuth needed
         }
-    ]
-) as session:
-    tools = session.tools
+    ],
+)
+tools = session.tools()
 ```
 
 </CodeGroup>
@@ -177,20 +177,20 @@ import { metorialAnthropic } from '@metorial/anthropic';
 let metorial = new Metorial({ apiKey: process.env.METORIAL_API_KEY });
 
 // 1. Create setup session
-let setupSession = await metorial.providers.setupSessions.create({
+let setupSession = await metorial.providerDeployments.setupSessions.create({
     providerId: 'your-slack-provider-id',
     providerAuthMethodId: 'oauth',
-    redirectUrl: 'https://yourapp.com/oauth/callback'
+    callbackUri: 'https://yourapp.com/oauth/callback'
 });
 
 // 2. Send URL to user
 console.log('Please authorize:', setupSession.url);
 
 // 3. Wait for completion
-let completedSetup = await metorial.waitForSetupSession([setupSession]);
+let completed = await metorial.providerDeployments.setupSessions.waitForCompletion([setupSession]);
 
 // 4. Store auth config ID for this user
-// database.save(userId, completedSetup.authConfig.id)
+// database.save(userId, completed[0].authConfig.id)
 
 // 5. Use in a session
 let session = await metorial.connect({
@@ -198,7 +198,7 @@ let session = await metorial.connect({
   providers: [
     {
 		providerDeploymentId: 'your-slack-provider-id',
-		providerAuthConfigId: storedAuthConfig
+		providerAuthConfigId: completed[0]!.authConfig!.id
 	}
   ]
 });
@@ -206,7 +206,7 @@ let session = await metorial.connect({
 
 ```python Python
 import asyncio
-from metorial import Metorial
+from metorial import Metorial, metorial_anthropic
 
 async def main():
     metorial = Metorial(api_key="your-metorial-api-key")
@@ -222,22 +222,22 @@ async def main():
     print(f"Please authorize: {setup_session.url}")
 
     # 3. Wait for completion
-    completed = await metorial.wait_for_setup_session(setup_session)
+    completed = await metorial.wait_for_setup_session([setup_session])
 
     # 4. Store auth config ID for this user
-    # database.save(user_id, completed.auth_config.id)
+    # database.save(user_id, completed[0].auth_config.id)
 
     # 5. Use in a session
-    async with metorial.provider_session(
-        provider="anthropic",
+    session = await metorial.connect(
+        adapter=metorial_anthropic(),
         providers=[
             {
                 "provider_deployment_id": "your-slack-deployment-id",
-                "provider_auth_config_id": completed.auth_config.id
+                "provider_auth_config_id": completed[0].auth_config.id
             }
         ],
-    ) as session:
-        pass  # Your AI now has access to user's Slack
+    )
+    # Your AI now has access to user's Slack via session.tools()
 
 asyncio.run(main())
 ```

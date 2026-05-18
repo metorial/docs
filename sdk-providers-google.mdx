@@ -40,7 +40,7 @@ let model = genAI.getGenerativeModel({
 ```
 
 ```python Python
-from metorial import Metorial
+from metorial import Metorial, metorial_google
 import google.generativeai as genai
 import asyncio
 import os
@@ -49,18 +49,19 @@ metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 async def main():
-    async with metorial.provider_session(
-        provider="google",
+    session = await metorial.connect(
+        adapter=metorial_google(),
         providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
-    ) as session:
-        model = genai.GenerativeModel("gemini-1.5-pro", tools=session.tools)
-        chat = model.start_chat()
-        response = chat.send_message("What's trending on Hacker News?")
+    )
 
-        for part in response.parts:
-            if fn := part.function_call:
-                result = await session.call_tool(fn.name, dict(fn.args))
-                # Continue conversation with result...
+    model = genai.GenerativeModel("gemini-2.5-pro", tools=session.tools())
+    chat = model.start_chat()
+    response = chat.send_message("What's trending on Hacker News?")
+
+    for part in response.parts:
+        if fn := part.function_call:
+            result = await session.call_tool(fn.name, dict(fn.args))
+            # Continue conversation with result...
 
 asyncio.run(main())
 ```

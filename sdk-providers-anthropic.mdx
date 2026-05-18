@@ -34,7 +34,7 @@ let session = await metorial.connect({
 });
 
 let response = await anthropic.messages.create({
-  model: "claude-sonnet-4-5",
+  model: "claude-sonnet-4-20250514",
   max_tokens: 1024,
   messages: [{ role: "user", content: "Help me" }],
   tools: session.tools()
@@ -42,7 +42,7 @@ let response = await anthropic.messages.create({
 ```
 
 ```python Python
-from metorial import Metorial
+from metorial import Metorial, metorial_anthropic
 from anthropic import AsyncAnthropic
 import asyncio
 import os
@@ -51,21 +51,22 @@ metorial = Metorial(api_key=os.getenv("METORIAL_API_KEY"))
 anthropic = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 async def main():
-    async with metorial.provider_session(
-        provider="anthropic",
+    session = await metorial.connect(
+        adapter=metorial_anthropic(),
         providers=[{"provider_deployment_id": "your-provider-deployment-id"}],
-    ) as session:
-        response = await anthropic.messages.create(
-            model="claude-sonnet-4-5",
-            max_tokens=1024,
-            tools=session.tools,
-            messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
-        )
+    )
 
-        if response.stop_reason == "tool_use":
-            tool_calls = [b for b in response.content if b.type == "tool_use"]
-            results = await session.call_tools(tool_calls)
-            # Add results to messages and continue conversation...
+    response = await anthropic.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1024,
+        tools=session.tools(),
+        messages=[{"role": "user", "content": "What's trending on Hacker News?"}],
+    )
+
+    if response.stop_reason == "tool_use":
+        tool_calls = [b for b in response.content if b.type == "tool_use"]
+        results = await session.call_tools(tool_calls)
+        # Add results to messages and continue conversation...
 
 asyncio.run(main())
 ```
