@@ -1,0 +1,92 @@
+---
+title: "Dashboard Overview"
+description: "A tour of the Metorial dashboard: onboarding, catalog, integrations, Magic MCP, logs, infrastructure, and workspace settings."
+---
+
+The Metorial dashboard is where you create workspaces, choose a data region, configure providers, connect agents, and inspect what happened after tools run.
+
+<Note>
+  **What you'll learn:**
+
+  - Which dashboard areas handle setup, integrations, Magic MCP, logs, and infrastructure
+  - Where GitHub and Linear setup flows live
+  - How organization, project, and environment navigation maps to the dashboard
+</Note>
+
+## Onboarding
+
+New accounts start on the welcome flow. Create an organization, choose a data region, answer or skip the optional onboarding questions, then create your first project.
+
+![Create an organization and choose a data region](/images/dashboard-audit/onboarding-create-organization-eu.png)
+
+The region choice is made during organization setup. In this walkthrough, the organization uses the **European Union** region.
+
+![Create a project](/images/dashboard-audit/onboarding-create-project-filled.png)
+
+## Home
+
+The project home page gives you the current organization, project, and environment context. It also shows the getting-started checklist and popular providers such as Linear and GitHub.
+
+![Dashboard home](/images/dashboard-audit/dashboard-home-after-onboarding.png)
+
+## Catalog And Providers
+
+Use **Providers** to browse catalog providers. Provider pages include an overview, tools and capabilities, versions, and setup actions.
+
+![Provider catalog](/images/dashboard-audit/dashboard-providers-catalog.png)
+
+On a provider page, **Use Provider** lets you create either:
+
+- a **Magic MCP Server**, which exposes a provider through a managed MCP endpoint
+- an **Integration**, which creates reusable provider setup for sessions and applications
+
+![GitHub provider page](/images/dashboard-audit/provider-github-detail-confirmed.png)
+
+## Integrations
+
+Integrations are reusable provider setups. The current setup flow starts from a provider page or the Integrations section, then asks for an auth method, auth credentials, and tool filters.
+
+![GitHub integration setup](/images/dashboard-audit/provider-github-create-integration-github-com-selected.png)
+
+Tool filters are grouped into read-only, write, and destructive tools. Review these groups before creating integrations for production apps.
+
+## Magic MCP
+
+Magic MCP servers turn configured providers into connectable MCP servers for agents and clients.
+
+![Magic MCP servers](/images/dashboard-audit/dashboard-magic-mcp-servers.png)
+
+Magic MCP includes pages for:
+
+- **Servers**: managed MCP endpoints
+- **Connections**: active client connections
+- **Groups**: grouped server access
+- **Tokens**: credentials used to connect clients
+
+## Explorer
+
+Use Explorer to test provider tools from the dashboard before wiring them into an application.
+
+![Explorer](/images/dashboard-audit/dashboard-explorer.png)
+
+## Logs And Monitoring
+
+The Logs area now includes activity plus focused pages for sessions, connections, tool calls, provider runs, provider errors, alerts, Protoguard, and provider-auth events/errors.
+
+![Logs activity](/images/dashboard-audit/dashboard-logs-activity.png)
+
+## Infrastructure
+
+Infra groups the operational pieces behind your providers and agents:
+
+- auth credentials, deployments, auth configs, and session templates
+- network and enclave settings
+- accounts, agents, identities, and security pages
+
+![Infrastructure overview](/images/dashboard-audit/dashboard-infra.png)
+
+## Workspace Settings
+
+Organization settings include general settings, projects, members, and invites. Project settings live under the organization project route.
+
+![Organization settings](/images/dashboard-audit/dashboard-organization-settings.png)

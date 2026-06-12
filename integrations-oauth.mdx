@@ -35,6 +35,14 @@ Each user authorizes once. You store their **Provider Auth Config ID** in your d
 4. Store the resulting **Provider Auth Config ID** for that user
 5. Pass the auth config ID when creating sessions for that user
 
+In the dashboard, OAuth-based integration setup asks you to select or create auth credentials after you choose the provider auth method. For GitHub, the hosted OAuth option appears as **GitHub.com**; for Linear, it appears as **OAuth**.
+
+![GitHub OAuth integration setup](/images/dashboard-audit/provider-github-create-integration-github-com-selected.png)
+
+<Warning>
+  Creating auth credentials starts a third-party authorization flow. Only continue when the user or account owner has approved connecting that GitHub, Linear, Slack, Google, or other third-party account.
+</Warning>
+
 ## Creating a Provider Setup Session
 
 Create a setup session specifying the provider, auth method, and optionally a redirect URL to send the user back to after they authorize.

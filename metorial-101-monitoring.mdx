@@ -8,43 +8,43 @@ Once you have your providers deployed and integrated, you'll want to keep an eye
 <Note>
   **What you'll learn:**
 
-  - How to view session logs
-  - How to inspect server run history
-  - How to review deployment errors
+  - How to view activity, sessions, connections, and tool calls
+  - How to inspect provider runs and errors
+  - How to review alerts, Protoguard events, and provider-auth events
 
   **Before you start:**
 
   - Complete the [Introduction](/metorial-101-introduction) guide
-  - Complete the [Deploying your first provider](/metorial-101-deploying) guide
+  - Complete the [Using your first provider](/metorial-101-deploying) guide
   - Complete the [Testing your first provider](/metorial-101-testing) guide
   - Complete the [Using your first provider](/metorial-101-using) guide
 </Note>
 
 <Steps>
-  <Step title="1. View All Sessions">
-    Navigate to **Logs → Sessions** in the sidebar to see every  session that has been opened.
+  <Step title="1. Open Logs Activity">
+    Navigate to **Logs** in the sidebar to see recent activity across the project.
 
-    ![All MCP sessions and their statuses](/images/metorial-101/monitoring-mcp-servers/step1.png)
+    ![Logs activity](/images/dashboard-audit/dashboard-logs-activity.png)
   </Step>
-  <Step title="2. Drill into a Session">
-    Click any session row to open the detailed view. Here you can see the session's creation and connection events.
+  <Step title="2. Review Sessions and Connections">
+    Use **Sessions** for provider sessions and **Connections** for connection-level records.
 
-    ![Detailed view for a single MCP session](/images/metorial-101/monitoring-mcp-servers/step2.png)
+    ![Sessions log](/images/dashboard-audit/dashboard-logs-sessions.png)
   </Step>
-  <Step title="3. Inspect Provider Runs">
-    Switch to the **Provider Runs** tab to review them.
+  <Step title="3. Inspect Tool Calls and Provider Runs">
+    Use **Tool Calls** for individual tool invocations and **Provider Runs** for provider execution records.
 
-    ![History of provider run instances](/images/metorial-101/monitoring-mcp-servers/step3.png)
+    ![Tool calls log](/images/dashboard-audit/dashboard-logs-tool-calls.png)
   </Step>
-  <Step title="4. Follow Provider Runs">
-    Click any run row to open the detailed view.
+  <Step title="4. Review Errors and Alerts">
+    Use **Errors** and **Alerts** to find failed provider runs and operational warnings.
 
-    ![Detailed view for a single MCP run](/images/metorial-101/monitoring-mcp-servers/step4.png)
+    ![Provider errors](/images/dashboard-audit/dashboard-logs-provider-errors.png)
   </Step>
-  <Step title="5. Review Errors">
-    Select the **Errors** tab to surface any deployment or runtime level failures.
+  <Step title="5. Audit Auth Events">
+    Provider auth events and errors have their own pages for OAuth, API key, and setup-session debugging.
 
-    ![Logged errors for your MCP deployment](/images/metorial-101/monitoring-mcp-servers/step5.png)
+    ![Provider auth events](/images/dashboard-audit/dashboard-provider-auth-events.png)
   </Step>
 </Steps>
 

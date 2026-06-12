@@ -1,54 +1,62 @@
 ---
-title: "Deploying your first provider"
-description: "Learn how to deploy a provider in your Metorial project"
+title: "Using your first provider"
+description: "Learn how to configure a provider in your Metorial project"
 ---
 
-The first step in allowing your AI integrations to access external tools via Metorial lies in deploying a provider.
+The first step in allowing your AI integrations to access external tools through Metorial is choosing a provider and creating a reusable setup for it.
 
 <Note>
   **What you'll learn:**
 
-  - How to deploy a provider
+  - How to open a provider from the catalog
+  - How to create an integration from a provider
+  - How Magic MCP servers differ from integrations
 
   **Before you start:**
 
   - Complete the [Introduction](/metorial-101-introduction) guide
 </Note>
 
-## Deploying a provider
+## Configure a provider
 
 Providers in Metorial provide tools and resources to AI assistants through the Model Context Protocol.
 
-Provider deployments can be locked to a particular version of a provider, which guarantees that the capabilities stay the same. By default, a deployment always points to the latest version.
+Provider pages now expose two setup paths:
 
-This guide will walk you through deploying your provider and making it accessible to AI applications.
+- **Integration**: reusable provider setup for sessions and applications
+- **Magic MCP Server**: a managed MCP endpoint you can connect to clients and agents
 
 <Steps>
-  <Step title="Open the Provider Page">
-    Navigate to the **Providers** section in the dashboard and select the **Metorial Search** provider.
+  <Step title="Open the Provider Catalog">
+    Navigate to **Providers** in the dashboard and choose a provider such as **GitHub** or **Linear**.
 
-    ![Step1](/images/metorial-101/deploying-mcp-servers/step1.png)
+    ![Provider catalog](/images/dashboard-audit/dashboard-providers-catalog.png)
   </Step>
-  <Step title="Deployment">
-    Click **Deploy Provider**.
+  <Step title="Review the Provider">
+    The provider page includes an overview, tools and capabilities, versions, and setup actions.
 
-    ![Step2](/images/metorial-101/deploying-mcp-servers/step2.png)
+    ![GitHub provider page](/images/dashboard-audit/provider-github-detail-confirmed.png)
   </Step>
-  <Step title="Configure Deployment Settings">
-    Set up your deployment  by choosing a clear, descriptive name for it.
+  <Step title="Choose How to Use the Provider">
+    Click **Use Provider**. Choose **Integration** when you want reusable provider setup for sessions, or **Magic MCP Server** when you want a connectable MCP server endpoint.
 
-    ![Step3](/images/metorial-101/deploying-mcp-servers/step3.png)
+    ![Use provider menu](/images/dashboard-audit/provider-linear-use-provider-modal.png)
   </Step>
-  <Step title="Your Provider is Ready">
-    The provider has now been deployed and is ready to use!
+  <Step title="Configure Auth and Tool Access">
+    Select the auth method, choose or create auth credentials, and review tool filters. Tool filters are grouped as read-only, write, and destructive tools.
 
-    ![Step4](/images/metorial-101/deploying-mcp-servers/step4.png)
+    ![GitHub integration setup](/images/dashboard-audit/provider-github-create-integration-github-com-selected.png)
+  </Step>
+  <Step title="Optional: Create a Magic MCP Server">
+    Magic MCP setup asks for an auth config and tool filters, then creates a server clients can connect to.
+
+    ![Create a Magic MCP server from GitHub](/images/dashboard-audit/provider-github-create-magic-mcp-flow.png)
   </Step>
 </Steps>
 
 ## What's Next?
 
-🎉 You've successfully deployed your first provider! Next, we'll guide you through testing your provider's capabilities.
+You've configured your first provider path. Next, test provider capabilities in Explorer.
 
 <Card title="Next Up: How to test a provider" icon="vial" href="/metorial-101-testing">
   Learn how to test a provider using the Explorer.

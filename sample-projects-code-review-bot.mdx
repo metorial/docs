@@ -15,7 +15,7 @@ This tutorial demonstrates practical AI-driven code analysis using Metorial's Gi
 
 <Note>
 **What you'll learn:**
-- Deploying the GitHub provider
+- Configuring the GitHub provider
 - Setting up OAuth for GitHub repositories
 - Creating an AI agent that reviews code
 - Posting GitHub review comments programmatically
@@ -34,9 +34,9 @@ This tutorial demonstrates practical AI-driven code analysis using Metorial's Gi
 Before building the code review bot, ensure you have:
 
 1. **Metorial setup**:
-   - Active Metorial account at [app.metorial.com](https://app.metorial.com)
+   - Active Metorial account at [platform.metorial.com](https://platform.metorial.com)
    - Project created in your organization
-   - Metorial API key (generate in Dashboard → Home → Connect to Metorial)
+   - Metorial API key (generate in Dashboard → Developer → API Keys)
 
 2. **GitHub repository**:
    - Local clone of your GitHub repository
@@ -69,28 +69,28 @@ The code review bot workflow:
 
 **Tools used**: Local git (read code changes) + AI Model (code analysis) + GitHub provider (post reviews)
 
-## Step 1: Deploy GitHub Provider
+## Step 1: Configure GitHub Provider
 
-Deploy the GitHub provider from Metorial's catalog to enable your bot to interact with GitHub.
+Configure the GitHub provider from Metorial's catalog to enable your bot to interact with GitHub.
 
 <Steps>
   <Step title="Navigate to Provider Catalog">
     In the Metorial Dashboard, go to **Providers** and search for "GitHub".
   </Step>
 
-  <Step title="Deploy GitHub Provider">
-    Click the **GitHub** provider, then click **Deploy** → **Provider Deployment**.
+  <Step title="Create a GitHub Integration">
+    Click the **GitHub** provider, then click **Use Provider** → **Integration**.
 
-    Give your deployment a descriptive name like "Code Review Bot GitHub".
+    Choose the GitHub auth method, create or select auth credentials, and review the tool filters for repository, issue, pull request, and file-content access.
   </Step>
 
   <Step title="Note Your Deployment ID">
-    After deployment, copy your **Server Deployment ID** from the deployment page. You'll need this for OAuth setup and in your bot code.
+    After setup, copy the provider deployment or integration ID shown in the dashboard. You'll need this for OAuth setup and in your bot code.
   </Step>
 </Steps>
 
 <Info>
-Save your GitHub deployment ID—you'll need it for OAuth setup (Step 2) and in your bot code (Step 3).
+Save your GitHub provider ID—you'll need it for OAuth setup (Step 2) and in your bot code (Step 3).
 </Info>
 
 ## Step 2: Set Up OAuth Authentication

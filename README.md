@@ -1,43 +1,41 @@
-# Mintlify Starter Kit
+# Metorial Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+This repository contains the Mintlify documentation for [metorial.com/docs](https://metorial.com/docs).
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Structure
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+- `docs.json` configures Mintlify navigation, theme, search, and global links.
+- `*.mdx` files are documentation pages.
+- `images/` stores screenshots and diagrams used by the docs.
+- `snippets/` stores reusable MDX snippets.
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+## Local Development
 
-## Development
+Install the Mintlify CLI:
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
+```bash
 npm i -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+Run the docs locally from this directory:
 
-```
+```bash
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+The local preview runs at `http://localhost:3000`.
 
-## Publishing changes
+## Screenshot Updates
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+Dashboard screenshots live under `images/dashboard-audit/`. They were captured from a fresh EU-region project in the Metorial dashboard and cover onboarding, provider setup, GitHub, Linear, Magic MCP, logs, infrastructure, organization settings, and API key creation.
 
-## Need help?
+When refreshing screenshots:
 
-### Troubleshooting
+1. Use a disposable docs/demo organization and project.
+2. Prefer the European Union region when validating EU-region copy.
+3. Stop before authorizing real third-party GitHub, Linear, Slack, or Google accounts unless the account owner explicitly approves it.
+4. Keep filenames descriptive and stable so MDX pages can reference them directly.
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+## Publishing
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+Mintlify deploys from the default branch after changes are merged. Do not commit generated local preview artifacts.

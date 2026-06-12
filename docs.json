@@ -27,6 +27,7 @@
             "group": "Metorial 101",
             "pages": [
               "index",
+              "dashboard-overview",
               "metorial-101-introduction",
               "metorial-101-deploying",
               "metorial-101-testing",
