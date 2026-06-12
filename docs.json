@@ -67,7 +67,26 @@
           {
             "group": "Reference",
             "pages": [
+              "docs-structure",
               "glossary"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Product",
+        "groups": [
+          {
+            "group": "Workforce",
+            "pages": [
+              "product-workforce",
+              "product-portals"
+            ]
+          },
+          {
+            "group": "Provider Catalog",
+            "pages": [
+              "product-provider-skills"
             ]
           }
         ]

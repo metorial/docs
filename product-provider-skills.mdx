@@ -1,0 +1,79 @@
+---
+title: "Provider Skills"
+description: "Provider skills are catalog summaries that describe what a provider can do. They are different from executable tools."
+---
+
+Provider skills are the short capability bullets shown on provider pages. They help you quickly understand what a provider is good at before inspecting its tools, versions, or setup options.
+
+<Note>
+  **What you'll learn:**
+
+  - What provider skills are
+  - How skills differ from tools
+  - Where skills fit into provider selection and tool filtering
+</Note>
+
+## Skills In The Dashboard
+
+Provider pages show a **Provider Summary** section. The dashboard code treats this as an AI-generated overview of the provider's capabilities and features.
+
+![Linear provider skills](/images/dashboard-audit/provider-linear-detail.png)
+
+Examples from the dashboard include summaries such as:
+
+- create and manage issues
+- manage projects and milestones
+- manage cycles and sprints
+- manage repositories
+- create pull requests
+- star repositories
+
+## Skills Versus Tools
+
+Skills are not executable tool calls. They are summaries that help you decide whether a provider is relevant.
+
+| Concept | Meaning |
+| --- | --- |
+| Provider skill | Human-readable capability summary on a provider page |
+| Tool | Executable MCP capability with an input/output schema |
+| Tool filter | Policy that allows, rejects, or mixes specific tools during setup |
+| Integration | Reusable configured provider setup |
+| Magic MCP Server | Connectable MCP endpoint built from provider access |
+
+## Selection Flow
+
+```mermaid
+flowchart TD
+  Catalog["Browse provider catalog"]
+  Skills["Read provider skills"]
+  Tools["Inspect tools and capabilities"]
+  Setup["Use Provider"]
+  Filters["Review tool filters"]
+  Integration["Create Integration"]
+  Magic["Create Magic MCP Server"]
+
+  Catalog --> Skills --> Tools --> Setup
+  Setup --> Filters
+  Filters --> Integration
+  Filters --> Magic
+```
+
+## Tool Filters
+
+Provider setup groups tools into read-only, write, and destructive categories. For providers such as GitHub and Linear, this is where the broad skill summary becomes concrete access control.
+
+![GitHub tool filters](/images/dashboard-audit/provider-github-create-integration-github-com-selected.png)
+
+Use skills to choose a provider. Use tools and tool filters to decide what an agent is allowed to do.
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Providers" icon="plug" href="/concepts-providers">
+    Learn how providers, integrations, configs, and auth configs fit together.
+  </Card>
+
+  <Card title="Using Your First Provider" icon="server" href="/metorial-101-deploying">
+    Walk through the current provider setup flow.
+  </Card>
+</CardGroup>

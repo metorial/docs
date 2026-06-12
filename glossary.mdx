@@ -13,9 +13,13 @@ export const GlossaryMarker = ({ children }) => (
 
 # Glossary
 
-This glossary summarizes core Metorial concepts. For deeper guides, see [Projects and Organizations](/concepts-projects-organizations), [Providers](/concepts-providers), and [Sessions](/concepts-sessions).
+This glossary summarizes core Metorial concepts. For deeper guides, see [Projects and Organizations](/concepts-projects-organizations), [Providers](/concepts-providers), [Sessions](/concepts-sessions), and [Workforce](/product-workforce).
 
 <GlossaryMarker>A</GlossaryMarker>
+
+## Account
+
+An account is the dashboard term for a [consumer](#consumer) managed through Workforce. Accounts represent people or external users who can receive access to approved [providers](#provider), [magic MCP servers](#magic-mcp-server), and [portals](#portal).
 
 ## Actor
 
@@ -129,6 +133,10 @@ A provider deployment is the runtime instance that combines a [provider](#provid
 
 A provider version is a specific release of a [provider](#provider). New versions can add or change [tools](#tool) and [triggers](#trigger) while older versions keep existing setups stable.
 
+## Provider Skill
+
+A provider skill is a human-readable capability summary shown on provider pages. Skills help you evaluate what a provider is useful for, but they are not executable [tools](#tool).
+
 <GlossaryMarker>R</GlossaryMarker>
 
 ## Role
@@ -162,3 +170,9 @@ Tools are the callable actions exposed by a [provider](#provider). They are invo
 ## Trigger
 
 A trigger lets a [provider](#provider) react to events in an external system. When a trigger fires, a [callback](#callback) can notify your application so you can run event-driven workflows.
+
+<GlossaryMarker>W</GlossaryMarker>
+
+## Workforce
+
+Workforce is the product area for managing [accounts](#account), agents, [identities](#identity), and [identity delegation](#identity-delegation). It connects human and non-human actors to the provider access, portals, and Magic MCP servers they are allowed to use.
