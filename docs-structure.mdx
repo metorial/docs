@@ -39,6 +39,7 @@ The product now has several dashboard areas that deserve first-class documentati
 | Dashboard | Covered by the new dashboard overview page | Keep it as the orientation page for the app |
 | Workforce | Visible in dashboard navigation, under-documented | Add product docs for accounts, agents, identities, and delegations |
 | Portals | Exists in API/backend and custom portal app, not discoverable in docs | Add product docs for branded MCP marketplaces and consumer access |
+| Magic Skills | Visible after starting a Workforce trial, not represented in docs | Add product docs for skills, marketplaces, templates, groups, and execution settings |
 | Provider skills | Visible on provider pages as AI-generated summaries | Explain skills vs tools so users do not confuse catalog summaries with executable tool calls |
 | Logs/Infra | Now covered by screenshots, still thin conceptually | Split into deeper observability and operations guides later |
 
@@ -60,8 +61,9 @@ flowchart TD
   C --> C2["Magic MCP"]
   C --> C3["Workforce"]
   C --> C4["Portals"]
-  C --> C5["Provider Skills"]
-  C --> C6["Logs and Infrastructure"]
+  C --> C5["Magic Skills"]
+  C --> C6["Provider Skills"]
+  C --> C7["Logs and Infrastructure"]
 
   A --> D["Build"]
   D --> D1["SDK Quickstart"]
@@ -97,6 +99,7 @@ flowchart LR
   Magic["Magic MCP Server"]
   Workforce["Workforce"]
   Portal["Portal"]
+  Skills["Magic Skills"]
   Logs["Logs"]
 
   Org --> Project --> Env
@@ -105,9 +108,11 @@ flowchart LR
   Provider --> Magic
   Env --> Workforce
   Workforce --> Portal
+  Workforce --> Skills
   Integration --> Logs
   Magic --> Logs
   Portal --> Magic
+  Skills --> Magic
 ```
 
 ## Editorial Rules
@@ -117,6 +122,7 @@ flowchart LR
 - Use **Integration** for reusable provider setup.
 - Use **Magic MCP Server** for connectable MCP endpoints.
 - Use **Account** for Workforce users/consumers in the dashboard UI.
+- Use **Magic Skill** for reusable Workforce skills, marketplaces, templates, and groups.
 - Use **Provider skill** for provider summary bullets, not executable tools.
 
 ## Near-Term Improvements

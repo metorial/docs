@@ -81,6 +81,10 @@ An [organization](#organization) contains [projects](#project); a project contai
 
 A **magic MCP server** is a Metorial resource that exposes a Model Context Protocol (MCP) endpoint for your [consumers](#consumer), alongside catalog [providers](#provider). You assign it per [instance](#instance) and access rules; users connect through the same surfaces as other integrations (for example a [portal](#portal) or the [Metorial CLI](#metorial-cli)).
 
+## Magic Skill
+
+A Magic Skill is a reusable Workforce asset that packages agent workflows, documents, custom logic, and resources. Magic Skills can be organized into [skill groups](#skill-group), published through [skill marketplaces](#skill-marketplace), and governed by default execution settings.
+
 ## Member
 
 A member is a person with access to your [organization](#organization). You assign [roles](#role), [policies](#policy), or [teams](#team) to control what they can see and do.
@@ -156,6 +160,14 @@ A session connection represents one client connected to a [session](#session). M
 ## Session Provider
 
 A session provider attaches a [provider](#provider) to a [session](#session) using a [provider config](#provider-config), [provider auth config](#provider-auth-config), and [provider deployment](#provider-deployment). Each session provider contributes [tools](#tool) to the session.
+
+## Skill Group
+
+A skill group organizes related [Magic Skills](#magic-skill) so they can be managed as a set.
+
+## Skill Marketplace
+
+A skill marketplace publishes selected plugins and [Magic Skills](#magic-skill) to users through a curated catalog.
 
 <GlossaryMarker>T</GlossaryMarker>
 
