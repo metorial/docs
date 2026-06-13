@@ -19,6 +19,8 @@ In the dashboard, Portals are part of the Workforce product. After starting a Wo
 
 The portal API describes portals as custom branded MCP server marketplaces. In practice, a portal gives external users a controlled surface for discovering and connecting to the provider access you approve.
 
+![Portal admin overview](/images/dashboard-audit/portal-admin-overview.png)
+
 ```mermaid
 flowchart LR
   Admin["Metorial Admin"]
@@ -60,9 +62,52 @@ The dashboard create flow starts with two fields:
 
 Create the portal first, then configure the access listings, auth, consumer profiles, and provider templates that shape what users can see.
 
+## Access Groups
+
+Use **Access → Groups** to define which consumers can see each portal resource. Groups can be assigned to every account by default or matched from SSO group IDs.
+
+![Portal access groups](/images/dashboard-audit/portal-admin-groups.png)
+
+After you create a resource listing, open the listing and explicitly set each access group to **Allow** or **Deny**. New listings can start denied until you choose the group access policy.
+
+## Resource Listings
+
+Use **Resources** to publish the integrations and skills that consumers can discover in the portal.
+
+### Integrations
+
+Integration listings can be:
+
+| Listing type | Meaning |
+| --- | --- |
+| User-configured | Each portal account connects the integration with their own credentials |
+| Pre-configured | Administrators manage the shared credentials and provider settings |
+
+![Portal integration listings](/images/dashboard-audit/portal-admin-integrations.png)
+
+### Skills
+
+Skill listings expose Magic Skills through the portal. A skill can link to integrations, so the consumer sees which provider access powers the workflow.
+
+![Portal skill listings](/images/dashboard-audit/portal-admin-skills.png)
+
+### Highlights
+
+Highlights organize selected resources on the portal home page. Use them to promote recommended starter kits, department workflows, or curated app bundles.
+
+![Portal highlights](/images/dashboard-audit/portal-admin-highlights.png)
+
 ## Authentication
 
 Portals support authenticated and unauthenticated boot flows. When a consumer authenticates, Metorial issues portal tokens and consumer session tokens scoped to that portal surface.
+
+The dashboard authentication settings include SSO tenants, email/domain allowlists, and session expiry controls.
+
+![Portal authentication settings](/images/dashboard-audit/portal-admin-auth-settings.png)
+
+Consumers authenticate before seeing portal resources.
+
+![Portal consumer login](/images/dashboard-audit/portal-consumer-email-verification.png)
 
 ```mermaid
 sequenceDiagram
@@ -90,6 +135,20 @@ Use portal-connected Magic MCP when:
 - the connection should honor portal authentication
 - customers need a branded entry point
 - you want provider access listings and requests around MCP access
+
+## Consumer Portal
+
+Consumers open the portal URL, authenticate, and land on a branded workspace that shows the Magic MCP URL, highlighted resources, available integrations, and shared skills.
+
+![Consumer portal home](/images/dashboard-audit/portal-consumer-home.png)
+
+The integrations view lists approved integrations and their availability state.
+
+![Consumer portal integrations](/images/dashboard-audit/portal-consumer-integrations.png)
+
+The skills view lists shared Magic Skills and the integrations they use.
+
+![Consumer portal skills](/images/dashboard-audit/portal-consumer-skills.png)
 
 ## API Surfaces
 
