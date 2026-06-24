@@ -1,13 +1,13 @@
 ---
-title: "Documentation Structure"
-description: "How the Metorial docs are organized today, where the gaps are, and the recommended structure as the product surface grows."
+title: "Documentation Map"
+description: "How the Metorial docs are organized and how the main product surfaces fit together."
 ---
 
-The docs currently explain the core Metorial flow well: create a workspace, configure providers, test in Explorer, use the SDKs, and monitor activity. The dashboard has grown beyond that original path, so the docs should separate **first-run onboarding**, **product areas**, **build guides**, and **reference material**.
+Use this page as a map of the docs and the product model they describe. The docs are organized around four reader goals: start with Metorial, understand the product areas, build with SDKs and APIs, and operate connected MCP infrastructure.
 
-## Current Layout
+## Navigation Layout
 
-The current Mintlify navigation is organized around the original provider-first journey.
+The Mintlify navigation is split into task-oriented tabs.
 
 ```mermaid
 flowchart TD
@@ -30,22 +30,22 @@ flowchart TD
   F --> F2["Provider Adapters"]
 ```
 
-## Gaps To Close
+## Product Coverage
 
-The product now has several dashboard areas that deserve first-class documentation:
+The main product surfaces map to these docs:
 
-| Area | Current state | Recommended change |
+| Area | Documentation role | Start here |
 | --- | --- | --- |
-| Dashboard | Covered by the new dashboard overview page | Keep it as the orientation page for the app |
-| Workforce | Visible in dashboard navigation, under-documented | Add product docs for accounts, agents, identities, and delegations |
-| Portals | Exists in API/backend and custom portal app, not discoverable in docs | Add product docs for branded MCP marketplaces and consumer access |
-| Magic Skills | Part of the Workforce product surface | Add product docs for skills, marketplaces, templates, groups, and execution settings |
-| Provider skills | Visible on provider pages as AI-generated summaries | Explain skills vs tools so users do not confuse catalog summaries with executable tool calls |
-| Logs/Infra | Now covered by screenshots, still thin conceptually | Split into deeper observability and operations guides later |
+| Dashboard | Orientation for onboarding, project setup, providers, integrations, Magic MCP, logs, infrastructure, and settings | [Dashboard Overview](/dashboard-overview) |
+| Workforce | Identity and access model for accounts, agents, identities, delegations, portals, and skills | [Workforce](/product-workforce) |
+| Portals | Branded consumer-facing MCP marketplaces for approved access | [Portals](/product-portals) |
+| Magic Skills | Reusable Workforce skills, marketplaces, templates, groups, and execution policy | [Magic Skills](/product-magic-skills) |
+| Provider skills | Provider-page capability summaries that help readers evaluate catalog entries | [Provider Skills](/product-provider-skills) |
+| Logs and infrastructure | Operational surfaces for runs, tool calls, provider activity, deployments, credentials, networks, and auth config | [Dashboard Overview](/dashboard-overview#logs) |
 
-## Recommended Layout
+## Reader Paths
 
-The improved structure should be organized by what the reader is trying to do.
+For larger additions, keep new pages aligned with what the reader is trying to do.
 
 ```mermaid
 flowchart TD
@@ -125,10 +125,10 @@ flowchart LR
 - Use **Magic Skill** for reusable Workforce skills, marketplaces, templates, and groups.
 - Use **Provider skill** for provider summary bullets, not executable tools.
 
-## Near-Term Improvements
+## Extending The Docs
 
 1. Keep the current **Getting Started** path short and task-oriented.
-2. Move product-area docs into the new **Product** tab.
-3. Split advanced operational pages out of 101 docs once they become long.
+2. Put durable product-area docs in the **Product** tab.
+3. Split advanced operational pages out of 101 docs when they become long.
 4. Add screenshots only where they explain current UI state or reduce ambiguity.
 5. Keep sample projects after setup docs, not before core concepts.

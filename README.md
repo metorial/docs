@@ -27,14 +27,15 @@ The local preview runs at `http://localhost:3000`.
 
 ## Screenshot Updates
 
-Dashboard screenshots live under `images/dashboard-audit/`. They were captured from a fresh EU-region project in the Metorial dashboard and cover onboarding, provider setup, GitHub, Linear, Magic MCP, logs, infrastructure, organization settings, and API key creation.
+Dashboard screenshots live under `images/dashboard-audit/`. They are captured from a disposable EU-region project in the Metorial dashboard and cover onboarding, provider setup, GitHub, Linear, Magic MCP, Workforce, Portals, logs, infrastructure, organization settings, and API key creation.
 
 When refreshing screenshots:
 
 1. Use a disposable docs/demo organization and project.
 2. Prefer the European Union region when validating EU-region copy.
-3. Stop before authorizing real third-party GitHub, Linear, Slack, or Google accounts unless the account owner explicitly approves it.
-4. Keep filenames descriptive and stable so MDX pages can reference them directly.
+3. Use seeded or demo resources with customer-like names so screenshots look representative.
+4. Stop before authorizing real third-party GitHub, Linear, Slack, or Google accounts unless the account owner explicitly approves it.
+5. Keep filenames descriptive and stable so MDX pages can reference them directly.
 
 ## Publishing
 
