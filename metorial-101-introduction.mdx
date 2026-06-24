@@ -1,44 +1,63 @@
 ---
 title: "Set Up Workforce"
-description: "Map the people, agents, portals, integrations, skills, and activity you want to manage in Metorial."
+description: "Understand the Workforce concepts you will use to publish integrations, Magic Skills, portals, and MCP access."
 ---
 
-Workforce is where you decide how access should work after the project already exists. Use it to map who needs access, what they should see, which tools and skills are approved, and where you will review activity.
+Workforce is where you decide how access should work after the project already exists. Start by understanding the core concepts, then choose the first portal, integration, Magic Skill, and access path you want to publish.
 
 <Note>
   **What you'll learn:**
 
   - How to orient around the Workforce dashboard
-  - How to choose the first portal, integration, and skill setup
+  - What Portals, Integrations, Magic Skills, and Magic MCP are for
+  - How those concepts fit together
   - How to choose the first concrete setup path
 </Note>
 
 ## Open Workforce
 
-Open **Workforce** from the dashboard. This is the control plane for accounts, agents, portals, skills, Magic MCP access, and activity.
+Open **Workforce** from the dashboard. This is the control plane for portals, integrations, Magic Skills, Magic MCP access, and activity.
 
 ![Workforce dashboard](/images/dashboard-audit/workforce-dashboard.png)
 
-## Choose The User Surface
+## Understand The Core Concepts
 
-Decide whether users should discover access through a portal, connect through Magic MCP, or both.
+Workforce brings a few product concepts together. Read them from the user's point of view first: where they discover access, what tools are approved, which workflows are packaged for them, and how clients connect.
 
-| Surface | Use it when |
+| Concept | What it means |
 | --- | --- |
-| Portal | Users need a branded place to discover approved integrations and skills |
-| Magic MCP | Agents or MCP clients need a managed endpoint for approved tool access |
-| Skills | Users need reusable workflows built on top of approved integrations |
+| Portal | A branded place where users discover approved integrations and Magic Skills |
+| Integration | An approved connection to a tool such as GitHub or Linear |
+| Magic Skill | A reusable workflow built on top of approved integrations and resources |
+| Magic MCP | A managed MCP endpoint that lets agents or MCP clients connect to approved tool access |
+| Activity | Logs for sessions, connections, tool calls, provider runs, errors, alerts, and auth events |
+
+```mermaid
+flowchart LR
+  Portal["Portal"]
+  Integration["Integration"]
+  Skill["Magic Skill"]
+  MCP["Magic MCP"]
+  Activity["Activity"]
+
+  Portal --> Integration
+  Portal --> Skill
+  Skill --> Integration
+  Integration --> MCP
+  MCP --> Activity
+  Skill --> Activity
+```
 
 ![Portal admin overview](/images/dashboard-audit/portal-admin-overview.png)
 
 ## Pick The First Resources
 
-Keep the first setup small. Choose one or two integrations, one useful skill, and one access group. This makes it easier to test the consumer experience before expanding the portal or adding more clients.
+Keep the first setup small. Choose one or two integrations, one useful Magic Skill, and one access group. This makes it easier to test the consumer experience before expanding the portal or adding more clients.
 
 Good first resources are:
 
 - a GitHub or Linear integration
-- one skill that solves a real repeated workflow
+- one Magic Skill that solves a real repeated workflow
 - one access group for the first user cohort
 - one Magic MCP server if agents or MCP clients need direct connection
 
