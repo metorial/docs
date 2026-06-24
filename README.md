@@ -27,7 +27,7 @@ The local preview runs at `http://localhost:3000`.
 
 ## Screenshot Updates
 
-Dashboard screenshots live under `images/dashboard-audit/`. They are captured from a disposable EU-region project in the Metorial dashboard and cover onboarding, provider setup, GitHub, Linear, Magic MCP, Workforce, Portals, logs, infrastructure, organization settings, and API key creation.
+Dashboard screenshots live under `images/dashboard-audit/`. They are captured from a disposable EU-region project in the Metorial dashboard and cover provider setup, GitHub, Linear, Magic MCP, Workforce, Portals, logs, infrastructure, organization settings, and API key creation.
 
 When refreshing screenshots:
 
