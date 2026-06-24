@@ -1,33 +1,44 @@
 ---
 title: "Documentation Map"
-description: "How the Metorial docs are organized and how the main product surfaces fit together."
+description: "How the Metorial docs are organized around Workforce, portals, integrations, developers, and reference material."
 ---
 
-Use this page as a map of the docs and the product model they describe. The docs are organized around four reader goals: start with Metorial, understand the product areas, build with SDKs and APIs, and operate connected MCP infrastructure.
+Use this page as an internal map for the docs structure. The public navigation now starts with Workforce outcomes and moves technical implementation material into developer sections.
 
 ## Navigation Layout
 
-The Mintlify navigation is split into task-oriented tabs.
+The Mintlify navigation is split into product-first tabs.
 
 ```mermaid
 flowchart TD
   A["Metorial Documentation"]
-  A --> B["Getting Started"]
-  B --> B1["Metorial 101"]
-  B --> B2["Sample Projects"]
-  B --> B3["API"]
-  A --> C["Concepts"]
-  C --> C1["Core Concepts"]
-  C --> C2["Glossary"]
-  A --> D["Custom Providers"]
-  D --> D1["Managed Providers"]
-  D --> D2["External Providers"]
-  A --> E["Integrations"]
-  E --> E1["Overview"]
-  E --> E2["Setup Guides"]
-  A --> F["SDK"]
-  F --> F1["Getting Started"]
-  F --> F2["Provider Adapters"]
+  A --> B["Start"]
+  B --> B1["Home"]
+  B --> B2["Dashboard Overview"]
+  B --> B3["Set Up Workforce"]
+  B --> B4["Launch A Portal"]
+  B --> B5["Test Portal Access"]
+  B --> B6["Review Activity"]
+
+  A --> C["Workforce"]
+  C --> C1["Workforce"]
+  C --> C2["Portals"]
+  C --> C3["Magic Skills"]
+  C --> C4["Provider Skills"]
+
+  A --> D["Integrations"]
+  D --> D1["Catalog"]
+  D --> D2["Setup Guides"]
+
+  A --> E["Developers"]
+  E --> E1["API"]
+  E --> E2["SDK"]
+  E --> E3["Provider Runtime"]
+  E --> E4["Custom Providers"]
+
+  A --> F["Reference"]
+  F --> F1["Concepts"]
+  F --> F2["Glossary"]
 ```
 
 ## Product Coverage
@@ -36,12 +47,12 @@ The main product surfaces map to these docs:
 
 | Area | Documentation role | Start here |
 | --- | --- | --- |
-| Dashboard | Orientation for onboarding, project setup, providers, integrations, Magic MCP, logs, infrastructure, and settings | [Dashboard Overview](/dashboard-overview) |
-| Workforce | Identity and access model for accounts, agents, identities, delegations, portals, and skills | [Workforce](/product-workforce) |
-| Portals | Branded consumer-facing MCP marketplaces for approved access | [Portals](/product-portals) |
-| Magic Skills | Reusable Workforce skills, marketplaces, templates, groups, and execution policy | [Magic Skills](/product-magic-skills) |
-| Provider skills | Provider-page capability summaries that help readers evaluate catalog entries | [Provider Skills](/product-provider-skills) |
-| Logs and infrastructure | Operational surfaces for runs, tool calls, provider activity, deployments, credentials, networks, and auth config | [Dashboard Overview](/dashboard-overview#logs) |
+| Workforce | Control plane for governed tool access across people, agents, portals, skills, and activity | [Workforce](/product-workforce) |
+| Portals | Branded user-facing catalogs for approved integrations, skills, and MCP access | [Portals](/product-portals) |
+| Magic Skills | Reusable workflows that can be grouped, templated, governed, and published | [Magic Skills](/product-magic-skills) |
+| Integrations | Approved tool access for catalog providers such as GitHub and Linear | [Integrations](/integrations-overview) |
+| Magic MCP | Managed MCP endpoints, groups, tokens, and client connections | [Dashboard Overview](/dashboard-overview#magic-mcp) |
+| Activity | Operational logs for sessions, connections, tool calls, provider runs, errors, alerts, and auth events | [Review Activity](/metorial-101-monitoring) |
 
 ## Reader Paths
 
@@ -50,39 +61,24 @@ For larger additions, keep new pages aligned with what the reader is trying to d
 ```mermaid
 flowchart TD
   A["Docs Home"]
-  A --> B["Start"]
-  B --> B1["Dashboard Overview"]
-  B --> B2["Create organization and project"]
-  B --> B3["Use provider"]
-  B --> B4["Test and monitor"]
+  A --> B["Evaluate And Start"]
+  B --> B1["What is Metorial Workforce?"]
+  B --> B2["Where does this live in the dashboard?"]
+  B --> B3["How do I launch the first portal?"]
 
-  A --> C["Product"]
-  C --> C1["Providers and Integrations"]
-  C --> C2["Magic MCP"]
-  C --> C3["Workforce"]
-  C --> C4["Portals"]
-  C --> C5["Magic Skills"]
-  C --> C6["Provider Skills"]
-  C --> C7["Logs and Infrastructure"]
+  A --> C["Operate Workforce"]
+  C --> C1["Manage accounts and agents"]
+  C --> C2["Publish integrations and skills"]
+  C --> C3["Review activity"]
 
-  A --> D["Build"]
-  D --> D1["SDK Quickstart"]
-  D --> D2["JavaScript SDK"]
-  D --> D3["Python SDK"]
-  D --> D4["OAuth"]
-  D --> D5["API Keys"]
-  D --> D6["Sample Projects"]
+  A --> D["Build On Metorial"]
+  D --> D1["Use the API"]
+  D --> D2["Use SDKs"]
+  D --> D3["Bring custom providers"]
 
-  A --> E["Operate"]
-  E --> E1["Monitoring"]
-  E --> E2["Security and tool filters"]
-  E --> E3["Identity and access"]
-  E --> E4["Enterprise BYO"]
-
-  A --> F["Reference"]
-  F --> F1["Glossary"]
-  F --> F2["API reference"]
-  F --> F3["Custom provider reference"]
+  A --> E["Reference"]
+  E --> E1["Concepts"]
+  E --> E2["Glossary"]
 ```
 
 ## Product Model
@@ -93,42 +89,47 @@ This is the mental model the docs should teach.
 flowchart LR
   Org["Organization"]
   Project["Project"]
-  Env["Environment"]
-  Provider["Provider Catalog"]
-  Integration["Integration"]
-  Magic["Magic MCP Server"]
   Workforce["Workforce"]
   Portal["Portal"]
-  Skills["Magic Skills"]
-  Logs["Logs"]
+  Account["Account"]
+  Agent["Agent"]
+  Integration["Integration"]
+  Skill["Magic Skill"]
+  MCP["Magic MCP Server"]
+  Activity["Activity And Logs"]
 
-  Org --> Project --> Env
-  Env --> Provider
-  Provider --> Integration
-  Provider --> Magic
-  Env --> Workforce
+  Org --> Project
+  Project --> Workforce
   Workforce --> Portal
-  Workforce --> Skills
-  Integration --> Logs
-  Magic --> Logs
-  Portal --> Magic
-  Skills --> Magic
+  Workforce --> Account
+  Workforce --> Agent
+  Workforce --> Integration
+  Workforce --> Skill
+  Integration --> MCP
+  Skill --> Integration
+  Portal --> Integration
+  Portal --> Skill
+  Account --> Portal
+  Agent --> MCP
+  MCP --> Activity
+  Portal --> Activity
 ```
 
 ## Editorial Rules
 
-- Use **Dashboard** for the browser UI at `platform.metorial.com`.
-- Use **Provider** for catalog entries such as GitHub, Linear, Slack, and Metorial Search.
-- Use **Integration** for reusable provider setup.
+- Lead with user outcomes before API or object-model detail.
+- Use **Workforce** for the product area that governs people, agents, portals, skills, and activity.
+- Use **Portal** for the branded user-facing resource catalog.
+- Use **Integration** for approved provider setup.
 - Use **Magic MCP Server** for connectable MCP endpoints.
-- Use **Account** for Workforce users/consumers in the dashboard UI.
-- Use **Magic Skill** for reusable Workforce skills, marketplaces, templates, and groups.
+- Use **Account** for Workforce users or consumers in the dashboard UI.
+- Use **Magic Skill** for reusable Workforce workflows, marketplaces, templates, and groups.
 - Use **Provider skill** for provider summary bullets, not executable tools.
 
 ## Extending The Docs
 
-1. Keep the current **Getting Started** path short and task-oriented.
-2. Put durable product-area docs in the **Product** tab.
-3. Split advanced operational pages out of 101 docs when they become long.
-4. Add screenshots only where they explain current UI state or reduce ambiguity.
-5. Keep sample projects after setup docs, not before core concepts.
+1. Keep **Start** short and task-oriented.
+2. Put durable product-area docs in **Workforce**.
+3. Put API, SDK, provider runtime, and custom-provider material in **Developers**.
+4. Add screenshots where they clarify current UI state.
+5. Keep internal structure notes off the public navigation.

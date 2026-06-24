@@ -1,52 +1,57 @@
 ---
-title: "Testing your first provider"
-description: "Learn how to test your provider using the Explorer tool"
+title: "Test Portal Access"
+description: "Preview the consumer portal and confirm users can see the right integrations and skills."
 ---
 
-Now that you've chosen a provider setup path, use Explorer to inspect and test provider tools before connecting them to an application.
+Test the portal from the consumer point of view before sharing it. This catches missing access groups, hidden resources, and confusing portal copy early.
 
 <Note>
   **What you'll learn:**
 
-  - How to test a provider
+  - How users authenticate into a portal
+  - How the portal home page presents approved resources
+  - How to verify integrations and skills from the consumer view
 
   **Before you start:**
 
-  - Complete the [Introduction](/metorial-101-introduction) guide
-  - Complete the [Using your first provider](/metorial-101-deploying) guide
+  - Complete [Set Up Workforce](/metorial-101-introduction)
+  - Complete [Launch A Portal](/metorial-101-deploying)
 </Note>
 
-## Testing a provider
+## Open The Portal
 
-Providers in Metorial expose capabilities such as tools and resources to AI assistants. Explorer gives you a dashboard surface for checking those capabilities.
+Open the portal URL and complete the configured authentication flow. If email verification or SSO is enabled, test the same path your users will use.
 
-<Steps>
-  <Step title="Open the Explorer">
-    Open **Explorer** from the project sidebar or click **Open Explorer** from a provider page.
+![Portal consumer login](/images/dashboard-audit/portal-consumer-email-verification.png)
 
-    ![Explorer](/images/dashboard-audit/dashboard-explorer.png)
-  </Step>
-  <Step title="Choose a Provider Context">
-    Select the provider, integration, auth config, or Magic MCP context you want to test. If the provider needs auth, create or select auth credentials first.
+## Review The Home Page
 
-    ![Linear provider tools](/images/dashboard-audit/provider-linear-capabilities.png)
-  </Step>
-  <Step title="Test Server Capabilities">
-    Select a tool, enter sample input, and run it. Start with read-only tools before testing write or destructive tools.
+The portal home page should make the approved resources obvious: Magic MCP connection details, highlighted resources, available integrations, and shared skills.
 
-    ![Session Viewer Interface](/images/metorial-101/testing-mcp-servers/step3.png)
-  </Step>
-  <Step title="View Result">
-    View the resulting response from the provider to see the data your AI integrations will consume.
+![Consumer portal home](/images/dashboard-audit/portal-consumer-home.png)
 
-    ![MCP Message Stream](/images/metorial-101/testing-mcp-servers/step4.png)
-  </Step>
-</Steps>
+## Check Integrations
+
+Open the integrations view and confirm the right tools are visible. Resources that require user credentials should make the connection state clear.
+
+![Consumer portal integrations](/images/dashboard-audit/portal-consumer-integrations.png)
+
+## Check Skills
+
+Open the skills view and confirm the published skills appear with the integrations they use. If a skill is missing, return to the portal admin resource settings and verify the access group is allowed.
+
+![Consumer portal skills](/images/dashboard-audit/portal-consumer-skills.png)
+
+## Test Provider Behavior
+
+Use Explorer when you need to inspect the underlying provider tools before exposing them broadly.
+
+![Explorer](/images/dashboard-audit/dashboard-explorer.png)
 
 ## What's Next?
 
-🚀 You've successfully deployed and tested your first provider. Next, you'll learn how to connect your provider to an LLM and use it in your AI application.
+Once the portal looks right, review activity and operational logs.
 
-<Card title="Next Up: How to use a provider" icon="code" href="/metorial-101-using">
-  Learn how to use a deployed provider using the Metorial SDKs.
+<Card title="Next Up: Review Activity" icon="chart-line" href="/metorial-101-monitoring">
+  Monitor access, sessions, tool calls, provider runs, and auth events.
 </Card>

@@ -1,57 +1,69 @@
 ---
-title: "Monitoring your providers"
-description: "Learn how to view session logs, inspect provider runs, and review deployment errors"
+title: "Review Activity"
+description: "Monitor sessions, connections, tool calls, provider runs, alerts, and authentication events."
 ---
 
-Once you have your providers deployed and integrated, you'll want to keep an eye on their activity and health.
+After users and agents start connecting, use activity and logs to understand what happened. This is where operators verify that access is working and catch issues before they become support tickets.
 
 <Note>
   **What you'll learn:**
 
-  - How to view activity, sessions, connections, and tool calls
-  - How to inspect provider runs and errors
-  - How to review alerts, Protoguard events, and provider-auth events
+  - How to review project activity
+  - Where sessions, connections, and tool calls appear
+  - Where provider runs, errors, alerts, and auth events live
 
   **Before you start:**
 
-  - Complete the [Introduction](/metorial-101-introduction) guide
-  - Complete the [Using your first provider](/metorial-101-deploying) guide
-  - Complete the [Testing your first provider](/metorial-101-testing) guide
-  - Complete the [Using your first provider](/metorial-101-using) guide
+  - Complete [Set Up Workforce](/metorial-101-introduction)
+  - Complete [Launch A Portal](/metorial-101-deploying)
+  - Complete [Test Portal Access](/metorial-101-testing)
 </Note>
 
-<Steps>
-  <Step title="1. Open Logs Activity">
-    Navigate to **Logs** in the sidebar to see recent activity across the project.
+## Open Logs Activity
 
-    ![Logs activity](/images/dashboard-audit/dashboard-logs-activity.png)
-  </Step>
-  <Step title="2. Review Sessions and Connections">
-    Use **Sessions** for provider sessions and **Connections** for connection-level records.
+Navigate to **Logs** to see recent project activity.
 
-    ![Sessions log](/images/dashboard-audit/dashboard-logs-sessions.png)
-  </Step>
-  <Step title="3. Inspect Tool Calls and Provider Runs">
-    Use **Tool Calls** for individual tool invocations and **Provider Runs** for provider execution records.
+![Logs activity](/images/dashboard-audit/dashboard-logs-activity.png)
 
-    ![Tool calls log](/images/dashboard-audit/dashboard-logs-tool-calls.png)
-  </Step>
-  <Step title="4. Review Errors and Alerts">
-    Use **Errors** and **Alerts** to find failed provider runs and operational warnings.
+## Review Sessions And Connections
 
-    ![Provider errors](/images/dashboard-audit/dashboard-logs-provider-errors.png)
-  </Step>
-  <Step title="5. Audit Auth Events">
-    Provider auth events and errors have their own pages for OAuth, API key, and setup-session debugging.
+Use **Sessions** for provider sessions and **Connections** for connection-level records.
 
-    ![Provider auth events](/images/dashboard-audit/dashboard-provider-auth-events.png)
-  </Step>
-</Steps>
+![Sessions log](/images/dashboard-audit/dashboard-logs-sessions.png)
+
+![Connections log](/images/dashboard-audit/dashboard-logs-connections.png)
+
+## Inspect Tool Calls And Provider Runs
+
+Use **Tool Calls** for individual tool invocations and **Provider Runs** for provider execution records.
+
+![Tool calls log](/images/dashboard-audit/dashboard-logs-tool-calls.png)
+
+![Provider runs](/images/dashboard-audit/dashboard-logs-provider-runs.png)
+
+## Review Errors And Alerts
+
+Use **Errors** and **Alerts** to find failed provider runs and operational warnings.
+
+![Provider errors](/images/dashboard-audit/dashboard-logs-provider-errors.png)
+
+![Alerts](/images/dashboard-audit/dashboard-logs-alerts.png)
+
+## Audit Auth Events
+
+Provider auth events and errors have their own pages for OAuth, API key, and setup-session debugging.
+
+![Provider auth events](/images/dashboard-audit/dashboard-provider-auth-events.png)
 
 ## What's Next?
 
-This is it for Metorial 101.
+You now have the core Workforce path in place: a project, a portal, published resources, consumer testing, and activity review.
 
-You've successfully deployed, tested, and monitored your first provider. You can follow the same steps for any other provider that you might want in production.
-
-If you have any questions, explore the API references or reach out to us directly.
+<CardGroup cols={2}>
+  <Card title="Workforce" icon="users" href="/product-workforce">
+    Understand the full Workforce product model.
+  </Card>
+  <Card title="Developers" icon="code" href="/sdk-quickstart">
+    Build programmatic workflows with the API and SDKs.
+  </Card>
+</CardGroup>

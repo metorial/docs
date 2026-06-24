@@ -1,142 +1,134 @@
 ---
 title: "Workforce"
-description: "Workforce is the identity and access layer for accounts, agents, identities, and delegation in a Metorial project."
+description: "Workforce is the control plane for giving people and AI agents governed access to tools, integrations, portals, and skills."
 ---
 
-Workforce is where you manage who or what can act inside Metorial. It brings together portals, Magic Skills, Magic MCP access, human accounts, agent actors, identities, and delegation policies so access can be modeled explicitly instead of hidden inside API keys or provider credentials.
+Workforce is where operators manage tool access across Metorial. It brings together portals, accounts, agents, identities, integrations, skills, Magic MCP, and activity so access is visible instead of scattered across credentials and one-off setup.
 
 <Note>
   **What you'll learn:**
 
-  - How Workforce relates to accounts, agents, identities, and delegations
-  - Where Workforce, Portals, Magic Skills, Magic MCP, Identity, Accounts, and Agents live
-  - How Workforce connects people, agents, skills, portals, and Magic MCP access
+  - What Workforce manages
+  - How Portals, Skills, Integrations, Accounts, Agents, and Magic MCP fit together
+  - Where to find the main Workforce pages in the dashboard
 </Note>
 
-## Workforce Home
+## What Workforce Is For
 
-Open **Workforce** from the top navigation to review workforce activity, portals, accounts, and access surfaces. The Workforce home page brings together:
+Use Workforce when you need to answer practical access questions:
 
-- governed portals
-- managed access
-- workforce activity
-- Magic Skills
-- SAML SSO
-
-The Workforce dashboard includes connection activity, a Portals card, and the Accounts table.
+- Which people or agents can use approved tools?
+- Which integrations and skills should users see?
+- Which portal should a customer, partner, or internal team open?
+- Which MCP clients can connect to which servers?
+- What happened after someone or an agent used access?
 
 ![Workforce dashboard](/images/dashboard-audit/workforce-dashboard.png)
 
+## What You Can Manage
+
+| Area | What it does |
+| --- | --- |
+| Portals | Publish branded catalogs of approved integrations and skills |
+| Magic Skills | Create and govern reusable workflows |
+| Integrations | Configure approved access to tools such as GitHub and Linear |
+| Magic MCP | Expose approved provider access through managed MCP endpoints |
+| Accounts | Manage people or consumers that receive access |
+| Agents | Manage non-human actors and linked clients |
+| Activity | Review usage, sessions, connections, tool calls, and errors |
+
+## Core Workflow
+
+Most teams start with this path:
+
+<Steps>
+  <Step title="Create the Workforce project">
+    Create an organization, choose a region, and create the project that will hold your Workforce setup.
+  </Step>
+  <Step title="Launch a portal">
+    Create the branded place where users will discover approved integrations and skills.
+  </Step>
+  <Step title="Add integrations and skills">
+    Publish the tools and workflows users need. Start with a small set, then expand as usage becomes clear.
+  </Step>
+  <Step title="Test as a user">
+    Open the consumer portal and confirm the right resources are visible.
+  </Step>
+  <Step title="Review activity">
+    Inspect sessions, connections, tool calls, provider runs, auth events, and alerts.
+  </Step>
+</Steps>
+
 ## Dashboard Surfaces
 
-After Workforce is active, the dashboard exposes these Workforce product areas:
+The Workforce product spans these dashboard areas:
 
 | Area | Route | What it manages |
 | --- | --- | --- |
-| Workforce | `/workforce` | Activity, portals, and account overview |
-| Portals | `/portals` | Branded provider catalogs for employees, partners, or customers |
-| Magic Skills | `/skills` | Reusable skills, marketplaces, templates, groups, and skill policy |
+| Workforce | `/workforce` | Activity, portals, accounts, and access overview |
+| Portals | `/portals` | Branded resource catalogs for employees, partners, or customers |
+| Magic Skills | `/skills` | Skills, marketplaces, templates, groups, and skill policy |
 | Magic MCP | `/magic-mcp` | MCP servers, connections, groups, and tokens |
-| Accounts | `/consumers` | People or consumers that can receive access across Metorial |
-| Agents | `/agents` | First-class agents and linked clients |
+| Accounts | `/consumers` | People or consumers that can receive access |
+| Agents | `/agents` | First-class agent actors and linked clients |
 | Identity | `/identities`, `/actors`, `/identity/delegations`, `/identity/delegation-configs` | Identities, actors, delegations, and delegation configs |
-
-The concrete identity management pages are:
-
-| Page | What it manages |
-| --- | --- |
-| Accounts | People or consumers that can receive access across Metorial |
-| Agents | First-class agents and linked clients |
-| Identities | Identity records used for ownership and delegation |
-| Delegations | Access relationships between identities |
-| Delegation Configs | Reusable policies for identity delegation |
 
 ![Accounts page](/images/dashboard-audit/dashboard-accounts.png)
 
 ![Agents page](/images/dashboard-audit/dashboard-agents.png)
 
-![Identities page](/images/dashboard-audit/dashboard-identities.png)
+## How The Pieces Fit
 
-## Magic Skills
-
-Magic Skills appear inside Workforce. They are reusable skills that can enable workflows across agents and teams.
-
-The Magic Skills section includes:
-
-| Tab | What it manages |
-| --- | --- |
-| Skills | Reusable skills built from integrations, documents, custom logic, and resources |
-| Marketplaces | Curated places to publish selected plugins and skills to users |
-| Templates | Reusable starting points for new skills |
-| Groups | Sets of related skills managed together |
-| Settings | Default skill execution policy |
-
-See [Magic Skills](/product-magic-skills) for the detailed walkthrough.
-
-![Magic Skills dashboard](/images/dashboard-audit/workforce-magic-skills.png)
-
-## Magic MCP Groups And Tokens
-
-Workforce also exposes the Magic MCP access-management pages. **Groups** organize Magic MCP servers, while **Tokens** can include group restrictions.
-
-![Magic MCP groups](/images/dashboard-audit/workforce-magic-mcp-groups.png)
-
-![Magic MCP tokens](/images/dashboard-audit/workforce-magic-mcp-tokens.png)
-
-## How Workforce Fits
+Portals are the user-facing surface. Integrations and Magic MCP provide approved tool access. Magic Skills package repeatable workflows. Accounts and agents represent who or what can use access. Activity and logs show what happened.
 
 ```mermaid
 flowchart TD
-  Account["Account / Consumer"]
-  Agent["Agent"]
-  Identity["Identity"]
-  Delegation["Delegation"]
-  Config["Delegation Config"]
-  Provider["Provider Access"]
-  Magic["Magic MCP Server"]
   Portal["Portal"]
+  Account["Account"]
+  Agent["Agent"]
+  Integration["Integration"]
+  MagicMCP["Magic MCP Server"]
   Skill["Magic Skill"]
-  Group["Group"]
+  Activity["Activity And Logs"]
 
-  Account --> Identity
-  Agent --> Identity
-  Config --> Delegation
-  Identity --> Delegation
-  Delegation --> Provider
-  Group --> Skill
-  Group --> Magic
-  Provider --> Magic
   Portal --> Account
-  Portal --> Magic
-  Skill --> Agent
+  Portal --> Integration
+  Portal --> Skill
+  Account --> MagicMCP
+  Agent --> MagicMCP
+  Integration --> MagicMCP
+  Skill --> Integration
+  MagicMCP --> Activity
+  Skill --> Activity
 ```
 
-## Accounts
+## Identity And Delegation
 
-Accounts represent consumers that can receive access across Metorial. In the dashboard, the Accounts page is labeled **Accounts** and lets you create and inspect consumer access records.
+Workforce also includes lower-level identity and delegation pages. Use them when you need durable ownership for people, agents, or delegated access relationships.
 
-Use accounts when you need to model access for people outside your internal Metorial organization, such as customers, end users, or partner users.
+| Page | What it manages |
+| --- | --- |
+| Accounts | People or consumers that can receive access |
+| Agents | Non-human actors and linked clients |
+| Identities | Identity records used for ownership and delegation |
+| Delegations | Access relationships between identities |
+| Delegation Configs | Reusable policies for identity delegation |
 
-## Agents
-
-Agents represent non-human actors and linked clients. Use them when you want access to be owned by a durable agent identity instead of a person or raw API key.
-
-## Identities And Delegation
-
-Identities and delegation configs let you model who can act as whom, and under which policies. This matters when tools can read, write, or perform destructive actions.
+![Identities page](/images/dashboard-audit/dashboard-identities.png)
 
 ## Related Pages
 
 <CardGroup cols={2}>
   <Card title="Portals" icon="door-open" href="/product-portals">
-    Let customers access approved providers through a branded portal.
+    Publish approved integrations and skills through a branded user surface.
   </Card>
-
   <Card title="Magic Skills" icon="wand-sparkles" href="/product-magic-skills">
-    Create and govern reusable skills, marketplaces, templates, and groups.
+    Create reusable workflows and publish them to teams or customers.
   </Card>
-
-  <Card title="Provider Skills" icon="sparkles" href="/product-provider-skills">
-    Understand provider summaries and how they differ from tools.
+  <Card title="Integrations" icon="plug" href="/integrations-overview">
+    Connect the tools your Workforce users need.
+  </Card>
+  <Card title="Review Activity" icon="chart-line" href="/metorial-101-monitoring">
+    Monitor access usage and operational events.
   </Card>
 </CardGroup>

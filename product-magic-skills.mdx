@@ -1,76 +1,74 @@
 ---
 title: "Magic Skills"
-description: "Magic Skills let teams create, organize, publish, and govern reusable agent skills across a Workforce-enabled Metorial project."
+description: "Magic Skills package repeatable workflows so teams can publish and govern useful agent work."
 ---
 
-Magic Skills are part of the Workforce product. They let teams package reusable agent workflows and make them available through controlled marketplaces, templates, groups, and execution policies.
+Magic Skills turn repeatable work into reusable assets. Create a skill once, organize it with groups or marketplaces, connect it to integrations, and publish it through Workforce or a portal.
 
 <Note>
   **What you'll learn:**
 
-  - What the Magic Skills section contains
-  - How skills, marketplaces, templates, and groups fit together
-  - Which settings control skill execution policy
+  - What Magic Skills are for
+  - How skills, groups, templates, marketplaces, and settings fit together
+  - How skills appear in portals for users
 </Note>
 
-## Dashboard Surface
+## What Skills Are For
 
-**Magic Skills** appears in the Workforce sidebar with five tabs:
+Use Magic Skills for work that should be repeatable, shareable, and governed:
 
-- **Skills**
-- **Marketplaces**
-- **Templates**
-- **Groups**
-- **Settings**
+- support triage playbooks
+- engineering review workflows
+- customer onboarding steps
+- research and reporting tasks
+- internal operations checklists
 
 ![Magic Skills dashboard](/images/dashboard-audit/workforce-magic-skills.png)
 
-## Skills
+## Create A Skill
 
-Skills are reusable workflows that can combine integrations, documents, custom logic, and resources. The Skills page lets you search, filter, and create skills.
+Create a skill with a clear name and description. The name should describe the job the user wants done, not the implementation detail behind it.
 
-The create flow starts with:
-
-| Field | Purpose |
+| Field | Good pattern |
 | --- | --- |
-| Name | Human-readable skill name |
-| Description | Short explanation of what the skill does |
+| Name | "Summarize Linear Escalations" |
+| Description | "Reviews recent Linear issues and drafts a customer-ready escalation summary." |
 
-After a skill exists, its detail page lets you manage skill files, create skill agents, and link providers or integrations. Linked integrations appear on the consumer portal skill card.
+After a skill exists, add the files, agents, resources, and integrations it needs.
 
-## Marketplaces
+## Connect Integrations
 
-Marketplaces let you publish selected plugins and skills to users. Use them when different teams or consumers should see curated skill catalogs instead of every available skill.
+Skills become more useful when they are connected to approved integrations. A customer support skill might use Linear and GitHub; an operations skill might use Google Drive and Slack.
 
-## Templates
+Linked integrations appear on the portal skill card so users can understand what access the workflow uses.
 
-Templates are reusable starting points for new skills. The default template list includes a **Plain** template for creating a skill with no preconfigured items.
+## Organize Skills
 
-## Groups
-
-Groups organize related skills and let you manage them as a set.
+| Surface | Use it for |
+| --- | --- |
+| Skills | Individual reusable workflows |
+| Groups | Sets of related skills, such as a team playbook |
+| Templates | Starting points for new skills |
+| Marketplaces | Curated skill catalogs for users |
+| Settings | Default execution policy |
 
 ![Magic Skills groups](/images/dashboard-audit/workforce-skill-groups.png)
 
-Use groups when you want to keep related workflows together, such as a support playbook, engineering review workflow, or onboarding collection.
+## Publish Skills Through Portals
 
-## Publishing Skills Through Portals
-
-Portals can publish individual skills, skill templates, or skill groups. In the portal resource setup, add a skill resource, choose an existing Magic Skill, and set the portal access group to **Allow**.
+Portals can publish individual skills, templates, or groups. Add a skill resource to the portal, choose the skill, and allow the right access groups.
 
 ![Portal skill listings](/images/dashboard-audit/portal-admin-skills.png)
 
-Once allowed, the skill appears in the consumer portal with the integrations it uses.
+Users then see the skill inside the portal with its connected integrations.
 
 ![Consumer portal skills](/images/dashboard-audit/portal-consumer-skills.png)
 
-## Settings
+## Govern Skill Execution
 
-Settings define the default execution policy used by skills in the instance.
+Settings define the default policy for skill files and execution behavior.
 
 ![Magic Skills settings](/images/dashboard-audit/workforce-skill-settings.png)
-
-The current settings are:
 
 | Setting | What it controls |
 | --- | --- |
@@ -84,19 +82,24 @@ Magic Skills are reusable Workforce assets. Provider skills are catalog summarie
 
 | Concept | Meaning |
 | --- | --- |
-| Magic Skill | A reusable workflow created and governed in the Workforce product |
+| Magic Skill | A reusable workflow created and governed in Workforce |
 | Magic Skill Group | A collection of related Magic Skills |
-| Skill Marketplace | A curated place to publish selected skills and plugins to users |
+| Skill Marketplace | A curated place to publish selected skills and plugins |
 | Provider Skill | A provider-page summary that describes what a catalog provider can do |
 
 ## Related Pages
 
 <CardGroup cols={2}>
   <Card title="Workforce" icon="users" href="/product-workforce">
-    See where Magic Skills fit in Workforce.
+    See where Magic Skills fit in the broader product.
   </Card>
-
+  <Card title="Portals" icon="door-open" href="/product-portals">
+    Publish skills to users through a branded portal.
+  </Card>
   <Card title="Provider Skills" icon="sparkles" href="/product-provider-skills">
     Understand provider-page capability summaries.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations-overview">
+    Connect skills to approved tools.
   </Card>
 </CardGroup>

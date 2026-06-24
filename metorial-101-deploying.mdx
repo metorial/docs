@@ -1,63 +1,57 @@
 ---
-title: "Using your first provider"
-description: "Learn how to configure a provider in your Metorial project"
+title: "Launch A Portal"
+description: "Create a branded portal and add the first integrations and skills your users can access."
 ---
 
-The first step in allowing your AI integrations to access external tools through Metorial is choosing a provider and creating a reusable setup for it.
+A portal is the user-facing place where people discover approved integrations and skills. Build the portal first, then add resources and access rules.
 
 <Note>
   **What you'll learn:**
 
-  - How to open a provider from the catalog
-  - How to create an integration from a provider
-  - How Magic MCP servers differ from integrations
+  - How to create a portal
+  - How to add access groups
+  - How to publish integrations and skills
+  - How to prepare the consumer experience for testing
 
   **Before you start:**
 
-  - Complete the [Introduction](/metorial-101-introduction) guide
+  - Complete [Set Up Workforce](/metorial-101-introduction)
 </Note>
 
-## Configure a provider
+## Create The Portal
 
-Providers in Metorial provide tools and resources to AI assistants through the Model Context Protocol.
+Open **Portals** from the Workforce area and create a portal with a clear name and description. Use a name your users will recognize, such as a company, department, or customer workspace.
 
-Provider pages now expose two setup paths:
+![Portal admin overview](/images/dashboard-audit/portal-admin-overview.png)
 
-- **Integration**: reusable provider setup for sessions and applications
-- **Magic MCP Server**: a managed MCP endpoint you can connect to clients and agents
+## Add Access Groups
 
-<Steps>
-  <Step title="Open the Provider Catalog">
-    Navigate to **Providers** in the dashboard and choose a provider such as **GitHub** or **Linear**.
+Use access groups to decide who can see each resource. You can assign groups to every account by default or map them from SSO group IDs.
 
-    ![Provider catalog](/images/dashboard-audit/dashboard-providers-catalog.png)
-  </Step>
-  <Step title="Review the Provider">
-    The provider page includes an overview, tools and capabilities, versions, and setup actions.
+![Portal access groups](/images/dashboard-audit/portal-admin-groups.png)
 
-    ![GitHub provider page](/images/dashboard-audit/provider-github-detail-confirmed.png)
-  </Step>
-  <Step title="Choose How to Use the Provider">
-    Click **Use Provider**. Choose **Integration** when you want reusable provider setup for sessions, or **Magic MCP Server** when you want a connectable MCP server endpoint.
+## Publish Integrations
 
-    ![Use provider menu](/images/dashboard-audit/provider-linear-use-provider-modal.png)
-  </Step>
-  <Step title="Configure Auth and Tool Access">
-    Select the auth method, choose or create auth credentials, and review tool filters. Tool filters are grouped as read-only, write, and destructive tools.
+Add integrations to the portal so users can connect approved tools such as GitHub or Linear. Choose whether each integration is user-configured or pre-configured by an admin.
 
-    ![GitHub integration setup](/images/dashboard-audit/provider-github-create-integration-github-com-selected.png)
-  </Step>
-  <Step title="Optional: Create a Magic MCP Server">
-    Magic MCP setup asks for an auth config and tool filters, then creates a server clients can connect to.
+![Portal integration listings](/images/dashboard-audit/portal-admin-integrations.png)
 
-    ![Create a Magic MCP server from GitHub](/images/dashboard-audit/provider-github-create-magic-mcp-flow.png)
-  </Step>
-</Steps>
+## Publish Skills
+
+Add skills to package repeatable workflows for users. A skill can show which integrations it uses, so users understand what access powers the workflow.
+
+![Portal skill listings](/images/dashboard-audit/portal-admin-skills.png)
+
+## Highlight Starter Resources
+
+Highlights shape the portal home page. Use them for recommended starter kits, team workflows, or the resources new users should try first.
+
+![Portal highlights](/images/dashboard-audit/portal-admin-highlights.png)
 
 ## What's Next?
 
-You've configured your first provider path. Next, test provider capabilities in Explorer.
+Preview the portal from the user side and confirm that the right resources are visible.
 
-<Card title="Next Up: How to test a provider" icon="vial" href="/metorial-101-testing">
-  Learn how to test a provider using the Explorer.
+<Card title="Next Up: Test Portal Access" icon="vial" href="/metorial-101-testing">
+  Review the consumer portal before sharing it with users.
 </Card>
