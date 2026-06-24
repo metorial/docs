@@ -18,6 +18,28 @@
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
+  "redirects": [
+    {
+      "source": "/metorial-101-introduction",
+      "destination": "/workforce-concepts"
+    },
+    {
+      "source": "/metorial-101-deploying",
+      "destination": "/create-portal"
+    },
+    {
+      "source": "/metorial-101-testing",
+      "destination": "/preview-portal-access"
+    },
+    {
+      "source": "/metorial-101-monitoring",
+      "destination": "/review-activity"
+    },
+    {
+      "source": "/metorial-101-using",
+      "destination": "/use-providers-with-sdks"
+    }
+  ],
   "navigation": {
     "tabs": [
       {
@@ -28,10 +50,10 @@
             "pages": [
               "index",
               "dashboard-overview",
-              "metorial-101-introduction",
-              "metorial-101-deploying",
-              "metorial-101-testing",
-              "metorial-101-monitoring"
+              "workforce-concepts",
+              "create-portal",
+              "preview-portal-access",
+              "review-activity"
             ]
           }
         ]
@@ -87,7 +109,7 @@
               "sdk-python",
               "sdk-oauth",
               "sdk-error-handling",
-              "metorial-101-using"
+              "use-providers-with-sdks"
             ]
           },
           {
