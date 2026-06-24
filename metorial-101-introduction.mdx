@@ -1,9 +1,9 @@
 ---
-title: "Understand Workforce"
+title: "Workforce Concepts"
 description: "Understand the Workforce concepts you will use to publish integrations, Magic Skills, portals, and MCP access."
 ---
 
-Workforce is where you decide how access should work after the project already exists. Start by understanding the core concepts, then choose the first portal, integration, Magic Skill, and access path you want to publish.
+Workforce is where you decide how employees, agents, and external users should access company tools. Start by understanding the core concepts, then create the first portal your users will open.
 
 <Note>
   **What you'll learn:**
@@ -11,7 +11,7 @@ Workforce is where you decide how access should work after the project already e
   - How to orient around the Workforce dashboard
   - What Portals, Integrations, Magic Skills, and Magic MCP are for
   - How those concepts fit together
-  - How to choose the first concrete setup path
+  - How to start with a small portal setup
 </Note>
 
 ## Open Workforce
@@ -50,26 +50,35 @@ flowchart LR
 
 ![Portal admin overview](/images/dashboard-audit/portal-admin-overview.png)
 
-## Pick The First Resources
+## Plan Your First Portal
 
-Keep the first setup small. Choose one or two integrations, one useful Magic Skill, and one access group. This makes it easier to test the consumer experience before expanding the portal or adding more clients.
+The clearest first setup is a portal with one or two integrations and one useful Magic Skill. That gives employees a concrete place to discover approved access, and it keeps the first review small enough to test.
 
-Good first resources are:
+Start with:
 
-- a GitHub or Linear integration
+- one portal for the first employee group
+- one GitHub or Linear integration
 - one Magic Skill that solves a real repeated workflow
-- one access group for the first user cohort
-- one Magic MCP server if agents or MCP clients need direct connection
+- one access group for the first employee cohort
 
-## Review Activity
-
-After users or agents connect, use Logs to inspect sessions, connections, tool calls, provider runs, errors, alerts, and auth events.
-
-![Logs activity](/images/dashboard-audit/dashboard-logs-activity.png)
+<CardGroup cols={2}>
+  <Card title="Create A Portal" icon="door-open" href="/metorial-101-deploying">
+    Create the branded place where employees discover approved integrations and skills.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations-overview">
+    Choose the tools, auth method, and access policy that the portal will expose.
+  </Card>
+  <Card title="Magic Skills" icon="wand-sparkles" href="/product-magic-skills">
+    Package repeatable workflows that employees can discover in the portal.
+  </Card>
+  <Card title="Magic MCP" icon="sparkles" href="/dashboard-overview#magic-mcp">
+    Connect agents or MCP clients when they need direct tool access.
+  </Card>
+</CardGroup>
 
 ## What's Next?
 
-Create the portal your users will see first.
+Create the portal your employees will see first.
 
 <Card title="Next Up: Create A Portal" icon="door-open" href="/metorial-101-deploying">
   Publish a branded place for approved integrations and skills.
