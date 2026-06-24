@@ -1,44 +1,65 @@
 ---
 title: "Set Up Workforce"
-description: "Create the organization, project, and region that will hold your Workforce setup."
+description: "Map the people, agents, portals, integrations, skills, and activity you want to manage in Metorial."
 ---
 
-Start by creating the workspace that will hold your portals, integrations, skills, accounts, agents, and activity logs.
+Workforce is where you decide how access should work after the project already exists. Use it to map who needs access, what they should see, which tools and skills are approved, and where you will review activity.
 
 <Note>
   **What you'll learn:**
 
-  - How to sign in to Metorial
-  - How to create an organization
-  - How to choose a data region
-  - How to create the first project for Workforce
+  - How to orient around the Workforce dashboard
+  - How to decide which accounts, agents, portals, integrations, and skills you need
+  - How to choose the first concrete setup path
 </Note>
 
-## Sign In
+## Open Workforce
 
-Open the [Metorial Dashboard](https://platform.metorial.com) and sign in with your account.
+Open **Workforce** from the dashboard. This is the control plane for accounts, agents, portals, skills, Magic MCP access, and activity.
 
-![Metorial login](/images/dashboard-audit/auth-login.png)
+![Workforce dashboard](/images/dashboard-audit/workforce-dashboard.png)
 
-## Create An Organization
+## Choose Who Needs Access
 
-An organization is the top-level workspace for your team. It contains projects, members, billing, and shared settings.
+Start with the actors that will use tools:
 
-Choose the data region that fits your users and compliance needs.
+| Actor | Use it for |
+| --- | --- |
+| Accounts | People, customers, partners, or employees who receive access through Workforce |
+| Agents | Non-human actors or linked clients that need durable tool access |
 
-![Create an organization and choose a data region](/images/dashboard-audit/onboarding-create-organization-eu.png)
+![Accounts page](/images/dashboard-audit/dashboard-accounts.png)
 
-## Create A Project
+![Agents page](/images/dashboard-audit/dashboard-agents.png)
 
-A project is where Workforce resources live for a product, customer environment, or internal rollout. Create the project that will hold your first portal, integrations, skills, and access policies.
+## Choose The User Surface
 
-![Create your first project](/images/dashboard-audit/onboarding-create-project-filled.png)
+Decide whether users should discover access through a portal, connect through Magic MCP, or both.
 
-## Open The Dashboard
+| Surface | Use it when |
+| --- | --- |
+| Portal | Users need a branded place to discover approved integrations and skills |
+| Magic MCP | Agents or MCP clients need a managed endpoint for approved tool access |
+| Skills | Users need reusable workflows built on top of approved integrations |
 
-After project creation, Metorial opens the project dashboard. From here you can open Workforce, create a portal, browse integrations, and review activity.
+![Portal admin overview](/images/dashboard-audit/portal-admin-overview.png)
 
-![Project dashboard home](/images/dashboard-audit/dashboard-home-after-onboarding.png)
+## Pick The First Resources
+
+Keep the first setup small. Choose one or two integrations, one useful skill, and one access group. This makes it easier to test the consumer experience before expanding the portal or adding more clients.
+
+Good first resources are:
+
+- a GitHub or Linear integration
+- one skill that solves a real repeated workflow
+- one access group for the first user cohort
+- one Magic MCP server if agents or MCP clients need direct connection
+
+## Review Activity
+
+After users or agents connect, use Logs to inspect sessions, connections, tool calls, provider runs, errors, alerts, and auth events.
+
+![Logs activity](/images/dashboard-audit/dashboard-logs-activity.png)
 
 ## What's Next?
 
