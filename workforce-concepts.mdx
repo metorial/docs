@@ -1,9 +1,9 @@
 ---
 title: "Workforce Concepts"
-description: "Understand how Workforce gives AI apps, AI clients, and agents governed access through portals, integrations, skills, MCP URLs, and activity logs."
+description: "Understand how Workforce connects AI agents and applications to user-authorized tools through portals, integrations, skills, MCP URLs, and activity logs."
 ---
 
-Workforce is the control plane for AI access. Admins choose which integrations and skills are approved, employees connect the apps they use for work, AI clients and agents connect through managed MCP URLs, and activity logs trace usage, tool calls, and access events.
+Workforce is the control plane for governed AI connectivity. Admins choose which integrations and skills are approved, users connect their tools through portals, AI clients and agents connect through standard MCP URLs, and activity logs trace usage, tool calls, and access events.
 
 <Note>
   **What you'll learn:**
@@ -16,28 +16,28 @@ Workforce is the control plane for AI access. Admins choose which integrations a
 
 ## The Problem Workforce Solves
 
-AI apps, clients, and agents need access to the systems where work happens, but unmanaged access quickly becomes difficult to approve, explain, and audit. Workforce gives teams one place to decide which integrations are allowed, who can use them, how employees connect them, and how usage is monitored.
+AI agents and applications need access to the tools where work happens, but unmanaged access quickly becomes difficult to approve, explain, and audit. Workforce gives teams one place to decide which integrations are allowed, who can use them, how users connect them, and how usage is traced.
 
 Use Workforce when you want to:
 
 - publish approved integrations such as GitHub or Linear
-- give employees a portal where they can discover and connect those tools
+- give users a portal where they can discover and connect those tools
 - package repeatable workflows as skills
-- give AI clients and agents a standard MCP URL with governed access
-- review sessions, tool calls, provider runs, auth events, alerts, and errors
+- give AI clients, MCP clients, and CLIs a standard MCP URL for approved access
+- review traces, sessions, tool calls, auth events, and errors
 
 ## Who Uses Workforce
 
 | Actor | What they need from Metorial |
 | --- | --- |
-| Admin | A control plane for approved tools, portals, skills, access groups, and activity |
-| Employee | A simple place to connect approved apps and use shared skills |
-| Agent or AI client | A standard MCP connection URL with access scoped to approved tools |
+| Admin | A control plane for approved integrations, portals, skills, access groups, and tracing |
+| User | A portal for connecting authorized tools and discovering shared skills |
+| Agent, AI client, MCP client, or CLI | A standard MCP connection URL with access scoped to authorized tools |
 | Developer | APIs and SDKs for automating the same governed access model |
 
 ## How Workforce Works
 
-Open **Workforce** from the dashboard. This is where admins manage the product surfaces employees and agents will use.
+Open **Workforce** from the dashboard. This is where admins manage the connection layer that users, AI clients, and agents rely on.
 
 ![Workforce dashboard](/images/dashboard-audit/workforce-dashboard.png)
 
@@ -46,7 +46,7 @@ At a high level, the flow looks like this:
 ```mermaid
 flowchart LR
   Admin["Admin approves access"]
-  Portal["Portal for employees"]
+  Portal["Portal for users"]
   Integration["Approved integrations"]
   Skill["Shared skills"]
   MCP["Magic MCP URL"]
@@ -67,55 +67,55 @@ flowchart LR
 
 ## Core Concepts
 
-Read these from the user's point of view first: where employees discover access, what tools are approved, which workflows are packaged for them, how AI clients connect, and how admins audit usage.
+Read these from the user's point of view first: where users authorize tools, which integrations are approved, which workflows are packaged for them, how AI clients connect, and how admins trace usage.
 
 | Concept | What it means |
 | --- | --- |
-| Portal | A branded place where employees discover approved integrations and skills |
-| Integration | An approved connection to a company tool such as GitHub or Linear |
-| Skill | A reusable workflow built on approved integrations and resources |
-| Magic MCP URL | A standard MCP connection URL for AI clients and agents, scoped to approved access |
+| Portal | A branded place where users connect authorized integrations and discover skills |
+| Integration | An approved connection to a tool such as GitHub or Linear |
+| Skill | A reusable workflow built on approved integrations, files, and instructions |
+| Magic MCP URL | A standard MCP connection URL for AI clients, agents, MCP clients, and CLIs |
 | Account | The employee or user record that receives portal access |
 | Agent | A non-human actor or linked client that needs durable access to approved integrations |
-| Activity | Logs for sessions, connections, tool calls, provider runs, errors, alerts, and auth events |
+| Activity | Traces and logs for sessions, connections, tool calls, errors, and auth events |
 
 ## The First Portal Pattern
 
-The clearest first setup is small: one portal, one employee group, one or two integrations, and one useful skill. That gives employees a concrete place to discover approved access, while keeping the first review easy to test.
+The clearest first setup is small: one portal, one user group, one or two integrations, and one useful skill. That gives users a concrete place to authorize tools, while keeping the first review easy to test.
 
 <Steps>
   <Step title="Create the portal">
-    Give employees a recognizable place to find the tools and skills approved for their work.
+    Give users a recognizable place to connect authorized tools and discover approved skills.
   </Step>
   <Step title="Add integrations">
-    Publish the first approved tools, such as GitHub or Linear, and decide whether employees connect their own accounts or admins manage shared credentials.
+    Publish the first approved tools, such as GitHub or Linear, and decide whether users connect their own accounts or admins manage shared credentials.
   </Step>
   <Step title="Add a skill">
-    Package one repeated workflow so employees can understand the value of the portal without needing to learn the whole system at once.
+    Package one repeated workflow so users can understand the value of the portal without needing to learn the whole system at once.
   </Step>
-  <Step title="Preview as an employee">
-    Open the portal from the user side and confirm the right integrations, skills, and Magic MCP URL are visible.
+  <Step title="Preview as a user">
+    Open the portal from the user side and confirm the right integrations, skills, and standard MCP URL are visible.
   </Step>
   <Step title="Review activity">
-    Check activity logs after testing so admins can see sessions, connections, tool calls, provider runs, and auth events.
+    Check activity logs after testing so admins can see traces, sessions, tool calls, auth events, and errors.
   </Step>
 </Steps>
 
 ## What's Next?
 
-Create the portal your employees will see first, then preview it before sharing it broadly.
+Create the portal your users will see first, then preview it before sharing it broadly.
 
 <CardGroup cols={2}>
   <Card title="Create A Portal" icon="door-open" href="/create-portal">
     Publish a branded place for approved integrations and skills.
   </Card>
   <Card title="Preview Portal Access" icon="vial" href="/preview-portal-access">
-    Review the employee portal before sharing it with users.
+    Review the user portal before sharing it broadly.
   </Card>
   <Card title="Integrations" icon="plug" href="/integrations-overview">
-    Choose the tools, auth method, and access policy employees will use.
+    Choose the tools, auth method, and access policy users will rely on.
   </Card>
   <Card title="Skills" icon="wand-sparkles" href="/product-magic-skills">
-    Package repeatable workflows that employees can discover in the portal.
+    Package repeatable workflows that users can discover in the portal.
   </Card>
 </CardGroup>

@@ -1,41 +1,40 @@
 ---
 title: "Metorial"
-description: "Governed access for AI apps, AI clients, and agents."
+description: "Connect AI agents and applications to user-authorized tools."
 ---
 
 ## Introduction
 
-Metorial is a set of controls, hosted surfaces, and APIs for connecting AI systems to the apps and internal systems employees use every day.
+Metorial is agentic infrastructure for connecting AI agents, products, MCP clients, and CLIs to the tools users authorize.
 
-Use Metorial to approve integrations, publish reusable skills, give MCP clients a managed connection URL, and monitor access events, tool calls, and usage from one place.
+Use Metorial to give every employee, agent, and AI client one place to connect integrations and skills, with governance, access control, and tracing built in.
 
-Workforce is the main product surface. Admins decide which integrations and skills are approved, employees connect through portals, and AI clients or agents use that approved access through managed MCP connections.
+Users connect tools through portals. AI clients connect through standard MCP URLs. Teams can review sessions, tool calls, auth events, and failures after work runs.
 
 ## Common Use Cases
 
 | Use case | What Metorial enables |
 | --- | --- |
-| Employee AI assistants | Let employees connect approved apps such as GitHub or Linear, then use those connections from AI clients and agents. |
-| Internal agent platforms | Give agents governed MCP access to the integrations and skills they need, with activity logs for every session and tool call. |
-| Customer-facing AI features | Publish portals where customers or partners can connect approved resources before your AI product acts on their behalf. |
-| Reusable workflows | Package repeatable work as skills so teams can share governed workflows instead of rebuilding prompts and tool setup each time. |
+| AI products | Connect your product to the tools each user authorizes. |
+| Employee AI clients | Let employees connect integrations once and reuse them across AI clients. |
+| Internal agents | Give company-run agents governed access to approved integrations and skills. |
+| MCP clients and CLIs | Provide a standard MCP URL for tool access without custom OAuth or one-off servers. |
+| Custom providers | Bring internal APIs, private tools, and remote MCP servers into the same governed runtime. |
 
 ## Getting Started
 
-Start with Workforce when you want to launch a governed AI access path.
-
 <Steps>
-  <Step title="Understand the model">
-    Learn how portals, integrations, skills, Magic MCP, accounts, agents, and activity fit together.
+  <Step title="Choose integrations or providers">
+    Choose the integrations or providers users should be able to authorize.
   </Step>
   <Step title="Create a portal">
-    Publish a branded place where employees or customers can discover approved integrations and skills.
+    Create a portal where users connect integrations and discover skills.
   </Step>
-  <Step title="Preview access">
-    Open the portal from the user side and confirm the right integrations, skills, and MCP connection details are visible.
+  <Step title="Connect an AI client">
+    Connect an agent, AI client, MCP client, or CLI through the portal MCP URL.
   </Step>
   <Step title="Review activity">
-    Inspect sessions, connections, tool calls, provider runs, auth events, alerts, and errors.
+    Review traces, sessions, tool calls, auth events, and errors.
   </Step>
 </Steps>
 
@@ -50,7 +49,7 @@ Start with Workforce when you want to launch a governed AI access path.
     Create a branded portal where users can discover approved integrations and skills.
   </Card>
   <Card title="Preview Portal Access" icon="vial" href="/preview-portal-access">
-    Preview the employee experience and confirm the right resources are visible.
+    Preview the employee experience and confirm the right integrations and skills are visible.
   </Card>
   <Card title="Review Activity" icon="chart-line" href="/review-activity">
     Monitor sessions, connections, tool calls, provider runs, alerts, and auth events.
@@ -85,7 +84,7 @@ When you are ready to automate Metorial or connect it to an application, use the
 
 <CardGroup cols={2}>
   <Card title="API Guide" icon="book" href="/api-getting-started">
-    Use the Metorial API to manage resources programmatically.
+    Use the Metorial API to manage integrations, portals, and access programmatically.
   </Card>
   <Card title="JavaScript SDK" icon="js" href="/sdk-javascript">
     Build TypeScript applications with Metorial and common AI provider adapters.
