@@ -1,85 +1,121 @@
 ---
 title: "Workforce Concepts"
-description: "Understand the Workforce concepts you will use to publish integrations, Magic Skills, portals, and MCP access."
+description: "Understand how Workforce connects admins, employees, agents, portals, integrations, skills, MCP access, and activity."
 ---
 
-Workforce is where you decide how employees, agents, and external users should access company tools. Start by understanding the core concepts, then create the first portal your users will open.
+Workforce is the control plane for approved tool access. Admins choose what is available, employees connect the tools and skills they need, agents use managed MCP access, and activity logs trace usage, tool calls, and access events.
 
 <Note>
   **What you'll learn:**
 
-  - How to orient around the Workforce dashboard
-  - What Portals, Integrations, Magic Skills, and Magic MCP are for
-  - How those concepts fit together
-  - How to start with a small portal setup
+  - Who uses Workforce and what each person gets from it
+  - What portals, integrations, skills, Magic MCP, accounts, agents, and activity mean
+  - How the first portal setup fits together
+  - Where to go after the concepts are clear
 </Note>
 
-## Open Workforce
+## The Problem Workforce Solves
 
-Open **Workforce** from the dashboard. This is the control plane for portals, integrations, Magic Skills, Magic MCP access, and activity.
+AI tools and agents need access to company systems, but unmanaged access quickly becomes difficult to approve, explain, and audit. Workforce gives teams one place to decide which tools are allowed, who can use them, how employees connect them, and how usage is monitored.
+
+Use Workforce when you want to:
+
+- publish approved integrations such as GitHub or Linear
+- give employees a portal where they can discover and connect those tools
+- package repeatable workflows as skills
+- give AI clients and agents a standard MCP URL with governed access
+- review sessions, tool calls, provider runs, auth events, alerts, and errors
+
+## Who Uses Workforce
+
+| Actor | What they need from Metorial |
+| --- | --- |
+| Admin | A control plane for approved tools, portals, skills, access groups, and activity |
+| Employee | A simple place to connect approved apps and use shared skills |
+| Agent or AI client | A standard MCP connection URL with access scoped to approved tools |
+| Developer | APIs and SDKs for automating the same governed access model |
+
+## How Workforce Works
+
+Open **Workforce** from the dashboard. This is where admins manage the product surfaces employees and agents will use.
 
 ![Workforce dashboard](/images/dashboard-audit/workforce-dashboard.png)
 
-## Understand The Core Concepts
-
-Workforce brings a few product concepts together. Read them from the user's point of view first: where they discover access, what tools are approved, which workflows are packaged for them, and how clients connect.
-
-| Concept | What it means |
-| --- | --- |
-| Portal | A branded place where users discover approved integrations and Magic Skills |
-| Integration | An approved connection to a tool such as GitHub or Linear |
-| Magic Skill | A reusable workflow built on top of approved integrations and resources |
-| Magic MCP | A managed MCP endpoint that lets agents or MCP clients connect to approved tool access |
-| Activity | Logs for sessions, connections, tool calls, provider runs, errors, alerts, and auth events |
+At a high level, the flow looks like this:
 
 ```mermaid
 flowchart LR
-  Portal["Portal"]
-  Integration["Integration"]
-  Skill["Magic Skill"]
-  MCP["Magic MCP"]
-  Activity["Activity"]
+  Admin["Admin approves access"]
+  Portal["Portal for employees"]
+  Integration["Approved integrations"]
+  Skill["Shared skills"]
+  MCP["Magic MCP URL"]
+  Agent["AI client or agent"]
+  Activity["Activity logs"]
 
+  Admin --> Portal
+  Admin --> Integration
+  Admin --> Skill
   Portal --> Integration
   Portal --> Skill
-  Skill --> Integration
-  Integration --> MCP
-  MCP --> Activity
+  Portal --> MCP
+  Agent --> MCP
+  Integration --> Activity
   Skill --> Activity
+  MCP --> Activity
 ```
 
-![Portal admin overview](/images/dashboard-audit/portal-admin-overview.png)
+## Core Concepts
 
-## Plan Your First Portal
+Read these from the user's point of view first: where employees discover access, what tools are approved, which workflows are packaged for them, how AI clients connect, and how admins audit usage.
 
-The clearest first setup is a portal with one or two integrations and one useful Magic Skill. That gives employees a concrete place to discover approved access, and it keeps the first review small enough to test.
+| Concept | What it means |
+| --- | --- |
+| Portal | A branded place where employees discover approved integrations and skills |
+| Integration | An approved connection to a company tool such as GitHub or Linear |
+| Skill | A reusable workflow built on approved integrations and resources |
+| Magic MCP URL | A standard MCP connection URL for AI clients and agents, scoped to approved access |
+| Account | The employee or user record that receives portal access |
+| Agent | A non-human actor or linked client that needs durable tool access |
+| Activity | Logs for sessions, connections, tool calls, provider runs, errors, alerts, and auth events |
 
-Start with:
+## The First Portal Pattern
 
-- one portal for the first employee group
-- one GitHub or Linear integration
-- one Magic Skill that solves a real repeated workflow
-- one access group for the first employee cohort
+The clearest first setup is small: one portal, one employee group, one or two integrations, and one useful skill. That gives employees a concrete place to discover approved access, while keeping the first review easy to test.
 
-<CardGroup cols={2}>
-  <Card title="Create A Portal" icon="door-open" href="/create-portal">
-    Create the branded place where employees discover approved integrations and skills.
-  </Card>
-  <Card title="Integrations" icon="plug" href="/integrations-overview">
-    Choose the tools, auth method, and access policy that the portal will expose.
-  </Card>
-  <Card title="Magic Skills" icon="wand-sparkles" href="/product-magic-skills">
-    Package repeatable workflows that employees can discover in the portal.
-  </Card>
-  <Card title="Magic MCP" icon="sparkles" href="/dashboard-overview#magic-mcp">
-    Connect agents or MCP clients when they need direct tool access.
-  </Card>
-</CardGroup>
+<Steps>
+  <Step title="Create the portal">
+    Give employees a recognizable place to find the tools and skills approved for their work.
+  </Step>
+  <Step title="Add integrations">
+    Publish the first approved tools, such as GitHub or Linear, and decide whether employees connect their own accounts or admins manage shared credentials.
+  </Step>
+  <Step title="Add a skill">
+    Package one repeated workflow so employees can understand the value of the portal without needing to learn the whole system at once.
+  </Step>
+  <Step title="Preview as an employee">
+    Open the portal from the user side and confirm the right integrations, skills, and Magic MCP URL are visible.
+  </Step>
+  <Step title="Review activity">
+    Check activity logs after testing so admins can see sessions, connections, tool calls, provider runs, and auth events.
+  </Step>
+</Steps>
 
 ## What's Next?
 
-Create the portal your employees will see first.
+Create the portal your employees will see first, then preview it before sharing it broadly.
 
-<Card title="Next Up: Create A Portal" icon="door-open" href="/create-portal">
-  Publish a branded place for approved integrations and skills.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Create A Portal" icon="door-open" href="/create-portal">
+    Publish a branded place for approved integrations and skills.
+  </Card>
+  <Card title="Preview Portal Access" icon="vial" href="/preview-portal-access">
+    Review the employee portal before sharing it with users.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations-overview">
+    Choose the tools, auth method, and access policy employees will use.
+  </Card>
+  <Card title="Skills" icon="wand-sparkles" href="/product-magic-skills">
+    Package repeatable workflows that employees can discover in the portal.
+  </Card>
+</CardGroup>
