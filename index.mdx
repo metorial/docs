@@ -7,19 +7,48 @@ description: "Connect AI agents and applications to user-authorized tools."
 
 Metorial is agentic infrastructure for connecting AI agents, products, MCP clients, and CLIs to the tools users authorize.
 
-Use Metorial to give every employee, agent, and AI client one place to connect integrations and skills, with governance, access control, and tracing built in.
+Use Metorial when you need AI systems to call real tools with the right user-approved access, without building every OAuth flow, MCP server, credential store, and activity trail yourself.
 
-Users connect tools through portals. AI clients connect through standard MCP URLs. Teams can review sessions, tool calls, auth events, and failures after work runs.
+Users connect tools through portals. AI clients connect through standard MCP URLs. Teams control which integrations and skills are available, then review traces, sessions, tool calls, auth events, and failures after work runs.
 
-## Common Use Cases
+## How It Works
 
-| Use case | What Metorial enables |
-| --- | --- |
-| AI products | Connect your product to the tools each user authorizes. |
-| Employee AI clients | Let employees connect integrations once and reuse them across AI clients. |
-| Internal agents | Give company-run agents governed access to approved integrations and skills. |
-| MCP clients and CLIs | Provide a standard MCP URL for tool access without custom OAuth or one-off servers. |
-| Custom providers | Bring internal APIs, private tools, and remote MCP servers into the same governed runtime. |
+<CardGroup cols={2}>
+  <Card title="Authorize" icon="shield-check">
+    Users connect approved integrations through portals. Admins control which integrations and skills are available.
+  </Card>
+  <Card title="Connect" icon="plug">
+    Agents, MCP clients, and CLIs use standard MCP URLs. Products can build against the API and SDKs.
+  </Card>
+  <Card title="Trace" icon="chart-line">
+    Teams review traces, sessions, tool calls, auth events, and failures after work runs.
+  </Card>
+</CardGroup>
+
+Workforce is the admin control plane. Portals are where users authorize integrations and discover skills. Magic MCP turns that approved access into a standard connection URL for AI clients, agents, MCP clients, and CLIs.
+
+## What You Can Build
+
+<CardGroup cols={2}>
+  <Card title="AI Products" icon="sparkles" href="/sdk-quickstart">
+    Connect your product to the tools each user authorizes, then build with the API and SDKs.
+  </Card>
+  <Card title="Employee AI Clients" icon="monitor" href="/preview-portal-access">
+    Let employees connect integrations once and reuse them from approved AI clients.
+  </Card>
+  <Card title="Internal Agents" icon="bot" href="/product-workforce">
+    Give company-run agents access to approved integrations and skills with activity logs.
+  </Card>
+  <Card title="MCP Clients And CLIs" icon="terminal" href="/workforce-concepts">
+    Provide a standard MCP URL for tool access without custom OAuth or one-off servers.
+  </Card>
+  <Card title="Custom Providers" icon="server" href="/custom-servers-overview">
+    Bring internal APIs, private tools, and remote MCP servers into the same runtime.
+  </Card>
+  <Card title="Reusable Skills" icon="wand-sparkles" href="/product-magic-skills">
+    Package repeatable workflows on top of approved integrations, files, and instructions.
+  </Card>
+</CardGroup>
 
 ## Getting Started
 
