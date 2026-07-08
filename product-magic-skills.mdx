@@ -3,13 +3,13 @@ title: "Magic Skills"
 description: "Magic Skills package repeatable workflows so teams can publish and govern useful agent work."
 ---
 
-Magic Skills turn repeatable work into reusable assets. Create a skill once, organize it with groups or marketplaces, connect it to integrations, and publish it through Workforce or a portal.
+Magic Skills turn repeatable work into reusable assets. Create a skill once, organize it with groups or marketplaces, and publish it through Workforce or a portal.
 
 <Note>
   **What you'll learn:**
 
   - What Magic Skills are for
-  - How skills, groups, templates, marketplaces, and settings fit together
+  - How skills, groups, templates, and marketplaces fit together
   - How skills appear in portals for users
 </Note>
 
@@ -47,40 +47,27 @@ After a skill exists, add the files, agents, resources, and integrations it need
 
 ## Connect Integrations
 
-Skills become more useful when they are connected to approved integrations. A customer support skill might use Linear and GitHub; an operations skill might use Google Drive and Slack.
+Skills become more useful when they can use approved integrations. A customer support skill might use Linear and GitHub; an operations skill might use Google Drive and Slack.
 
 Linked integrations appear on the portal skill card so users can understand what access the workflow uses.
 
-## Organize Skills
-
-| Surface | Use it for |
-| --- | --- |
-| Skills | Individual reusable workflows |
-| Groups | Sets of related skills, such as a team playbook |
-| Templates | Starting points for new skills |
-| Marketplaces | Curated skill catalogs for users |
-| Settings | Default execution policy |
-
-![Magic Skills groups](/images/dashboard-audit/workforce-skill-groups.png)
-
 ## Skill Marketplaces
 
-A skill marketplace is a curated library of skills, templates, and plugins that a team wants to make reusable. Use marketplaces when teams need one reviewed place to publish workflows instead of copying skill files between projects or clients.
+A skill marketplace is a curated library of skills and plugins that a team wants to make reusable. Use marketplaces when teams need one reviewed place to publish workflows instead of copying skill files between projects or clients.
 
-Marketplaces can be backed by a GitHub repository when you want skills to follow normal repo workflows: pull requests, code review, version history, and releases. After a compatible client loads a marketplace skill, users can invoke it directly by name where the client supports that behavior, commonly with a slash command such as `/skill-name`.
+Marketplaces can be backed by a GitHub repository. Any change to a skill through Metorial is then automatically synced with the repo. This is a one-way sync from Metorial to GitHub, which is especially useful when non-technical teammates need to share skills without GitHub accounts.
+
+After a client that supports skills loads a marketplace skill, users can invoke it directly by name where the client supports that behavior, commonly with a slash command such as `/skill-name`.
 
 <CardGroup cols={2}>
   <Card title="Claude Code Skills" icon="bot" href="https://code.claude.com/docs/en/skills">
-    Learn how Claude Code discovers skills and supports direct invocation such as `/skill-name`.
+    Learn how Claude Code discovers skills, where skills live, and how `/skill-name` invocation works.
   </Card>
   <Card title="Cursor Agent Skills" icon="cursor" href="https://cursor.com/docs/skills">
-    Learn how Cursor uses Agent Skills to package reusable knowledge and scripts.
+    Learn how Cursor uses Agent Skills to package reusable knowledge, scripts, and commands.
   </Card>
   <Card title="Cursor Plugins" icon="puzzle-piece" href="https://cursor.com/docs/plugins">
-    Learn how Cursor distributes skills and related capabilities through plugins.
-  </Card>
-  <Card title="ChatGPT MCP Apps" icon="message-circle" href="https://help.openai.com/en/articles/11487775-connectors-in-chatgpt">
-    Learn how ChatGPT connects to MCP-powered apps and tools.
+    Learn how Cursor distributes skills, MCP servers, and related capabilities through plugins and marketplaces.
   </Card>
 </CardGroup>
 
