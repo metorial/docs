@@ -25,6 +25,15 @@ Use Magic Skills for work that should be repeatable, shareable, and governed:
 
 ![Magic Skills dashboard](/images/dashboard-audit/workforce-magic-skills.png)
 
+## Concepts
+
+| Concept | Meaning |
+| --- | --- |
+| Magic Skill | A reusable workflow with instructions, files, and optional scripts that an AI client or agent can use |
+| Skill Group | A collection of related skills, such as an engineering or support playbook |
+| Skill Template | A starting point for creating repeatable skills with a shared structure |
+| Skill Marketplace | A curated skill catalog that teams can publish and connect to compatible clients |
+
 ## Create A Skill
 
 Create a skill with a clear name and description. The name should describe the job the user wants done, not the implementation detail behind it.
@@ -54,6 +63,27 @@ Linked integrations appear on the portal skill card so users can understand what
 
 ![Magic Skills groups](/images/dashboard-audit/workforce-skill-groups.png)
 
+## Skill Marketplaces
+
+A skill marketplace is a curated library of skills, templates, and plugins that a team wants to make reusable. Use marketplaces when teams need one reviewed place to publish workflows instead of copying skill files between projects or clients.
+
+Marketplaces can be backed by a GitHub repository when you want skills to follow normal repo workflows: pull requests, code review, version history, and releases. After a compatible client loads a marketplace skill, users can invoke it directly by name where the client supports that behavior, commonly with a slash command such as `/skill-name`.
+
+<CardGroup cols={2}>
+  <Card title="Claude Code Skills" icon="bot" href="https://code.claude.com/docs/en/skills">
+    Learn how Claude Code discovers skills and supports direct invocation such as `/skill-name`.
+  </Card>
+  <Card title="Cursor Agent Skills" icon="cursor" href="https://cursor.com/docs/skills">
+    Learn how Cursor uses Agent Skills to package reusable knowledge and scripts.
+  </Card>
+  <Card title="Cursor Plugins" icon="puzzle-piece" href="https://cursor.com/docs/plugins">
+    Learn how Cursor distributes skills and related capabilities through plugins.
+  </Card>
+  <Card title="ChatGPT MCP Apps" icon="message-circle" href="https://help.openai.com/en/articles/11487775-connectors-in-chatgpt">
+    Learn how ChatGPT connects to MCP-powered apps and tools.
+  </Card>
+</CardGroup>
+
 ## Publish Skills Through Portals
 
 Portals can publish individual skills, templates, or groups. Add a skill resource to the portal, choose the skill, and allow the right access groups.
@@ -76,17 +106,6 @@ Settings define the default policy for skill files and execution behavior.
 | Allow non-standard directories | Whether skill files can live outside the standard skill directory structure |
 | Allow all file extensions | Whether skill uploads are limited to an approved extension list |
 
-## Magic Skills Versus Provider Skills
-
-Magic Skills are reusable Workforce assets. Provider skills are catalog summaries on provider pages.
-
-| Concept | Meaning |
-| --- | --- |
-| Magic Skill | A reusable workflow created and governed in Workforce |
-| Magic Skill Group | A collection of related Magic Skills |
-| Skill Marketplace | A curated place to publish selected skills and plugins |
-| Provider Skill | A provider-page summary that describes what a catalog provider can do |
-
 ## Related Pages
 
 <CardGroup cols={2}>
@@ -96,8 +115,8 @@ Magic Skills are reusable Workforce assets. Provider skills are catalog summarie
   <Card title="Portals" icon="door-open" href="/product-portals">
     Publish skills to users through a branded portal.
   </Card>
-  <Card title="Provider Skills" icon="sparkles" href="/product-provider-skills">
-    Understand provider-page capability summaries.
+  <Card title="Skill Marketplaces" icon="store" href="#skill-marketplaces">
+    Publish reviewed skill catalogs to compatible AI clients.
   </Card>
   <Card title="Integrations" icon="plug" href="/integrations-overview">
     Connect skills to approved tools.
