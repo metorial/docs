@@ -18,80 +18,56 @@
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
+  "redirects": [
+    {
+      "source": "/metorial-101-introduction",
+      "destination": "/workforce-concepts"
+    },
+    {
+      "source": "/metorial-101-deploying",
+      "destination": "/create-portal"
+    },
+    {
+      "source": "/metorial-101-testing",
+      "destination": "/preview-portal-access"
+    },
+    {
+      "source": "/metorial-101-monitoring",
+      "destination": "/review-activity"
+    },
+    {
+      "source": "/metorial-101-using",
+      "destination": "/use-providers-with-sdks"
+    }
+  ],
   "navigation": {
     "tabs": [
       {
-        "tab": "Getting Started",
+        "tab": "Start",
         "groups": [
           {
-            "group": "Metorial 101",
+            "group": "Get Started",
             "pages": [
               "index",
-              "metorial-101-introduction",
-              "metorial-101-deploying",
-              "metorial-101-testing",
-              "metorial-101-using",
-              "metorial-101-monitoring"
-            ]
-          },
-          {
-            "group": "Sample Projects",
-            "pages": [
-              "sample-projects-code-review-bot",
-              "sample-projects-slack-standup-bot",
-              "sample-projects-interview-coordinator-bot"
-            ]
-          },
-          {
-            "group": "API",
-            "pages": [
-              "api-getting-started"
+              "dashboard-overview",
+              "workforce-concepts",
+              "create-portal",
+              "preview-portal-access",
+              "review-activity"
             ]
           }
         ]
       },
       {
-        "tab": "Concepts",
+        "tab": "Workforce",
         "groups": [
           {
-            "group": "Core Concepts",
+            "group": "Product",
             "pages": [
-              "concepts-projects-organizations",
-              "concepts-providers",
-              "concepts-sessions",
-              "concepts-environments",
-              "concepts-monitoring"
-            ]
-          },
-          {
-            "group": "Reference",
-            "pages": [
-              "glossary"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Custom Providers",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "custom-servers-overview"
-            ]
-          },
-          {
-            "group": "Custom Providers",
-            "pages": [
-              "custom-servers-managed-getting-started",
-              "custom-servers-managed-deployment"
-            ]
-          },
-          {
-            "group": "External Providers",
-            "pages": [
-              "custom-servers-external-connecting",
-              "custom-servers-external-authentication"
+              "product-workforce",
+              "product-portals",
+              "product-magic-skills",
+              "product-provider-skills"
             ]
           }
         ]
@@ -100,7 +76,7 @@
         "tab": "Integrations",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Catalog",
             "pages": [
               "integrations-overview",
               "integrations-browsing-catalog"
@@ -117,20 +93,27 @@
         ]
       },
       {
-        "tab": "SDK",
+        "tab": "Developers",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "API",
+            "pages": [
+              "api-getting-started"
+            ]
+          },
+          {
+            "group": "SDK",
             "pages": [
               "sdk-quickstart",
               "sdk-javascript",
               "sdk-python",
               "sdk-oauth",
-              "sdk-error-handling"
+              "sdk-error-handling",
+              "use-providers-with-sdks"
             ]
           },
           {
-            "group": "Providers",
+            "group": "Provider Runtime",
             "pages": [
               "sdk-providers-overview",
               "sdk-providers-ai-sdk",
@@ -138,6 +121,37 @@
               "sdk-providers-anthropic",
               "sdk-providers-google",
               "sdk-providers-openai-compatible"
+            ]
+          },
+          {
+            "group": "Custom Providers",
+            "pages": [
+              "custom-servers-overview",
+              "custom-servers-managed-getting-started",
+              "custom-servers-managed-deployment",
+              "custom-servers-external-connecting",
+              "custom-servers-external-authentication"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "Concepts",
+            "pages": [
+              "concepts-projects-organizations",
+              "concepts-providers",
+              "concepts-sessions",
+              "concepts-environments",
+              "concepts-monitoring"
+            ]
+          },
+          {
+            "group": "Glossary",
+            "pages": [
+              "glossary"
             ]
           }
         ]
@@ -179,7 +193,7 @@
   },
   "ai": {
     "enabled": true,
-    "instructions": "You are a helpful assistant for Metorial documentation. Metorial is a platform for deploying and managing MCP (Model Context Protocol) servers. When answering questions, always cite specific documentation pages when possible. If you're unsure about something, direct users to the relevant documentation section or support at support@metorial.com."
+    "instructions": "You are a helpful assistant for Metorial documentation. Metorial connects AI agents and applications to user-authorized tools. Metorial Workforce helps teams approve integrations, publish reusable skills, connect AI clients, MCP clients, and CLIs through standard MCP URLs, and review tracing, sessions, tool calls, auth events, and errors. When answering questions, start from the user's product goal, cite the relevant documentation pages, and move API or SDK details into the developer context when appropriate. If you're unsure about something, direct users to the relevant documentation section or support at support@metorial.com."
   },
   "contextual": {
     "options": [

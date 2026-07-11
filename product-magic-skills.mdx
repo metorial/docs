@@ -1,0 +1,151 @@
+---
+title: "Magic Skills"
+description: "Magic Skills package repeatable workflows so teams can publish and govern useful agent work."
+---
+
+Magic Skills turn repeatable work into reusable assets. Create a skill once, organize it with groups or marketplaces, and publish it through Workforce or a portal.
+
+<Note>
+  **What you'll learn:**
+
+  - What Magic Skills are for
+  - How skills, groups, templates, and marketplaces fit together
+  - How skills appear in portals for users
+</Note>
+
+## What Skills Are For
+
+Use Magic Skills for work that should be repeatable, shareable, and governed:
+
+- support triage playbooks
+- engineering review workflows
+- customer handoff steps
+- research and reporting tasks
+- internal operations checklists
+
+![Magic Skills dashboard](/images/dashboard-audit/workforce-magic-skills.png)
+
+## Concepts
+
+| Concept | Meaning |
+| --- | --- |
+| Magic Skill | A reusable workflow with instructions, files, and optional scripts that an AI client or agent can use |
+| Skill Group | A collection of related skills, such as an engineering or support playbook |
+| Skill Template | A starting point for creating repeatable skills with a shared structure |
+| Skill Marketplace | A curated skill catalog that teams can publish and connect to compatible clients |
+
+## Create A Skill
+
+Create a skill with a clear name and description. The name should describe the job the user wants done, not the implementation detail behind it.
+
+| Field | Good pattern |
+| --- | --- |
+| Name | "Summarize Linear Escalations" |
+| Description | "Reviews recent Linear issues and drafts a customer-ready escalation summary." |
+
+After a skill exists, add the files, agents, resources, and integrations it needs.
+
+## Connect Integrations
+
+Skills become more useful when they can use approved integrations. A customer support skill might use Linear and GitHub; an operations skill might use Google Drive and Slack.
+
+Linked integrations appear on the portal skill card so users can understand what access the workflow uses.
+
+## Skill Marketplaces
+
+A skill marketplace is a curated library of skills and plugins that a team wants to make reusable. Use marketplaces when teams need one reviewed place to publish workflows instead of copying skill files between projects or clients.
+
+Marketplaces can be backed by a GitHub repository. Any change to a skill through Metorial is then automatically synced with the repo. This is a one-way sync from Metorial to GitHub, which is especially useful when non-technical teammates need to share skills without GitHub accounts.
+
+After a client that supports skills loads a marketplace skill, users can invoke it directly by name where the client supports that behavior, commonly with a slash command such as `/skill-name`.
+
+<CardGroup cols={2}>
+  <Card title="Claude Code Skills" icon="bot" href="https://code.claude.com/docs/en/skills">
+    Learn how Claude Code discovers skills, where skills live, and how `/skill-name` invocation works.
+  </Card>
+  <Card title="Cursor Agent Skills" icon="cursor" href="https://cursor.com/docs/skills">
+    Learn how Cursor uses Agent Skills to package reusable knowledge, scripts, and commands.
+  </Card>
+  <Card title="Cursor Plugins" icon="puzzle-piece" href="https://cursor.com/docs/plugins">
+    Learn how Cursor distributes skills, MCP servers, and related capabilities through plugins and marketplaces.
+  </Card>
+</CardGroup>
+
+## Publish And Share Skills
+
+Skills can start from an admin in the dashboard or from a user in the portal. Use admin-published skills for approved workflows that should appear for a group. Use user-created skills when the person closest to the work wants to capture and share a workflow.
+
+### Admin-published skills
+
+Admins publish skills from the dashboard when a workflow should be available through a portal.
+
+<Steps>
+  <Step title="Add a skill resource">
+    Open the portal in the dashboard, add a skill resource, and choose the skill, template, or group that should appear for users.
+
+    ![Portal skill listings](/images/dashboard-audit/portal-admin-skills.png)
+  </Step>
+
+  <Step title="Allow the right groups">
+    Choose the access groups that should see the skill. This keeps approved workflows visible to the right users without making them available to everyone.
+  </Step>
+
+  <Step title="Preview the portal">
+    Users then see the approved skills inside the portal with their connected integrations.
+
+    ![Employee portal skills](/images/dashboard-audit/portal-consumer-skills.png)
+  </Step>
+</Steps>
+
+### User-created skills
+
+Portal users can create personal skills when they know the workflow best.
+
+<Steps>
+  <Step title="Create a personal skill">
+    A support lead can draft a refund handling skill, a sales teammate can write an account research skill, and an operations teammate can turn a recurring checklist into something agents can follow.
+
+    ![Collaborative skill editor](/images/dashboard-audit/skill-collaborative-editor.png)
+  </Step>
+
+  <Step title="Collaborate on the draft">
+    Keep the skill private while drafting, then invite teammates to refine the instructions. Shared skills can be collaborative, so several teammates can improve the same workflow before it is used more broadly.
+  </Step>
+
+  <Step title="Share with groups">
+    Share the skill with the groups that should have access. The skill stays reusable for the team while access remains controlled through the portal.
+  </Step>
+</Steps>
+
+## Govern Skill Execution
+
+Settings define the default policy for skill files and execution behavior.
+
+![Magic Skills settings](/images/dashboard-audit/workforce-skill-settings.png)
+
+| Setting | What it controls |
+| --- | --- |
+| Allow scripts | Whether skills can include and execute script files |
+| Allow non-standard directories | Whether skill files can live outside the standard skill directory structure |
+| Allow all file extensions | Whether skill uploads are limited to an approved extension list |
+
+## Where To Go Next
+
+Skills are most useful once they are connected to the rest of Workforce: integrations give them useful tool access, portals make them available to users, groups control who can see them, and marketplaces help distribute reviewed skills to compatible clients.
+
+Start with a small skill, share it with one group, and test it from the portal before publishing it more broadly.
+
+<CardGroup cols={2}>
+  <Card title="Create a portal" icon="door-open" href="/create-portal">
+    Build the user-facing place where people discover integrations and skills.
+  </Card>
+  <Card title="Portals" icon="door-open" href="/product-portals">
+    Learn how portals package integrations, skills, access groups, and the MCP URL.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations-overview">
+    Choose the approved apps, APIs, and tools that skills can use.
+  </Card>
+  <Card title="Skill Marketplaces" icon="store" href="#skill-marketplaces">
+    Publish reviewed skill catalogs to compatible clients.
+  </Card>
+</CardGroup>

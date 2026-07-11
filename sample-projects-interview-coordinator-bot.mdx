@@ -33,7 +33,7 @@ By the end of this tutorial, you'll have a working interview coordinator that ca
 
 Before starting, make sure you have:
 
-- **Metorial Account**: [Sign up](https://app.metorial.com) and get your API key
+- **Metorial Account**: [Sign up](https://platform.metorial.com) and get your API key
 - **Google Workspace Account**: With Calendar and Gmail access
 - **Anthropic API Key**: Get one from [Anthropic Console](https://console.anthropic.com)
 - **Development Environment**: Node.js 18+ or Python 3.9+
@@ -52,21 +52,21 @@ Here's how the interview coordinator works:
 
 The AI autonomously decides which tools to use and in what order, handling complex multi-step workflows without explicit programming.
 
-## Step 1: Deploy Google Calendar Provider
+## Step 1: Configure Google Calendar Provider
 
-First, deploy the Google Calendar provider from the Metorial catalog:
+First, configure the Google Calendar provider from the Metorial catalog:
 
 <Steps>
   <Step title="Navigate to Provider Catalog">
-    Go to [app.metorial.com](https://app.metorial.com) and click **Providers**
+    Go to [platform.metorial.com](https://platform.metorial.com) and click **Providers**
   </Step>
 
   <Step title="Find Google Calendar">
     Search for "Google Calendar" in the catalog
   </Step>
 
-  <Step title="Deploy">
-    Click **Deploy** and note your deployment ID (starts with `pdp_`)
+  <Step title="Create an Integration">
+    Open the provider, click **Use Provider** → **Integration**, then note the provider deployment or integration ID shown in the dashboard.
   </Step>
 </Steps>
 
@@ -76,17 +76,17 @@ Save your Calendar deployment ID - you'll need it in Step 3. It looks like: `pdp
 **Note on Multiple Interviewers**: This deployment accesses **one** Google Calendar (the authenticated user's calendar). To check availability across multiple interviewers' calendars, each interviewer would need their own Calendar provider deployment and auth config. For simplicity, this tutorial uses a single calendar instance.
 </Note>
 
-## Step 1b: Deploy Gmail Provider
+## Step 1b: Configure Gmail Provider
 
-Next, deploy the Gmail provider for email communications:
+Next, configure the Gmail provider for email communications:
 
 <Steps>
   <Step title="Search for Gmail">
     In the same catalog, search for "Gmail"
   </Step>
 
-  <Step title="Deploy">
-    Click **Deploy** and note your Gmail deployment ID
+  <Step title="Create an Integration">
+    Open Gmail, click **Use Provider** → **Integration**, and note your Gmail provider deployment or integration ID.
   </Step>
 </Steps>
 

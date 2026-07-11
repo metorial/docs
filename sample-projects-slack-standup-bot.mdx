@@ -17,13 +17,13 @@ This tutorial demonstrates practical AI-driven team communication using Metorial
 
 <Note>
 **What you'll learn:**
-- Deploying the Slack provider
+- Configuring the Slack provider
 - Setting up OAuth for Slack workspace access
 - Creating an AI agent that processes team updates
 - Posting and reading Slack messages programmatically
 
 **Before you begin:**
-- [Create a Metorial account](/metorial-101-introduction)
+- [Review Workforce concepts](/workforce-concepts)
 - [Create API keys](/api-getting-started)
 - Slack workspace with admin access
 - Anthropic API key (Claude Sonnet 4 or newer recommended)
@@ -36,9 +36,9 @@ This tutorial demonstrates practical AI-driven team communication using Metorial
 Before building the standup bot, ensure you have:
 
 1. **Metorial setup**:
-   - Active Metorial account at [app.metorial.com](https://app.metorial.com)
+   - Active Metorial account at [platform.metorial.com](https://platform.metorial.com)
    - Project created in your organization
-   - Metorial API key (generate in Dashboard → Home → Connect to Metorial)
+   - Metorial API key (generate in Dashboard → Developer → API Keys)
 
 2. **Slack workspace**:
    - Admin access to install apps
@@ -68,23 +68,23 @@ The standup bot workflow:
 
 **Tools used**: Slack provider (post messages, read threads) + AI Model (analysis and summarization)
 
-## Step 1: Deploy Slack Provider
+## Step 1: Configure Slack Provider
 
-Deploy the Slack provider from Metorial's catalog to enable your bot to interact with Slack.
+Configure the Slack provider from Metorial's catalog to enable your bot to interact with Slack.
 
 <Steps>
   <Step title="Navigate to Provider Catalog">
     In the Metorial Dashboard, go to **Providers** and search for "Slack".
   </Step>
 
-  <Step title="Deploy Slack Server">
-    Click the **Slack** server, then click **Deploy Server** → **Server Deployment**.
+  <Step title="Create a Slack Integration">
+    Click the **Slack** provider, then click **Use Provider** → **Integration**.
 
-    Give your deployment a descriptive name like "Standup Bot Slack".
+    Choose the Slack auth method, create or select auth credentials, and review tool filters for message and channel access.
   </Step>
 
   <Step title="Note Your Deployment ID">
-    After deployment, copy your **Server Deployment ID** from the deployment page. You'll need this for OAuth setup and in your bot code.
+    After setup, copy the provider deployment or integration ID shown in the dashboard. You'll need this for OAuth setup and in your bot code.
   </Step>
 </Steps>
 
@@ -804,7 +804,7 @@ Congratulations! You've built an AI-powered Slack standup bot that automates tea
     Learn more about managing Slack authorization.
   </Card>
 
-  <Card title="Monitoring Guide" icon="chart-line" href="/metorial-101-monitoring">
+  <Card title="Monitoring Guide" icon="chart-line" href="/review-activity">
     Monitor bot performance and standup participation.
   </Card>
 </CardGroup>

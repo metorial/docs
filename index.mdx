@@ -1,47 +1,138 @@
 ---
-title: "Welcome to Metorial"
-description: "Documentation for deploying and managing providers with Metorial"
+title: "Metorial"
+description: "Let your team connect AI agents and MCP clients like Cursor, ChatGPT, and Claude to approved apps, tools, and shared skills, with access controls and activity logs."
 ---
 
-This documentation provides an overview of the Metorial API and SDKs, including guides, references, and examples to help you get started.
+## Introduction
 
-## Getting Started
+Use Metorial when AI systems need to call real tools with the right user-approved access. That can be apps like GitHub and Linear, internal APIs, or remote MCP servers. Instead of sharing broad credentials or over-scoped service accounts, each user connects their own apps and keeps the permissions they should have.
 
-Learn more about how to get set up with Metorial.
+Set up branded portals for employees, customers, or partners. Users enter a portal to connect approved integrations, discover shared skills, and copy a standard MCP URL for their AI client. Teams control which integrations, skills, and providers appear in the portal, then review traces, sessions, tool calls, auth events, and failures after work runs.
+
+## How It Works
 
 <CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/metorial-101-introduction">
-    Get started with Metorial in minutes.
+  <Card title="Authorize" icon="shield-check">
+    Teams create portals for specific users or groups. Users connect approved
+    integrations and discover shared skills inside the portal.
   </Card>
-  <Card title="Deploy Providers" icon="server" href="/metorial-101-deploying">
-    Learn how to deploy a provider in your Metorial project.
+  <Card title="Connect" icon="plug">
+    Agents, MCP clients, and CLIs use standard MCP URLs. Products can build
+    against the API and SDKs.
   </Card>
-  <Card title="Test Providers" icon="vial" href="/metorial-101-testing">
-    Learn how to test your providers in the Metorial dashboard.
-  </Card>
-  <Card title="Use Providers" icon="code" href="/metorial-101-using">
-    Learn how to use your deployed providers with the Metorial SDKs.
-  </Card>
-  <Card title="Monitor Providers" icon="chart-line" href="/metorial-101-monitoring">
-    Learn how to monitor your providers and tool calls.
+  <Card title="Trace" icon="chart-line">
+    Teams review traces, sessions, tool calls, auth events, and failures after
+    work runs.
   </Card>
 </CardGroup>
 
-## For Developers
+Workforce is the admin control plane. Portals are where users authorize integrations and discover skills. Magic MCP turns that approved access into a standard connection URL for AI clients, agents, MCP clients, and CLIs.
 
-Explore the Metorial API and SDKs to build powerful applications and integrations with Metorial.
+## What You Can Build
+
+<CardGroup cols={2}>
+  <Card title="AI Products" icon="sparkles" href="/sdk-quickstart">
+    Connect your product to the tools each user authorizes, then build with the
+    API and SDKs.
+  </Card>
+  <Card
+    title="Employee AI Clients"
+    icon="desktop"
+    href="/preview-portal-access"
+  >
+    Let employees connect integrations once and reuse them from approved AI
+    clients.
+  </Card>
+  <Card title="Internal Agents" icon="robot" href="/product-workforce">
+    Give company-run agents access to approved integrations and skills with
+    activity logs.
+  </Card>
+  <Card title="MCP Clients And CLIs" icon="terminal" href="/workforce-concepts">
+    Provide a standard MCP URL for tool access without custom OAuth or one-off
+    servers.
+  </Card>
+  <Card title="Custom Providers" icon="server" href="/custom-servers-overview">
+    Bring internal APIs, private tools, and remote MCP servers into the same
+    runtime.
+  </Card>
+  <Card
+    title="Reusable Skills"
+    icon="wand-sparkles"
+    href="/product-magic-skills"
+  >
+    Package repeatable workflows on top of approved integrations, files, and
+    instructions.
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+<CardGroup cols={2}>
+  <Card title="Workforce Concepts" icon="users" href="/workforce-concepts">
+    Learn how portals, integrations, skills, Magic MCP, and activity fit
+    together.
+  </Card>
+  <Card
+    title="Dashboard Overview"
+    icon="table-columns"
+    href="/dashboard-overview"
+  >
+    Learn where Workforce, Portals, Skills, Integrations, Magic MCP, and
+    activity logs live.
+  </Card>
+  <Card title="Create A Portal" icon="door-open" href="/create-portal">
+    Create a branded portal where users can discover approved integrations and
+    skills.
+  </Card>
+  <Card title="Preview Portal Access" icon="vial" href="/preview-portal-access">
+    Preview the employee experience and confirm the right integrations and
+    skills are visible.
+  </Card>
+  <Card title="Review Activity" icon="chart-line" href="/review-activity">
+    Monitor sessions, connections, tool calls, provider runs, alerts, and auth
+    events.
+  </Card>
+  <Card title="Use The SDKs" icon="code" href="/sdk-quickstart">
+    Build programmatic workflows once your product setup is clear.
+  </Card>
+</CardGroup>
+
+## Product Areas
+
+The main product surfaces map to the way access is managed in production: who gets access, what they can use, where they discover it, and how you audit it.
+
+<CardGroup cols={2}>
+  <Card title="Workforce" icon="users" href="/product-workforce">
+    Manage accounts, agents, identities, portals, skills, and access activity.
+  </Card>
+  <Card title="Portals" icon="door-open" href="/product-portals">
+    Publish a branded catalog of approved integrations and skills for users.
+  </Card>
+  <Card title="Magic Skills" icon="wand-sparkles" href="/product-magic-skills">
+    Package reusable workflows and publish them through controlled marketplaces.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations-overview">
+    Connect tools like GitHub and Linear through approved auth and tool
+    policies.
+  </Card>
+</CardGroup>
+
+## Build On Metorial
+
+When you are ready to automate Metorial or connect it to an application, use the developer docs.
 
 <CardGroup cols={2}>
   <Card title="API Guide" icon="book" href="/api-getting-started">
-    Learn how to use the Metorial API.
+    Use the Metorial API to manage integrations, portals, and access
+    programmatically.
   </Card>
   <Card title="JavaScript SDK" icon="js" href="/sdk-javascript">
-    TypeScript-first SDK with streaming support and multiple AI provider integrations.
+    Build TypeScript applications with Metorial and common AI provider adapters.
   </Card>
   <Card title="Python SDK" icon="python" href="/sdk-python">
-    Async Python SDK with full type hints for building AI agent workflows.
+    Build Python agent workflows with typed async SDK support.
   </Card>
-  <Card title="Manage API Keys" icon="key" href="/api-getting-started">
-    Create and manage API keys for your Metorial project.
+  <Card title="Custom Providers" icon="server" href="/custom-servers-overview">
+    Bring your own MCP servers and provider runtime into Metorial.
   </Card>
 </CardGroup>

@@ -13,7 +13,7 @@ description: "Pre-built provider integrations that you can deploy without writin
   **Related resources:**
 
   - [Browsing the Catalog](integrations-browsing-catalog)
-  - [Deploy Your First Provider](metorial-101-deploying)
+  - [Create A Portal](/create-portal)
 </Note>
 
 ## What Are Integrations?
@@ -21,6 +21,12 @@ description: "Pre-built provider integrations that you can deploy without writin
 Integrations are pre-built providers that offer ready-to-use tools for popular services. Instead of building API clients from scratch, you can deploy integrations for services like GitHub, Slack, Google Calendar, Exa, and more.
 
 Each integration exposes tools that your AI models can call directly. For example, the GitHub integration provides tools for creating issues, reviewing pull requests, and managing repositories—all without writing any integration code yourself.
+
+![Integrations page](/images/dashboard-audit/dashboard-integrations.png)
+
+<Info>
+  Provider pages now offer two setup paths from **Use Provider**: create an **Integration** for reusable application/session setup, or create a **Magic MCP Server** for a connectable MCP endpoint.
+</Info>
 
 ## Licensing
 
@@ -86,7 +92,15 @@ Required when each user needs to authorize access to their own account. The inte
   **Managed OAuth credentials cover a subset of integrations.** Metorial provides default OAuth apps for a subset of popular providers (e.g., Slack, GitHub) so you can get started without registering your own. Less common providers in the catalog may require you to bring your own OAuth app via [Enterprise BYO](integrations-enterprise-byo). Check the provider in the [catalog](integrations-browsing-catalog) to confirm.
 </Warning>
 
+![GitHub integration auth setup](/images/dashboard-audit/provider-github-create-integration-github-com-selected.png)
+
 See [OAuth Integrations](integrations-oauth) for implementation patterns.
+
+## Tool Filters
+
+Integration setup includes tool filters. Tools are grouped as read-only, write, and destructive actions. For providers like GitHub and Linear, review these groups before enabling production access.
+
+![Linear integration tool filters](/images/dashboard-audit/provider-linear-create-integration-oauth-selected.png)
 
 ## Choosing Integrations
 

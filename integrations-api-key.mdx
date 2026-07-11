@@ -1,6 +1,6 @@
 ---
 title: "Setting Up API Key Integrations"
-description: "Deploy and configure API key-based integrations in Metorial"
+description: "Configure API key-based integrations in Metorial"
 ---
 
 API key integrations use a single set of credentials for your entire application. Perfect for services like search APIs (Exa, Tavily) where you don't need user-specific authorization—just get an API key, configure it, and start building.
@@ -8,16 +8,16 @@ API key integrations use a single set of credentials for your entire application
 <Note>
   **What you'll learn:**
 
-  - How to deploy and configure API key-based providers
+  - How to configure API key-based providers
   - How to test integrations
 
   **Related resources:**
 
-  - [Deploy Your First Provider](/metorial-101-deploying)
+  - [Browsing the Catalog](/integrations-browsing-catalog)
   - [Integrations Overview](/integrations-overview)
 </Note>
 
-## Deploying an API Key Integration
+## Configuring an API Key Integration
 
 <Steps>
   <Step title="Get Your API Key">
@@ -25,18 +25,20 @@ API key integrations use a single set of credentials for your entire application
   </Step>
   <Step title="Find the Provider">
     In Metorial, go to **Providers** and search for the integration.
+
+    ![Provider catalog](/images/dashboard-audit/dashboard-providers-catalog.png)
   </Step>
-  <Step title="Create a Deployment">
-    Click **Deploy**, name your deployment, and paste your API key. Metorial creates a **Provider Auth Config** to store your credentials securely.
+  <Step title="Create an Integration">
+    Open the provider, click **Use Provider**, choose **Integration**, then select the API key auth method. Paste the API key when creating auth credentials. Metorial stores credentials securely as provider auth configuration.
   </Step>
   <Step title="Test">
-    Use the test console to verify the deployment works.
+    Use Explorer to verify the integration works before using it in an application.
   </Step>
 </Steps>
 
 ## Using API Key Integrations
 
-After deploying your integration, pass the provider deployment ID when creating a session. The integration handles authentication automatically using the credentials you configured.
+After configuring your integration, pass the provider deployment or integration details when creating a session. The integration handles authentication automatically using the credentials you configured.
 
 <CodeGroup>
 

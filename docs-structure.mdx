@@ -1,0 +1,135 @@
+---
+title: "Documentation Map"
+description: "How the Metorial docs are organized around Workforce, portals, integrations, developers, and reference material."
+---
+
+Use this page as an internal map for the docs structure. The public navigation now starts with Workforce outcomes and moves technical implementation material into developer sections.
+
+## Navigation Layout
+
+The Mintlify navigation is split into product-first tabs.
+
+```mermaid
+flowchart TD
+  A["Metorial Documentation"]
+  A --> B["Start"]
+  B --> B1["What Is Metorial?"]
+  B --> B2["Dashboard Overview"]
+  B --> B3["Workforce Concepts"]
+  B --> B4["Create A Portal"]
+  B --> B5["Preview Portal Access"]
+  B --> B6["Review Activity"]
+
+  A --> C["Workforce"]
+  C --> C1["Workforce"]
+  C --> C2["Portals"]
+  C --> C3["Magic Skills"]
+  C --> C4["Provider Skills"]
+
+  A --> D["Integrations"]
+  D --> D1["Catalog"]
+  D --> D2["Setup Guides"]
+
+  A --> E["Developers"]
+  E --> E1["API"]
+  E --> E2["SDK"]
+  E --> E3["Provider Runtime"]
+  E --> E4["Custom Providers"]
+
+  A --> F["Reference"]
+  F --> F1["Concepts"]
+  F --> F2["Glossary"]
+```
+
+## Product Coverage
+
+The main product surfaces map to these docs:
+
+| Area | Documentation role | Start here |
+| --- | --- | --- |
+| Workforce | Control plane for governed tool access across people, agents, portals, skills, and activity | [Workforce](/product-workforce) |
+| Portals | Branded user-facing catalogs for approved integrations, skills, and MCP access | [Portals](/product-portals) |
+| Magic Skills | Reusable workflows that can be grouped, templated, governed, and published | [Magic Skills](/product-magic-skills) |
+| Integrations | Approved tool access for catalog providers such as GitHub and Linear | [Integrations](/integrations-overview) |
+| Magic MCP | Managed MCP endpoints, groups, tokens, and client connections | [Dashboard Overview](/dashboard-overview#magic-mcp) |
+| Activity | Operational logs for sessions, connections, tool calls, provider runs, errors, alerts, and auth events | [Review Activity](/review-activity) |
+
+## Reader Paths
+
+For larger additions, keep new pages aligned with what the reader is trying to do.
+
+```mermaid
+flowchart TD
+  A["Docs Home"]
+  A --> B["Evaluate And Start"]
+  B --> B1["What is Metorial?"]
+  B --> B2["Where does this live in the dashboard?"]
+  B --> B3["How do I launch the first portal?"]
+
+  A --> C["Operate Workforce"]
+  C --> C1["Manage accounts and agents"]
+  C --> C2["Publish integrations and skills"]
+  C --> C3["Review activity"]
+
+  A --> D["Build On Metorial"]
+  D --> D1["Use the API"]
+  D --> D2["Use SDKs"]
+  D --> D3["Bring custom providers"]
+
+  A --> E["Reference"]
+  E --> E1["Concepts"]
+  E --> E2["Glossary"]
+```
+
+## Product Model
+
+This is the mental model the docs should teach.
+
+```mermaid
+flowchart LR
+  Org["Organization"]
+  Project["Project"]
+  Workforce["Workforce"]
+  Portal["Portal"]
+  Account["Account"]
+  Agent["Agent"]
+  Integration["Integration"]
+  Skill["Magic Skill"]
+  MCP["Magic MCP Server"]
+  Activity["Activity And Logs"]
+
+  Org --> Project
+  Project --> Workforce
+  Workforce --> Portal
+  Workforce --> Account
+  Workforce --> Agent
+  Workforce --> Integration
+  Workforce --> Skill
+  Integration --> MCP
+  Skill --> Integration
+  Portal --> Integration
+  Portal --> Skill
+  Account --> Portal
+  Agent --> MCP
+  MCP --> Activity
+  Portal --> Activity
+```
+
+## Editorial Rules
+
+- Lead with user outcomes before API or object-model detail.
+- Use **Workforce** for the product area that governs people, agents, portals, skills, and activity.
+- Use **Portal** for the branded user-facing resource catalog.
+- Use **Integration** for approved provider setup.
+- Use **Magic MCP Server** for connectable MCP endpoints.
+- Use **Account** for Workforce users or consumers in the dashboard UI.
+- Use **Magic Skill** for reusable Workforce workflows, marketplaces, templates, and groups.
+- Use **Provider skill** for provider summary bullets, not executable tools.
+
+## Extending The Docs
+
+1. Keep **Start** short and task-oriented.
+2. Put durable product-area docs in **Workforce**.
+3. Put API, SDK, provider runtime, and custom-provider material in **Developers**.
+4. Add screenshots where they clarify current UI state.
+5. Keep internal structure notes off the public navigation.

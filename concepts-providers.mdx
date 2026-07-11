@@ -1,12 +1,12 @@
 ---
 title: "Providers"
-description: "Providers are the integrations you connect to Metorial. Understanding provider deployments, configs, and auth configs lets you control exactly how each integration is configured and authenticated."
+description: "Providers are catalog or custom integrations you connect to Metorial. Understanding integrations, Magic MCP servers, configs, auth configs, and provider deployments lets you control exactly how each provider is configured and authenticated."
 ---
 
 <Note>
   **What you'll learn:**
 
-  - What providers, provider deployments, configs, and auth configs are
+  - What providers, integrations, Magic MCP servers, provider deployments, configs, and auth configs are
   - How these entities relate to each other
   - How to mix and match them when creating sessions
 
@@ -26,6 +26,19 @@ A **provider** is an integration available in the Metorial catalog—for example
 - The configuration fields it accepts
 
 You browse and discover providers through the Metorial dashboard catalog.
+
+![Provider catalog](/images/dashboard-audit/dashboard-providers-catalog.png)
+
+## Integrations And Magic MCP Servers
+
+From a provider page, **Use Provider** gives you two common setup paths:
+
+| Path | Use when |
+| --- | --- |
+| Integration | You want reusable provider setup for sessions and application code |
+| Magic MCP Server | You want a managed MCP endpoint that clients and agents can connect to |
+
+![Use provider menu](/images/dashboard-audit/provider-linear-use-provider-modal.png)
 
 ## Provider Deployments
 
@@ -67,6 +80,20 @@ There are three types:
 | `oauth_manual` | OAuth tokens imported manually |
 
 Auth configs are stored per user. If 100 users connect their Slack accounts, you have 100 auth configs. This keeps credentials isolated and auditable.
+
+In the dashboard, provider setup asks you to choose or create auth credentials/auth configs before creating an integration or Magic MCP server.
+
+![GitHub Magic MCP auth config](/images/dashboard-audit/provider-github-create-magic-mcp-flow.png)
+
+## Tool Filters
+
+Provider setup also includes tool filters. You can allow, reject, or mix tools by category:
+
+- read-only tools
+- write tools
+- destructive tools
+
+For high-impact providers like GitHub and Linear, review destructive tools before exposing them to production agents.
 
 ## Provider Setup Sessions
 

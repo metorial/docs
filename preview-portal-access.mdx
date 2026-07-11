@@ -1,0 +1,53 @@
+---
+title: "Preview Portal Access"
+description: "Preview the employee portal and confirm users can see the right integrations and skills."
+---
+
+Test the portal from the employee point of view before sharing it. This catches missing access groups, hidden resources, and confusing portal copy early.
+
+<Note>
+  **What you'll learn:**
+
+  - How users authenticate into a portal
+  - How the portal home page presents approved resources
+  - How to verify integrations and skills from the employee view
+
+  **Before you start:**
+
+  - Complete [Workforce Concepts](/workforce-concepts)
+  - Complete [Create A Portal](/create-portal)
+</Note>
+
+## Open The Portal
+
+Open the portal URL and complete the configured authentication flow. If email verification or SSO is enabled, test the same path your users will use.
+
+![Portal employee login](/images/dashboard-audit/portal-consumer-email-verification.png)
+
+## Review The Home Page
+
+The portal home page should make the approved resources obvious. The Magic MCP URL is a standard MCP connection URL that employees can paste into an AI client or agent. When they connect, the client can use the integrations the employee has connected through the portal, and the connection can filter that access down further for the specific client or workflow.
+
+The home page should also show highlighted resources, available integrations, and shared skills.
+
+![Employee portal home](/images/dashboard-audit/portal-consumer-home.png)
+
+## Check Integrations
+
+Open the integrations view and confirm the right tools are visible. Resources that require user credentials should make the connection state clear.
+
+![Employee portal integrations](/images/dashboard-audit/portal-consumer-integrations.png)
+
+## Check Skills
+
+Open the skills view and confirm the published skills appear with the integrations they use. If a skill is missing, return to the portal admin resource settings and verify the access group is allowed.
+
+![Employee portal skills](/images/dashboard-audit/portal-consumer-skills.png)
+
+## What's Next?
+
+Once the portal looks right from the employee side, review activity and operational logs.
+
+<Card title="Next Up: Review Activity" icon="chart-line" href="/review-activity">
+  Monitor access, sessions, tool calls, provider runs, and auth events.
+</Card>
